@@ -2,6 +2,8 @@ package progistar.pXg.utils;
 
 import java.util.Arrays;
 
+import progistar.pXg.constants.Constants;
+
 public class Codon {
 	private static final int nucleoIndexes = 8;
 	private static String AminoToNuclArray[][];
@@ -102,5 +104,29 @@ public class Codon {
 	public static String[] aminoToNucl (String amino){
 		if(!setOkay) mapping();
 		return AminoToNuclArray[amino.charAt(0)-'A'];
+	}
+	/**
+	 * Decide AA-level region annotation.<br>
+	 * Note that the worst nucleotide is a representative to AA.<br> 
+	 * 
+	 * 
+	 * @param nt1
+	 * @param nt2
+	 * @param nt3
+	 * @return
+	 */
+	public static char getAARegion (char nt1, char nt2, char nt3) {
+		char aaRegion = Constants.MARK_CDS;
+		
+		// worst annotation has the highest priority.
+		// soft-clip is the worst case... will be discarded!
+		if(nt1 == Constants.MARK_SOFTCLIP || nt2 == Constants.MARK_SOFTCLIP || nt3 == Constants.MARK_SOFTCLIP) aaRegion = Constants.MARK_SOFTCLIP;
+		else if(nt1 == Constants.MARK_INTERGENIC || nt2 == Constants.MARK_INTERGENIC || nt3 == Constants.MARK_INTERGENIC) aaRegion = Constants.MARK_INTERGENIC;
+		else if(nt1 == Constants.MARK_INTRON || nt2 == Constants.MARK_INTRON || nt3 == Constants.MARK_INTRON) aaRegion = Constants.MARK_INTRON;
+		else if(nt1 == Constants.MARK_NCDS || nt2 == Constants.MARK_NCDS || nt3 == Constants.MARK_NCDS) aaRegion = Constants.MARK_NCDS;
+		else if(nt1 == Constants.MARK_UTR3 || nt2 == Constants.MARK_UTR3 || nt3 == Constants.MARK_UTR3) aaRegion = Constants.MARK_UTR3;
+		else if(nt1 == Constants.MARK_UTR5 || nt2 == Constants.MARK_UTR5 || nt3 == Constants.MARK_UTR5) aaRegion = Constants.MARK_UTR5;
+		
+		return aaRegion;
 	}
 }

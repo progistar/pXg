@@ -30,7 +30,11 @@ public class Constants {
 	public static final byte IN_FRAME_0		=	0;
 	public static final byte IN_FRAME_1		=	1;
 	public static final byte IN_FRAME_2		=	2;
-	public static final byte THREE_FRAME	=	3;
+	
+	// Frame type
+	public static final byte IN_FRAME		=	0;
+	public static final byte OUT_OF_FRAME	=	1;
+	public static final byte NO_FRAME		=	2;
 	
 	// RNA-Seq parameter
 	public static final byte FORWARD_STRAND_READS	=	0;

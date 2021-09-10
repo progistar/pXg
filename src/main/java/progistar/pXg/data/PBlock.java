@@ -1,5 +1,7 @@
 package progistar.pXg.data;
 
+import progistar.pXg.constants.Parameters;
+
 public class PBlock {
 
 	private String[] record;
@@ -11,6 +13,8 @@ public class PBlock {
 	}
 	
 	public String getPeptideSequence () {
-		return this.pSeq;
+		if(Parameters.leucineIsIsoleucine) {
+			return this.pSeq.replace("I", "L");
+		} else return this.pSeq;
 	}
 }

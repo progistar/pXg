@@ -25,9 +25,8 @@ public class PeptideParser {
 	 * 
 	 * @param peptideFilePath
 	 */
-	public static PeptideAnnotation parseResult (String peptideFilePath) {
+	public static void parseResult (String peptideFilePath) {
 		System.out.print("Parsing peptide file: "+peptideFilePath);
-		PeptideAnnotation peptideAnnotation = new PeptideAnnotation();
 		long startTime = System.currentTimeMillis();
 		
 		// set regular expressions
@@ -51,7 +50,7 @@ public class PeptideParser {
 				
 				// the first line after headers must be field line.
 				if(recordCount == -1) {
-					peptideAnnotation.setFields(line.split("\t"));
+					PeptideAnnotation.setFields(line.split("\t"));
 				} 
 				// record
 				else {
@@ -65,10 +64,12 @@ public class PeptideParser {
 						pSeq.append(matcher.group());
 					}
 					
-					PBlock pBLock = new PBlock(record, pSeq.toString());
+					if(pSeq.length() >= Parameters.minPeptLen && pSeq.length() <= Parameters.maxPeptLen) {
+						PBlock pBLock = new PBlock(record, pSeq.toString());
+						PeptideAnnotation.pBlocks.add(pBLock);
+					}
 					pSeq.setLength(0);
 					
-					peptideAnnotation.pBlocks.add(pBLock);
 				}
 				
 				recordCount ++;
@@ -84,7 +85,9 @@ public class PeptideParser {
 
 		long endTime = System.currentTimeMillis();
 		System.out.println("\tElapsed time: "+((endTime-startTime)/1000) + " sec");
+
 		
-		return peptideAnnotation;
+		// build keyword-trie
+		PeptideAnnotation.buildKeywordTrie();
 	}
 }

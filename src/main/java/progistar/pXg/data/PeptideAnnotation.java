@@ -1,72 +1,96 @@
 package progistar.pXg.data;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Hashtable;
 
-import progistar.pXg.constants.Parameters;
+import org.ahocorasick.trie.Emit;
+import org.ahocorasick.trie.Trie;
 
 public class PeptideAnnotation {
 
 	
-	private String[] fields;
-	public ArrayList<PBlock> pBlocks = new ArrayList<PBlock>();
+	private static String[]			fields;
+	private static Trie				trie;
+	public static ArrayList<PBlock>	pBlocks = new ArrayList<PBlock>();
+	public static Hashtable<String, Integer>	peptideIndexer	=	new Hashtable<String, Integer>();
+	public static Hashtable<Integer, String>	indexedPeptide	=	new Hashtable<Integer, String>();
 	
-	public void setFields (String[] fields) {
-		this.fields = fields;
+	private PeptideAnnotation() {}
+	
+	public static void setFields (String[] fields) {
+		PeptideAnnotation.fields = fields;
 	}
 	
-	public static String getFastaQueryFilePath () {
-		return Parameters.peptideFilePath+".query";
+	public static void buildKeywordTrie () {
+		System.out.println("Enumerate peptide sequences...");
+		ArrayList<String> sequences = enumerateSequence();
+		System.out.println("A total of "+sequences.size()+" peptides was detected without duplications.");
+		System.out.println("Build keyword trie...");
+		trie = Trie.builder().addKeywords(sequences).build();
+		System.out.println("Done!");
 	}
 	
-	/**
-	 * Write non-duplicated peptide sequences. <br>
-	 * This file will be an input for nBLASTt. <br> 
-	 * 
-	 * 
-	 */
-	public void writeFastaQuery () {
-		File file = new File(getFastaQueryFilePath());
-		
-		try {
-			BufferedWriter BW = new BufferedWriter(new FileWriter(file));
-			int index = 0;
+	public static ArrayList<Output> find (GenomicSequence gSeq) {
+		ArrayList<Output> outputs = new ArrayList<Output>();
+		for(int i=0; i<3; i++) {
+			Collection<Emit> emits = trie.parseText(gSeq.getForwardStrandTranslation(i));
 			
-			ArrayList<String> sequences = this.enumerateSequence();
-			
-			for(String sequence : sequences) {
-				index++;
-				
-				BW.append(">peptide"+index); 
-				BW.newLine();
-				BW.append(sequence);
-				BW.newLine();
+			for(Emit emit : emits) {
+				// convert peptide index to nucleotide index
+				int start = emit.getStart() * 3 + i;
+				int end = (emit.getEnd()+1) * 3 + i - 1;
+				Output output = new Output(gSeq, peptideIndexer.get(emit.getKeyword()), start, end, true);
+				outputs.add(output);
 			}
-			
-			BW.close();
-		}catch(IOException ioe) {
-			
 		}
+		
+		for(int i=0; i<3; i++) {
+			int ntLen = gSeq.getNucleotideString().length();
+			Collection<Emit> emits = trie.parseText(gSeq.getReverseStrandTranslation(i));
+			
+			for(Emit emit : emits) {
+				// convert peptide index to nucleotide index
+				int start = emit.getStart() * 3 + i;
+				int end = (emit.getEnd()+1) * 3 + i - 1;
+			
+				// convert reverse index to forward index
+				int tmp = start;
+				start = ntLen - end - 1;
+				end = ntLen - tmp - 1;
+				
+				Output output = new Output(gSeq, peptideIndexer.get(emit.getKeyword()), start, end, false);
+				outputs.add(output);
+			}
+		}
+		
+		
+		
+		return outputs;
 	}
+	
 	/**
 	 * Get non-duplicated peptide sequences from PeptideAnnotation.<br>
 	 * 
 	 * 
 	 * @return
 	 */
-	private ArrayList<String> enumerateSequence () {
-		Hashtable<String, Boolean> checks = new Hashtable<String, Boolean>();
+	private static ArrayList<String> enumerateSequence () {
 		ArrayList<String> sequences = new ArrayList<String>();
 		
 		// put peptide sequences into checks
-		this.pBlocks.forEach(pBlock -> checks.put(pBlock.getPeptideSequence(), true));
+		pBlocks.forEach(pBlock ->
+			{
+				if(peptideIndexer.get(pBlock.getPeptideSequence()) == null) {
+					indexedPeptide.put(peptideIndexer.size()+1, pBlock.getPeptideSequence());
+					peptideIndexer.put(pBlock.getPeptideSequence(), peptideIndexer.size()+1);
+					
+				}
+			}
+		);
 		
 		// add to ArrayList without duplications
-		checks.forEach((k, v) -> { sequences.add(k); });
+		peptideIndexer.forEach((k, v) -> { sequences.add(k); });
 		
 		return sequences;
 	}

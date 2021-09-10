@@ -14,6 +14,9 @@ public class ABlock implements Comparable<ABlock>{
 	public byte feature;
 	public boolean strand;
 	
+	// frame reflects strand.
+	// if reverse strand, the frame is calculated from downstream to upstream.
+	public int inframeIndex;
 	
 	@Override
 	public int compareTo(ABlock o) {

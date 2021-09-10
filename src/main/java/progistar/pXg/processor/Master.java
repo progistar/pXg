@@ -37,7 +37,7 @@ public class Master {
 	public static void ready (String genomicAnnotationFilePath, String sequenceFilePath, String peptideFilePath) {
 		// GTF parser and Peptide parser
 		genomicAnnotation = GTFParser.parseGTF(genomicAnnotationFilePath);
-		peptideAnnotation = PeptideParser.parseResult(peptideFilePath);
+		PeptideParser.parseResult(peptideFilePath); // static..!
 				
 		// TODO:
 		// Make available to BAM file.

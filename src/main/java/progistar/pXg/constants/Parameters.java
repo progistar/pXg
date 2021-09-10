@@ -25,6 +25,9 @@ public class Parameters {
 	// READ sequencing 
 	public static byte READ_STRAND					=	Constants.FORWARD_STRAND_READS;
 	
+	public static int minPeptLen					=	8;
+	public static int maxPeptLen					=	13;
+	public static boolean leucineIsIsoleucine		=	true;
 	
 	// Peptide file
 	// for user-friendly purpose, peptideColumnIndex is taken one-based and converted to zero-based.

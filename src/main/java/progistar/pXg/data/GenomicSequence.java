@@ -76,17 +76,9 @@ public class GenomicSequence {
     			break;
 	    	}
 		}
-		
 	}
-	
-	/*
-	public String getGenomicInformation () {
-		
-	}
-	*/
-	
-	public String getFastaHeader () {
-		return ">"+this.uniqueID;
+	public String getLocus () {
+		return IndexConvertor.indexToChr(chrIndex) +":" +this.startPosition+"-"+this.endPosition;
 	}
 	
 	public String getNucleotideString () {
@@ -98,115 +90,26 @@ public class GenomicSequence {
 		return nucleotides.toString();
 	}
 	
-	/**
-	 * key: this.uniqueID. <br>
-	 * header: <br>
-	 * 1) this.uniqueID. <br>
-	 * 2) chrName. <br>
-	 * TODO genomic position will be multiple..?
-	 * 3) genomic positions. <br>
-	 * 4) number of contents. <br>
-	 * contents: starts with @ <br>
-	 * 1) @ENSG_ENST.  <br>
-	 * If the locus falls in intergenic region, @Intergenic is annotated <br>
-	 * 2) cigar annotations. <br>
-	 * 
-	 * 
-	 * @return
-	 */
-	public String getGenomicFeature () {
-		StringBuilder genomicFeature = new StringBuilder();
-		String newLine = System.lineSeparator();
-		
-		genomicFeature.append(">"+this.uniqueID+"_"+IndexConvertor.indexToChr(this.chrIndex)+":"+this.startPosition+"-"+this.endPosition+"_"+matchedTxds);
-		genomicFeature.append(newLine);
-		
-		for(int i=0; i<matchedTxds; i++) {
-			if(tBlocks[i] == null) {
-				genomicFeature.append("@Intergenic");
-			} else {
-				genomicFeature.append("@"+tBlocks[i].geneID+"_"+tBlocks[i].geneName+"_"+tBlocks[i].transcriptID+"_"+tBlocks[i].transcriptType);
-			}
-			genomicFeature.append(newLine);
-			
-			for(Cigar cigar : cigars) {
-				if(cigar.operation == 'S' || cigar.operation == 'M' || cigar.operation == 'I') {
-					for(int j=0; j<cigar.annotations.length; j++) {
-						genomicFeature.append(cigar.annotations[j][i]);
-					}
-				}
-			}
-			genomicFeature.append(newLine);
-		}
-		
-		return genomicFeature.toString();
-	}
-
-	/**
-	 * To see what's going on <br>
-	 * This is not associated with any functional effects.
-	 */
-	public void toPrint() {
-		
-		// TEST Peptide
-		StringBuilder nucleotides = new StringBuilder();
-		String targetPeptides = "QRFRAGPNM";
-		
-//		System.out.println(uniqueID+"\t"+startPosition+"-"+endPosition+"\t"+matchedTxds);
+	public String getGenomieRegion (int transcriptNum) {
+		StringBuilder genomicRegion = new StringBuilder();
 		for(Cigar cigar : cigars) {
-//			System.out.print(cigar.nucleotides);
-			
 			// append sequence
-			nucleotides.append(cigar.nucleotides);
-			
-		}
-		
-		boolean isFind = false;
-		for(int i=0; i<3; i++) {
-			
-			String translatedSequences = translation(nucleotides.toString(), i, false);
-			if(translatedSequences.contains(targetPeptides)) {
-				isFind = true;
-				break;
-			}
-			translatedSequences = reverseComplementTranslation(nucleotides.toString(), i, false);
-			if(translatedSequences.contains(targetPeptides)) {
-				isFind = true;
-				break;
-			}
-		}
-		
-		if(!isFind) return;
-		System.out.println(nucleotides.toString());
-		System.out.println(uniqueID+"\t"+startPosition+"-"+endPosition+"\t"+matchedTxds);
-		
-		for(Cigar cigar : cigars) {
-			System.out.print(cigar.markerSize+""+cigar.operation);
-		}
-		System.out.println();
-		
-		boolean isUTR = false;
-		System.out.println(matchedTxds+" is matched Txds");
-		for(int i=0; i<matchedTxds; i++) {
-			for(Cigar cigar : cigars) {
-				if(cigar.operation == 'S' || cigar.operation == 'M' || cigar.operation == 'I') {
-					for(int j=0; j<cigar.annotations.length; j++) {
-						System.out.print(cigar.annotations[j][i]);
-						if(cigar.annotations[j][i] == Constants.MARK_UTR3 || cigar.annotations[j][i] == Constants.MARK_UTR5) isUTR = true;
-					}
+			if(cigar.operation == 'S' || cigar.operation == 'M' || cigar.operation == 'I') {
+				for(int i=0; i<cigar.annotations.length; i++) {
+					genomicRegion.append(cigar.annotations[i][transcriptNum]);
 				}
 			}
-			
-			if(tBlocks[i] == null) {
-				System.out.println("\tIntergenic Only");
-			} else {
-				System.out.println("\t"+tBlocks[i].transcriptID);
-			}
 		}
-		if(isUTR) System.out.println("ABOVE IS UTRs!");
-		else System.out.println();
+		return genomicRegion.toString();
 	}
 	
+	public String getForwardStrandTranslation (int frame) {
+		return this.translation(getNucleotideString(), frame);
+	}
+	
+	public String getReverseStrandTranslation (int frame) {
+		return this.reverseComplementTranslation(this.getNucleotideString(), frame);
+	}
 	/**
 	 * frame is a start position. This is zero-base.
 	 * 
@@ -214,17 +117,16 @@ public class GenomicSequence {
 	 * @param frame
 	 * @return
 	 */
-	public String translation (String nucleotides, int frame, boolean isTerminatedAtStopCodon) {
+	public String translation (String nucleotides, int frame) {
 		StringBuilder peptides = new StringBuilder();
 		for(int position=frame; position<nucleotides.length()-2; position+=3) {
 			char aa = Codon.nuclToAmino(nucleotides.substring(position,position+3));
-			if(isTerminatedAtStopCodon && aa == 'X') break;
 			peptides.append(aa);
 		}
 		return peptides.toString();
 	}
 	
-	public String reverseComplementTranslation (String nucleotides, int frame, boolean isTerminatedAtStopCodon) {
+	public String reverseComplementTranslation (String nucleotides, int frame) {
 		StringBuilder peptides = new StringBuilder();
 		StringBuilder reverseComplementNTs = new StringBuilder(nucleotides);
 		for(int i=0; i<nucleotides.length(); i++) {
@@ -240,28 +142,7 @@ public class GenomicSequence {
 		nucleotides = reverseComplementNTs.reverse().toString();
 		for(int position=frame; position<nucleotides.length()-2; position+=3) {
 			char aa = Codon.nuclToAmino(nucleotides.substring(position,position+3));
-			if(isTerminatedAtStopCodon && aa == 'X') break;
 			peptides.append(aa);
-		}
-		return peptides.toString();
-	}
-	
-	public String complementTranslation (String nucleotides, int frame) {
-		StringBuilder peptides = new StringBuilder();
-		StringBuilder reverseComplementNTs = new StringBuilder(nucleotides);
-		for(int i=0; i<nucleotides.length(); i++) {
-			switch(reverseComplementNTs.charAt(i)) {
-				case 'A': reverseComplementNTs.setCharAt(i, 'T'); break;
-				case 'C': reverseComplementNTs.setCharAt(i, 'G'); break;
-				case 'T': reverseComplementNTs.setCharAt(i, 'A'); break;
-				case 'G': reverseComplementNTs.setCharAt(i, 'C'); break;
-				default : break;
-			}
-		}
-		
-		nucleotides = reverseComplementNTs.toString();
-		for(int position=frame; position<nucleotides.length()-2; position+=3) {
-			peptides.append(Codon.nuclToAmino(nucleotides.substring(position,position+3)));
 		}
 		return peptides.toString();
 	}

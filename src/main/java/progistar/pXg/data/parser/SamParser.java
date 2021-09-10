@@ -207,6 +207,11 @@ public class SamParser {
 	    		relPos += cigar.markerSize;
 	    		
 	    		break;	
+	    		
+	    	case '*': // unmapped
+	    		//TODO unmapped reads
+	    		
+	    		break;
 	    	}
 	    }
 

@@ -4,6 +4,8 @@ public class Cigar {
 	public int		markerSize;
 	public char		operation;
 	public String	nucleotides = ""; // default
+	
+	// relative position to the start site of NGS-read
 	public int[]	relativePositions;
 	
 	// see Regional Characters in Constants Class

@@ -1,6 +1,5 @@
 package progistar.pXg.processor;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 
@@ -8,7 +7,6 @@ import progistar.pXg.constants.Constants;
 import progistar.pXg.data.Cigar;
 import progistar.pXg.data.GenomicAnnotation;
 import progistar.pXg.data.GenomicSequence;
-import progistar.pXg.data.PBlock;
 import progistar.pXg.data.PeptideAnnotation;
 import progistar.pXg.data.TBlock;
 
@@ -184,10 +182,4 @@ public class Mapper {
 //		genomicSequence.toPrint();
 		
 	}
-	
-	
-	public static void xMap (GenomicSequence genomicSequence, PeptideAnnotation peptideAnnotation) {
-		
-	}
-	
 }
