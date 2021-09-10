@@ -112,35 +112,6 @@ public class Master {
 			// wait for finishing all tasks from workers
 			waitUntilAllWorkersDone(workers);
 			
-			// making blast DB
-			tasks = getTasks(Constants.TASK_MAKE_BLAST_DB);
-			
-			for(int i=0; i<workers.length; i++) {
-				if(workers[i] != null) {
-					workers[i] = new Worker(i+1, tasks[i]);
-					workers[i].start();
-				}
-			}
-			// prepare peptide query file
-			peptideAnnotation.writeFastaQuery();
-			
-			// wait for finishing all tasks from workers
-			waitUntilAllWorkersDone(workers);
-			
-			// making blast DB
-			tasks = getTasks(Constants.TASK_MAP_BLAST);
-			
-			// mapping blast DB
-			for(int i=0; i<workers.length; i++) {
-				if(workers[i] != null) {
-					workers[i] = new Worker(i+1, tasks[i]);
-					workers[i].start();
-				}
-			}
-			
-			// wait for finishing all tasks from workers
-			waitUntilAllWorkersDone(workers);
-			
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -232,23 +203,6 @@ public class Master {
 					System.out.println(tasks[i].description());
 				}
 			}
-		}
-		
-		return tasks;
-	}
-	/**
-	 * Get tasks for making blast DB. <br>
-	 * 
-	 * @return
-	 */
-	private static Task[] getTasks (int blastJobID) {
-		Task[] tasks = new Task[Parameters.nThreads];
-		
-		for(int i=0; i<tasks.length; i++) {
-			tasks[i] = new Task();
-			tasks[i].isAssigned = true;
-			tasks[i].taskID = ++Master.taskCount;
-			tasks[i].taskType = blastJobID;
 		}
 		
 		return tasks;

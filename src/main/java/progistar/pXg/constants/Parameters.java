@@ -45,11 +45,4 @@ public class Parameters {
 	public static final String numOfThreads			=	"num_threads".toLowerCase();
 	public static int nThreads						=	1;
 	
-	// BLAST PARAMETER
-	public static final String makeblastdbPath		=	"makedb".toLowerCase();
-	public static String TBLASTN_EXE_PATH			=	"C:\\Bioinformatics\\0.utils\\blast-2.9.0+\\bin\\tblastn.exe";
-	
-	public static final String tblastnPath			=	"tblastn".toLowerCase();
-	public static String MAKEDB_EXE_PATH 			=	"C:\\Bioinformatics\\0.utils\\blast-2.9.0+\\bin\\makeblastdb.exe";
-	
 }

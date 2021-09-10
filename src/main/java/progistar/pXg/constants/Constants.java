@@ -38,6 +38,4 @@ public class Constants {
 	
 	// TASKS
 	public static final int TASK_G_MAP				=	1;
-	public static final int TASK_MAKE_BLAST_DB		=	2;
-	public static final int TASK_MAP_BLAST			=	3;
 }

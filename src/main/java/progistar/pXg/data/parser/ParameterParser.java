@@ -61,14 +61,6 @@ public class ParameterParser {
 						Parameters.readSize = Integer.parseInt(value);
 					}
 					
-					else if(param.equalsIgnoreCase(Parameters.makeblastdbPath)) {
-						Parameters.MAKEDB_EXE_PATH = value;
-					}
-					
-					else if(param.equalsIgnoreCase(Parameters.tblastnPath)) {
-						Parameters.TBLASTN_EXE_PATH = value;
-					}
-					
 					else if(param.equalsIgnoreCase(Parameters.numOfThreads)) {
 						Parameters.nThreads = Integer.parseInt(value);
 					}

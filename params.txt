@@ -19,11 +19,6 @@ cm=#|@|%
 gann_size=5000000
 gseq_size=1000000
 
-## Blast
-makedb=C:\\Bioinformatics\\0.utils\\blast-2.9.0+\\bin\\makeblastdb.exe
-tblastn=C:\\Bioinformatics\\0.utils\\blast-2.9.0+\\bin\\tblastn.exe
-
-
 ## Systems
 num_threads=2
 
