@@ -1,0 +1,29 @@
+## Genomic annotation file path
+gann=C:\\Bioinformatics\\0.Databases\\1.HumanRNAs\\gencode.v19.annotation.sorted.gtf
+
+## NGS-read file path
+gseq=C:\\Users\\progi\\Desktop\\Projects\\pXg\\chr1toy.sam
+
+## Peptide annotation file path
+pann=C:\Users\progi\Desktop\Projects\pXg\testQuery.fasta
+
+## Output file path
+output=C:\Users\progi\Desktop\Projects\pXg\hello.out
+
+## one-based column index
+pcol=1
+aareg=[A-Z]
+cm=#|@|%
+
+## Genomic annotation indexing
+gann_size=5000000
+gseq_size=1000000
+
+## Blast
+makedb=C:\\Bioinformatics\\0.utils\\blast-2.9.0+\\bin\\makeblastdb.exe
+tblastn=C:\\Bioinformatics\\0.utils\\blast-2.9.0+\\bin\\tblastn.exe
+
+
+## Systems
+num_threads=2
+

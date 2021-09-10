@@ -1,0 +1,256 @@
+package progistar.pXg.processor;
+
+import java.util.ArrayList;
+import java.util.Vector;
+
+import progistar.pXg.constants.Constants;
+import progistar.pXg.constants.Parameters;
+import progistar.pXg.data.GenomicAnnotation;
+import progistar.pXg.data.GenomicSequence;
+import progistar.pXg.data.PeptideAnnotation;
+import progistar.pXg.data.parser.GTFParser;
+import progistar.pXg.data.parser.PeptideParser;
+import progistar.pXg.data.parser.SamParser;
+
+public class Master {
+
+	private static GenomicAnnotation genomicAnnotation = null;
+	private static PeptideAnnotation peptideAnnotation = null;
+	
+	// PEPTIDE FILE
+	// We assumed that peptide file can be either MS-search result or just sequence flat.
+	// Both of formats must contain field lines.
+	//TODO:
+	// Enable to MS-search result. 
+	private static String peptideFilePath;
+	private static int taskCount = 0;
+	
+	private Master() {}
+	
+	
+	/**
+	 * Load GTF and peptide file and ready to read SAM file <br>
+	 * 
+	 * @param genomicAnnotationFilePath
+	 * @param sequenceFilePath
+	 */
+	public static void ready (String genomicAnnotationFilePath, String sequenceFilePath, String peptideFilePath) {
+		// GTF parser and Peptide parser
+		genomicAnnotation = GTFParser.parseGTF(genomicAnnotationFilePath);
+		peptideAnnotation = PeptideParser.parseResult(peptideFilePath);
+				
+		// TODO:
+		// Make available to BAM file.
+		SamParser.ready(sequenceFilePath);
+	}
+	
+	/**
+	 * Start to map peptides to NGS-reads <br>
+	 * 
+	 */
+	public static void run () {
+		assert genomicAnnotation != null;
+		// TODO:
+		// Auto detection of already made index files.
+		
+		try {
+			Worker[] workers = new Worker[Parameters.nThreads];
+			
+			ArrayList<GenomicSequence> genomicSequences = null;
+			Vector<Task> taskQueue = new Vector<Task>(); // for synchronized
+			Task[] tasks = null;
+			
+			while(!SamParser.isEndOfFile()) {
+				genomicSequences = SamParser.parseSam(Parameters.readSize);
+				// the array is initialized as "false"
+				boolean[] assignedArray = new boolean[genomicSequences.size()];
+				
+				int size = genomicSequences.size();
+				int start = genomicSequences.get(0).startPosition;
+				int end = genomicSequences.get(size-1).endPosition;
+				
+				System.out.println(start+"-"+end);
+				
+				while(true) {
+					tasks = getTasks(genomicSequences, assignedArray);
+					boolean isEmpty = false;
+					for(int i=0; i<tasks.length; i++) {
+						if(tasks[i].isAssigned) {
+							// add task into taskQueue
+							taskQueue.add(tasks[i]);
+						} else {
+							isEmpty = true;
+						}
+					}
+					
+					while(!taskQueue.isEmpty()) {
+						Task task = taskQueue.firstElement();
+						taskQueue.remove(0);
+						
+						boolean isAssigned = false;
+						
+						while(!isAssigned) {
+							for(int i=0; i<workers.length; i++) {
+								if(workers[i] == null || !workers[i].isAlive()) {
+									workers[i] = new Worker(i+1, task);
+									workers[i].start();
+									isAssigned = true;
+									break;
+								}
+							}
+							
+							Thread.yield();
+						}
+					}
+					
+					if(isEmpty) break;
+				}
+			}
+			
+			SamParser.finish();
+			
+			// wait for finishing all tasks from workers
+			waitUntilAllWorkersDone(workers);
+			
+			// making blast DB
+			tasks = getTasks(Constants.TASK_MAKE_BLAST_DB);
+			
+			for(int i=0; i<workers.length; i++) {
+				if(workers[i] != null) {
+					workers[i] = new Worker(i+1, tasks[i]);
+					workers[i].start();
+				}
+			}
+			// prepare peptide query file
+			peptideAnnotation.writeFastaQuery();
+			
+			// wait for finishing all tasks from workers
+			waitUntilAllWorkersDone(workers);
+			
+			// making blast DB
+			tasks = getTasks(Constants.TASK_MAP_BLAST);
+			
+			// mapping blast DB
+			for(int i=0; i<workers.length; i++) {
+				if(workers[i] != null) {
+					workers[i] = new Worker(i+1, tasks[i]);
+					workers[i].start();
+				}
+			}
+			
+			// wait for finishing all tasks from workers
+			waitUntilAllWorkersDone(workers);
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private static void waitUntilAllWorkersDone (Worker[] workers) {
+		boolean isProcessing = true;
+		while(isProcessing) {
+			isProcessing = false;
+			for(int i=0; i<workers.length; i++) {
+				isProcessing |= workers[i].isAlive();
+			}
+			Thread.yield();
+		}
+	}
+	
+	/**
+	 * Partitioning tasks. <br>
+	 * @param gSeqs
+	 * @param assignedArray
+	 * @return
+	 */
+	private static Task[] getTasks (ArrayList<GenomicSequence> gSeqs, boolean[] assignedArray) {
+		
+		assert gSeqs.size() != 0;
+		
+		
+		Task[] tasks = new Task[Parameters.nThreads * 2];
+		
+		// Task class contains "isAssigned" feature.
+		// The default value of the feature is "false"
+		// The value becomes "true" when task has something to do.
+		for(int i=0; i<tasks.length; i++) tasks[i] = new Task();
+		
+		int gSeqSize	=	gSeqs.size();
+		byte chrIndex	=	0;
+		int start		=	0;
+		int end			=	0;
+		
+		// Setting the pivot start position information
+		for(int i=0; i<gSeqSize; i++) {
+			// start position of NOT treated sequence
+			if(!assignedArray[i]) {
+				chrIndex	=	gSeqs.get(i).chrIndex;
+				start		=	gSeqs.get(i).startPosition;
+				end			=	start + Parameters.partitionSize - 1;
+				
+				break;
+			}
+		}
+		
+		ArrayList<GenomicSequence> gSeqPartitionIn = new ArrayList<GenomicSequence>();
+		
+		for(int i=0; i<gSeqSize; i++) {
+			// already treated sequence
+			if(assignedArray[i]) continue;
+			
+			GenomicSequence gSeq = gSeqs.get(i);
+			
+			if(gSeq.chrIndex == chrIndex) {
+				if(gSeq.startPosition >= start && gSeq.endPosition <= end) {
+					assignedArray[i] = true;
+					gSeqPartitionIn.add(gSeq);
+				}
+			}
+			
+		}
+		
+		// have a task at least one.
+		int partitionInSize = gSeqPartitionIn.size();
+		if(partitionInSize != 0) {
+			// Annotation index
+			int[][] gIndex = genomicAnnotation.getIndexingBlocks(chrIndex, start, end);
+			int taskIndex = 0;
+			for(int i=0; i<partitionInSize; i++) {
+				tasks[taskIndex++].genomicSequences.add(gSeqPartitionIn.get(i));
+				if(taskIndex == tasks.length) taskIndex = 0;
+			}
+			
+			for(int i=0; i<tasks.length; i++) {
+				if(tasks[i].genomicSequences.size() != 0) {
+					tasks[i].isAssigned = true;
+					tasks[i].genomicAnnotationIndex = gIndex;
+					tasks[i].genomicAnnotation = genomicAnnotation;
+					tasks[i].gIndexStart = start;
+					tasks[i].taskID = ++Master.taskCount;
+					tasks[i].taskType = Constants.TASK_G_MAP;
+					
+					System.out.println(tasks[i].description());
+				}
+			}
+		}
+		
+		return tasks;
+	}
+	/**
+	 * Get tasks for making blast DB. <br>
+	 * 
+	 * @return
+	 */
+	private static Task[] getTasks (int blastJobID) {
+		Task[] tasks = new Task[Parameters.nThreads];
+		
+		for(int i=0; i<tasks.length; i++) {
+			tasks[i] = new Task();
+			tasks[i].isAssigned = true;
+			tasks[i].taskID = ++Master.taskCount;
+			tasks[i].taskType = blastJobID;
+		}
+		
+		return tasks;
+	}
+}
