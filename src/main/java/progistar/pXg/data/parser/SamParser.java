@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import progistar.pXg.constants.Parameters;
+import progistar.pXg.constants.RunInfo;
 import progistar.pXg.data.Cigar;
 import progistar.pXg.data.GenomicAnnotation;
 import progistar.pXg.data.GenomicSequence;
@@ -120,6 +121,9 @@ public class SamParser {
 			}
 			
 			totalReadCount += readCount;
+			
+			// record porcessed reads
+			RunInfo.totalProcessedReads += readCount;
 			
 			// is end of file
 			if(line == null) {

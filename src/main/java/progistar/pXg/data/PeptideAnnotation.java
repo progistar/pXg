@@ -7,6 +7,8 @@ import java.util.Hashtable;
 import org.ahocorasick.trie.Emit;
 import org.ahocorasick.trie.Trie;
 
+import progistar.pXg.decoy.Decoy;
+
 public class PeptideAnnotation {
 
 	
@@ -33,6 +35,7 @@ public class PeptideAnnotation {
 	
 	public static ArrayList<Output> find (GenomicSequence gSeq) {
 		ArrayList<Output> outputs = new ArrayList<Output>();
+		
 		for(int i=0; i<3; i++) {
 			Collection<Emit> emits = trie.parseText(gSeq.getForwardStrandTranslation(i));
 			

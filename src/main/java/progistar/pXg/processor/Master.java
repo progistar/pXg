@@ -11,6 +11,7 @@ import progistar.pXg.data.PeptideAnnotation;
 import progistar.pXg.data.parser.GTFParser;
 import progistar.pXg.data.parser.PeptideParser;
 import progistar.pXg.data.parser.SamParser;
+import progistar.pXg.decoy.Decoy;
 
 public class Master {
 
@@ -187,7 +188,12 @@ public class Master {
 			int[][] gIndex = genomicAnnotation.getIndexingBlocks(chrIndex, start, end);
 			int taskIndex = 0;
 			for(int i=0; i<partitionInSize; i++) {
-				tasks[taskIndex++].genomicSequences.add(gSeqPartitionIn.get(i));
+				// target NGS-read
+				tasks[taskIndex].genomicSequences.add(gSeqPartitionIn.get(i));
+				// decoy NGS-read
+				tasks[taskIndex].genomicSequences.add(Decoy.makeDecoy(gSeqPartitionIn.get(i), Parameters.decoys));
+				
+				taskIndex++;
 				if(taskIndex == tasks.length) taskIndex = 0;
 			}
 			

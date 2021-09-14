@@ -21,12 +21,16 @@ public class Worker extends Thread {
 	
 	public Worker (int workerID, Task task) {
 		super();
-		this.task = task;
+		setTask(task);
 		this.workerID = workerID;
 		this.startTime = System.currentTimeMillis();
 		this.tmpOutput = new File(genTmpFilePath());
 		
 		System.out.println("Worker "+this.workerID+" takes task "+task.taskID);
+	}
+	
+	public void setTask (Task task) {
+		this.task = task;
 	}
 	
 	private String genTmpFilePath () {

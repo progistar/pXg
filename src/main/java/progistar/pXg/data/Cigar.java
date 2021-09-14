@@ -18,4 +18,15 @@ public class Cigar {
 		this.operation = operation;
 		this.nucleotides = ""; // default
 	}
+	
+	/**
+	 * Deep copy.<br>
+	 * 
+	 * @param cigar
+	 */
+	public Cigar (Cigar cigar) {
+		this.markerSize = cigar.markerSize;
+		this.operation = cigar.operation;
+		this.nucleotides = cigar.nucleotides;
+	}
 }
