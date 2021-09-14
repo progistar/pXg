@@ -28,5 +28,8 @@ public class Cigar {
 		this.markerSize = cigar.markerSize;
 		this.operation = cigar.operation;
 		this.nucleotides = cigar.nucleotides;
+		// relative position and annotations are shallow copied.
+		this.relativePositions = cigar.relativePositions;
+		this.annotations = cigar.annotations;
 	}
 }

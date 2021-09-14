@@ -23,7 +23,7 @@ public class Decoy  {
 		
 		ArrayList<Cigar> cigars = new ArrayList<Cigar>();
 		
-		for(Cigar cigar : cigars) {
+		for(Cigar cigar : gSeq.cigars) {
 			Cigar revCigar = new Cigar(cigar);
 			
 			
@@ -37,21 +37,18 @@ public class Decoy  {
 			cigars.add(revCigar);
 		}
 		
-		GenomicSequence reverseSeq = new GenomicSequence("XXX_"+gSeq.uniqueID, gSeq.chrIndex, gSeq.startPosition, cigars);
+		GenomicSequence gDSeq = new GenomicSequence("XXX_"+gSeq.uniqueID, gSeq.chrIndex, gSeq.startPosition, cigars);
 		
-		return reverseSeq;
+		return gDSeq;
 	}
 	
 	private static String getReverseSequence (String nucleotide) {
-		StringBuilder revNucleotides = new StringBuilder();
-		revNucleotides.append(nucleotide);
-		
+		StringBuilder revNucleotides = new StringBuilder(nucleotide);
 		return revNucleotides.reverse().toString();
 	}
 	
 	private static String getShuffleSequence (String nucleotide) {
-		StringBuilder shfNucleotides = new StringBuilder();
-		shfNucleotides.append(nucleotide);
+		StringBuilder shfNucleotides = new StringBuilder(nucleotide);
 		
 		// Do shuffle
 		Random rnd = new Random();

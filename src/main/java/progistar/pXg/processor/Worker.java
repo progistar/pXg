@@ -11,6 +11,7 @@ import progistar.pXg.constants.Parameters;
 import progistar.pXg.data.GenomicSequence;
 import progistar.pXg.data.Output;
 import progistar.pXg.data.PeptideAnnotation;
+import progistar.pXg.decoy.Decoy;
 
 public class Worker extends Thread {
 
