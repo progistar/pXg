@@ -3,6 +3,7 @@ package progistar.pXg.data;
 import java.util.ArrayList;
 
 import progistar.pXg.constants.Constants;
+import progistar.pXg.constants.Parameters;
 import progistar.pXg.utils.Codon;
 import progistar.pXg.utils.IndexConvertor;
 
@@ -104,11 +105,19 @@ public class GenomicSequence {
 	}
 	
 	public String getForwardStrandTranslation (int frame) {
-		return this.translation(getNucleotideString(), frame);
+		if(Parameters.leucineIsIsoleucine) {
+			return this.translation(getNucleotideString(), frame).replace("I", "L");
+		} else {
+			return this.translation(getNucleotideString(), frame);
+		}
 	}
 	
 	public String getReverseStrandTranslation (int frame) {
-		return this.reverseComplementTranslation(this.getNucleotideString(), frame);
+		if(Parameters.leucineIsIsoleucine) {
+			return this.reverseComplementTranslation(this.getNucleotideString(), frame).replace("I", "L");
+		} else {
+			return this.reverseComplementTranslation(this.getNucleotideString(), frame);
+		}
 	}
 	/**
 	 * frame is a start position. This is zero-base.

@@ -1,8 +1,10 @@
 package progistar.pXg.data;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -116,6 +118,9 @@ public class PeptideAnnotation {
 				pBlockMapper.put(pPeptide, mPBlocks);
 			});
 			
+			Hashtable<String, XBlock> xBlocks = new Hashtable<String, XBlock>();
+			int maxTargetCount = 0;
+			int maxDecoyCount = 0;
 			
 			for(File file : files) {
 				System.out.println("parsing "+file.getName()+" ...");
@@ -124,7 +129,6 @@ public class PeptideAnnotation {
 				
 				String uniqueID = null;
 				boolean isDecoy = false;
-				String pPeptide = null;
 				
 				while((line = BR.readLine()) != null) {
 					String[] field = line.split("\t");
@@ -137,13 +141,62 @@ public class PeptideAnnotation {
 							isDecoy = false;
 						}
 					} else if(field[0].equalsIgnoreCase(Constants.OUTPUT_G_PEPTIDE)) {
+						// skip unknown region
+						if(field[2].contains("?")) continue;
 						
+						String key = field[3] + "_" + field[2];
+						
+						XBlock xBlock = xBlocks.get(key);
+						if(xBlock == null) {
+							xBlock = new XBlock();
+							xBlock.genomicSequence = field[3];
+							xBlock.genomicLocus = field[2];
+							xBlocks.put(key, xBlock);
+						}
+						
+						if(isDecoy) {
+							xBlock.decoyReadCount++;
+							maxDecoyCount = Math.max(maxDecoyCount, xBlock.decoyReadCount);
+						} else {
+							xBlock.targetReadCount++;
+							maxTargetCount = Math.max(maxTargetCount, xBlock.targetReadCount);
+						}
 					}
 				}
 				
 				
 				BR.close();
 			}
+			
+			int[] targetCounts = new int[maxTargetCount+1];
+			int[] decoyCounts = new int[maxDecoyCount+1];
+			
+			System.out.println(maxTargetCount+" and "+maxDecoyCount);
+			
+			xBlocks.forEach((key, xBlock) -> {
+				if(xBlock.targetReadCount != 0) targetCounts[xBlock.targetReadCount]++;
+				if(xBlock.decoyReadCount != 0) decoyCounts[xBlock.decoyReadCount]++;
+			});
+			
+			BufferedWriter BW = new BufferedWriter(new FileWriter("readmapping.stat"));
+			
+			int maxIndex = Math.max(maxTargetCount+1, maxDecoyCount+1);
+			
+			BW.append("Count\tTarget\tDecoy");
+			BW.newLine();
+			for(int i=1; i<maxIndex; i++) {
+				int targetCount = 0;
+				int decoyCount = 0;
+				
+				if(targetCounts.length > i) targetCount = targetCounts[i];
+				if(decoyCounts.length > i) decoyCount = decoyCounts[i];
+				
+				BW.append(i+"\t"+targetCount+"\t"+decoyCount);
+				BW.newLine();
+			}
+			
+			BW.close();
+			
 		}catch(IOException ioe) {
 			
 		}
