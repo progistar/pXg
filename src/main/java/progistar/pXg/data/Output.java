@@ -53,6 +53,11 @@ public class Output {
 	}
 	
 	public String getLocus () {
+		// unknown locus
+		if(this.startGenomicPosition == -1 || this.endGenomicPosition == -1) {
+			return IndexConvertor.indexToChr(gSeq.chrIndex)+":?";
+		}
+		
 		return IndexConvertor.indexToChr(gSeq.chrIndex) +":" +startGenomicPosition+"-"+endGenomicPosition;
 	}
 	
@@ -100,11 +105,27 @@ public class Output {
 			aaRegionAnnotation.append(Codon.getAARegion(ntMark1, ntMark2, ntMark3));
 		}
 		
-		if(strand) {
-			return aaRegionAnnotation.toString();
-		} else {
-			return aaRegionAnnotation.reverse().toString();
+		
+		if(!strand) {
+			aaRegionAnnotation = aaRegionAnnotation.reverse();
 		}
+		// region shrinkage
+		StringBuilder shortAnnotation = new StringBuilder();
+		int count = 1;
+		char mark = aaRegionAnnotation.charAt(0);
+		for(int i=1; i<aaRegionAnnotation.length(); i++) {
+			char nextMark = aaRegionAnnotation.charAt(i);
+			if(mark == nextMark) count++;
+			else {
+				shortAnnotation.append(count).append(mark);
+				mark = nextMark;
+				count = 1;
+			}
+		}
+		shortAnnotation.append(count).append(mark);
+		
+		return shortAnnotation.toString();
+		
 	}
 	/**
 	 * Genomic positions of mapped peptides <br>
@@ -135,9 +156,6 @@ public class Output {
 				}
 			}
 		}
-		
-		// TODO: FRAME DECISION
-		
 	}
 }
 

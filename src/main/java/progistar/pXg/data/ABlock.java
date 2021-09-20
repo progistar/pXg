@@ -1,5 +1,7 @@
 package progistar.pXg.data;
 
+import progistar.pXg.constants.Constants;
+
 /**
  * Annotation Block <br>
  * 
@@ -13,10 +15,6 @@ public class ABlock implements Comparable<ABlock>{
 	public int end;
 	public byte feature;
 	public boolean strand;
-	
-	// frame reflects strand.
-	// if reverse strand, the frame is calculated from downstream to upstream.
-	public int inframeIndex;
 	
 	@Override
 	public int compareTo(ABlock o) {

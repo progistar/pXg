@@ -26,15 +26,16 @@ public class Constants {
 	public static final byte NON_CODING_TRANSCRIPT	=	0;
 	public static final byte CODING_TRANSCRIPT		=	1;
 	
-	// Frame annotation
-	public static final byte IN_FRAME_0		=	0;
-	public static final byte IN_FRAME_1		=	1;
-	public static final byte IN_FRAME_2		=	2;
-	
 	// Frame type
-	public static final byte IN_FRAME		=	0;
-	public static final byte OUT_OF_FRAME	=	1;
-	public static final byte NO_FRAME		=	2;
+	public static final byte NO_FRAME		=	0;
+	public static final byte IN_FRAME		=	1;
+	public static final byte OUT_OF_FRAME	=	2;
+	
+	// Frame index
+	// Note that if there is no frame index, it is same to NO_FRAME
+	public static final byte FRAME_0		=	0;
+	public static final byte FARME_1		=	1;
+	public static final byte FRAME_2		=	2;
 	
 	// RNA-Seq parameter
 	public static final byte FORWARD_STRAND_READS	=	0;
@@ -47,4 +48,10 @@ public class Constants {
 	
 	// TASKS
 	public static final int TASK_G_MAP				=	1;
+	
+	// Output Annotation
+	public static final String OUTPUT_G_UNIQUE_ID	=	"[ID]";
+	public static final String OUTPUT_G_SEQUENCE	=	"[SEQ]";
+	public static final String OUTPUT_G_REGION		=	"[REGION]";
+	public static final String OUTPUT_G_PEPTIDE		=	"[PEPTIDE]";
 }

@@ -32,7 +32,7 @@ public class GenomicSequence {
 	// => in this case, tBlocks has annotated transcript models and fill with their object.
 	// The assignment, see Mapper Class
 	public TBlock[]	tBlocks; // we can get strand from tBlock!
-	public int 		matchedTxds = 0; // in the case of only mapping to intergenic, the number is 1.
+	public int 		matchedTxds = 1; // in the case of only mapping to intergenic, the number is 1.
 	
 	// default is three frame translation.
 	// it has a specific translation frame as if it can infer from annotation.

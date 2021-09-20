@@ -70,7 +70,7 @@ public class Mapper {
 		if(txdIndexer.size() == 0) {
 			genomicSequence.matchedTxds = 1;
 			genomicSequence.tBlocks = new TBlock[1];
-			genomicSequence.tBlocks[0] = null; // intergenic transcript
+			genomicSequence.tBlocks[0] = null;
 			
 			for(Cigar cigar : genomicSequence.cigars) {
 				char op = cigar.operation;

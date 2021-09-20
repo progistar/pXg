@@ -69,28 +69,7 @@ public class Worker extends Thread {
 							output.mapGenomicAnnotation();
 						}
 						
-						BW.append(genomicSequence.uniqueID+"_"+genomicSequence.getLocus());
-						BW.newLine();
-						BW.append(genomicSequence.getNucleotideString());
-						BW.newLine();
-						
-						for(int i=0; i<genomicSequence.matchedTxds; i++) {
-							BW.append(genomicSequence.getGenomieRegion(i));
-							BW.newLine();
-						}
-						
-						for(Output output : matches) {
-							String strand = null;
-							if(output.strand) {
-								strand = "forward";
-							} else {
-								strand = "reverse";
-							}
-							for(int i=0; i<genomicSequence.matchedTxds; i++) {
-								BW.append(strand+"\t"+output.getPeptide()+"\t"+output.getLocus()+"\t"+output.getMatchedNucleotide()+"\t"+output.getGenomicRegion(i)+"\t"+output.getAARegionAnnotation(i));
-								BW.newLine();
-							}
-						}
+						writeResult(BW, matches, genomicSequence);
 					}
 				}
 			}
@@ -103,6 +82,63 @@ public class Worker extends Thread {
 		long endTime = System.currentTimeMillis();
 		System.out.println("Worker "+this.workerID+" was done with task"+task.taskID +"\tElapsed time: "+((endTime-startTime)/1000)+" sec");
 	}
-	
+	/**
+	 * Write temporary output file. <br>
+	 * 
+	 * @param BW
+	 * @param outputs
+	 * @param gSeq
+	 */
+	public void writeResult (BufferedWriter BW, ArrayList<Output> outputs, GenomicSequence gSeq) {
+		try {
+
+			BW.append(Constants.OUTPUT_G_UNIQUE_ID+"\t"+gSeq.uniqueID+"_"+gSeq.getLocus());
+			BW.newLine();
+			
+			/*
+			 * These information are needed to confirm.
+			 * Not informative for the last result.
+			BW.append(Constants.OUTPUT_G_SEQUENCE+gSeq.getNucleotideString());
+			BW.newLine();
+			
+			for(int i=0; i<gSeq.matchedTxds; i++) {
+				BW.append(Constants.OUTPUT_G_REGION+gSeq.getGenomieRegion(i));
+				BW.newLine();
+			}
+			*/
+			
+			for(Output output : outputs) {
+				String strand = null;
+				if(output.strand) {
+					strand = "forward";
+				} else {
+					strand = "reverse";
+				}
+				BW.append(Constants.OUTPUT_G_PEPTIDE);
+				BW.append("\t");
+				BW.append(output.getPeptide());
+				BW.append("\t");
+				BW.append(output.getLocus());
+				BW.append("\t");
+				BW.append(output.getMatchedNucleotide());
+				BW.append("\t");
+				
+				
+				for(int i=0; i<gSeq.matchedTxds; i++) {
+					if(i!=0) BW.append("|");
+					// intergenic
+					if(gSeq.tBlocks[i] == null) {
+						BW.append("intergenic");
+					} else {
+						BW.append(gSeq.tBlocks[i].transcriptID);
+					}
+					BW.append("(").append(output.getAARegionAnnotation(i)).append(")");
+				}
+				BW.newLine();
+			}
+		}catch(IOException ioe) {
+			
+		}
+	}
 	
 }

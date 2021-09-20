@@ -81,6 +81,9 @@ public class TBlock implements Comparable<TBlock> {
 			for(int idx=0; idx<blockTypes.length; idx++) {
 				if( blockTypes[idx] != Constants.INTRON ) blockTypes[idx] = Constants.NCDS;
 			}
+			
+			// non-coding transcript is assigned "NO_FRAME"
+			// there is nothing to do because the default value is NO_FRAME
 		} 
 		// else if, this is coding transcript. In this case, exons are interpreted as UTR.
 		else {
@@ -89,6 +92,7 @@ public class TBlock implements Comparable<TBlock> {
 			
 			boolean isUTR5 = this.strand;
 			
+			// block type assignment
 			for(int idx=0; idx<blockTypes.length; idx++) {
 				if( blockTypes[idx] == Constants.EXON && isUTR5 ) blockTypes[idx] = Constants.UTR5;
 				else if( blockTypes[idx] == Constants.EXON && !isUTR5 ) blockTypes[idx] = Constants.UTR3;
