@@ -39,10 +39,6 @@ public class Worker extends Thread {
 	}
 	
 	/**
-	 * There are two types of tasks: <br>
-	 * 
-	 * 1) Mapping genomic sequence to genomic annotation. <br>
-	 * 2) Make blast db. <br>
 	 * 
 	 * The decision of task is defined by Task.taskType <br>
 	 * 
@@ -55,6 +51,13 @@ public class Worker extends Thread {
 			if(this.task.taskType == Constants.TASK_G_MAP) {
 				for(GenomicSequence genomicSequence : this.task.genomicSequences) {
 					ArrayList<Output> matches = PeptideAnnotation.find(genomicSequence);
+					
+					/**
+					 * Only consider matched NGS-reads.
+					 * Because we are not interested in unmatched NGS-reads.
+					 * 
+					 */
+					
 					if(matches.size() > 0) {
 						Mapper.gMap(genomicSequence, task.gIndexStart, task.genomicAnnotationIndex, task.genomicAnnotation);
 						

@@ -16,14 +16,6 @@ import progistar.pXg.decoy.Decoy;
 public class Master {
 
 	private static GenomicAnnotation genomicAnnotation = null;
-	private static PeptideAnnotation peptideAnnotation = null;
-	
-	// PEPTIDE FILE
-	// We assumed that peptide file can be either MS-search result or just sequence flat.
-	// Both of formats must contain field lines.
-	//TODO:
-	// Enable to MS-search result. 
-	private static String peptideFilePath;
 	private static int taskCount = 0;
 	
 	private Master() {}

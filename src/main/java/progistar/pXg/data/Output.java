@@ -20,7 +20,6 @@ public class Output {
 	public int peptideIndex;
 	public boolean strand;
 
-
 	public GenomicSequence gSeq;
 	
 	public Output (GenomicSequence gSeq, int peptideIndex, int startPos, int endPos, boolean strand) {
@@ -82,16 +81,23 @@ public class Output {
 		return genomicRegion.toString();
 	}
 	
+	/**
+	 * 
+	 * get genomic regional information at AA level. <br>
+	 * 
+	 * @param transcriptNum
+	 * @return
+	 */
 	public String getAARegionAnnotation (int transcriptNum) {
 		String genomicRegion = getGenomicRegion(transcriptNum);
 		StringBuilder aaRegionAnnotation = new StringBuilder();
 		
 		for(int i=0; i<genomicRegion.length(); i+=3) {
-			char nt1 = genomicRegion.charAt(i);
-			char nt2 = genomicRegion.charAt(i+1);
-			char nt3 = genomicRegion.charAt(i+2);
+			char ntMark1 = genomicRegion.charAt(i);
+			char ntMark2 = genomicRegion.charAt(i+1);
+			char ntMark3 = genomicRegion.charAt(i+2);
 			
-			aaRegionAnnotation.append(Codon.getAARegion(nt1, nt2, nt3));
+			aaRegionAnnotation.append(Codon.getAARegion(ntMark1, ntMark2, ntMark3));
 		}
 		
 		if(strand) {
@@ -100,7 +106,11 @@ public class Output {
 			return aaRegionAnnotation.reverse().toString();
 		}
 	}
-	
+	/**
+	 * Genomic positions of mapped peptides <br>
+	 * Plus, frame-decision <br>
+	 * 
+	 */
 	public void mapGenomicAnnotation () {
 		// genomic position setting
 		this.startGenomicPosition = -1;
@@ -127,6 +137,7 @@ public class Output {
 		}
 		
 		// TODO: FRAME DECISION
+		
 	}
 }
 
