@@ -19,6 +19,12 @@ public class PBlock {
 		this.pSeq = pSeq;
 	}
 	
+	/**
+	 * 
+	 * Return peptide sequence with IL-replacement option.<br>
+	 * 
+	 * @return
+	 */
 	public String getPeptideSequence () {
 		if(Parameters.leucineIsIsoleucine) {
 			return this.pSeq.replace("I", "L");

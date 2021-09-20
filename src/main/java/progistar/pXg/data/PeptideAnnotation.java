@@ -108,9 +108,10 @@ public class PeptideAnnotation {
 	public static void parseTmpResults (File[] files) {
 		try {
 			
+			// IL replaced peptide to PBlocks
 			Hashtable<String, ArrayList<PBlock>> pBlockMapper = new Hashtable<String, ArrayList<PBlock>>();
 			pBlocks.forEach(pBlock -> {
-				String pPeptide = pBlock.getPeptideSequence();
+				String pPeptide = pBlock.getPeptideSequence(); // applied IL-replacement option.
 				ArrayList<PBlock> mPBlocks = pBlockMapper.get(pPeptide);
 				if(mPBlocks == null) mPBlocks = new ArrayList<PBlock>();
 				mPBlocks.add(pBlock);

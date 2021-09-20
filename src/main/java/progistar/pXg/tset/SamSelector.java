@@ -10,7 +10,7 @@ import java.io.IOException;
 public class SamSelector {
 	
 	public static void main(String[] args) throws IOException {
-		writeSam("C:\\Users\\progi\\Desktop\\Projects\\pXg\\chr1toy.sam", 1);
+		writeSam("C:\\Users\\progi\\Desktop\\Projects\\pXg\\chr1toy.sam", 2);
 	}
 	
 	/**
@@ -34,7 +34,7 @@ public class SamSelector {
 				
 				// meta data is not counted.
 				if(!line.startsWith("@")) {
-					if(!line.contains("HISEQ:111:C6ADFANXX:1:2108:11966:4731")) continue;
+					if(!line.contains("HISEQ:111:C6ADFANXX:1:2101:10310:56482")) continue;
 					numOfRecords--;
 				}
 				
