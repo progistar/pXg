@@ -13,7 +13,7 @@ public class Parameters {
 	
 	// Output file path
 	public static final String oPath				=	"output".toLowerCase();
-	public static String outputFilePaht				=	"";
+	public static String outputFilePath				=	"";
 	
 	public static final String decoyMethod			=	"reverse".toLowerCase();
 	public static byte	decoys						=	Constants.DECOY_SHUFFLE;

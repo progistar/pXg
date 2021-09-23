@@ -1,15 +1,18 @@
 package progistar.pXg.processor;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Vector;
 
 import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
 import progistar.pXg.data.GenomicAnnotation;
 import progistar.pXg.data.GenomicSequence;
-import progistar.pXg.data.PeptideAnnotation;
+import progistar.pXg.data.PxGAnnotation;
 import progistar.pXg.data.parser.GTFParser;
 import progistar.pXg.data.parser.PeptideParser;
+import progistar.pXg.data.parser.ResultParser;
 import progistar.pXg.data.parser.SamParser;
 import progistar.pXg.decoy.Decoy;
 
@@ -17,6 +20,7 @@ public class Master {
 
 	private static GenomicAnnotation genomicAnnotation = null;
 	private static int taskCount = 0;
+	private static Hashtable<String, String> tmpOutputFilePaths = null;
 	
 	private Master() {}
 	
@@ -31,6 +35,7 @@ public class Master {
 		// GTF parser and Peptide parser
 		genomicAnnotation = GTFParser.parseGTF(genomicAnnotationFilePath);
 		PeptideParser.parseResult(peptideFilePath); // static..!
+		tmpOutputFilePaths = new Hashtable<String, String>();
 				
 		// TODO:
 		// Make available to BAM file.
@@ -104,6 +109,15 @@ public class Master {
 			
 			// wait for finishing all tasks from workers
 			waitUntilAllWorkersDone(workers);
+			
+			// read tmp output files
+			ArrayList<File> tmpOutputFiles = new ArrayList<File>();
+			tmpOutputFilePaths.forEach((path, value) ->{
+				tmpOutputFiles.add(new File(path));
+			});
+			
+			PxGAnnotation pXgA = ResultParser.parseResult(tmpOutputFiles);
+			pXgA.write(Parameters.outputFilePath);
 			
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -204,5 +218,9 @@ public class Master {
 		}
 		
 		return tasks;
+	}
+	
+	public static void enrollTmpOutputFilePath (String outputFilePath) {
+		tmpOutputFilePaths.put(outputFilePath, "");
 	}
 }

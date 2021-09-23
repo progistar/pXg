@@ -66,7 +66,7 @@ public class ParameterParser {
 					}
 					
 					else if(param.equalsIgnoreCase(Parameters.oPath)) {
-						Parameters.outputFilePaht = value;
+						Parameters.outputFilePath = value;
 					}
 				}
 				

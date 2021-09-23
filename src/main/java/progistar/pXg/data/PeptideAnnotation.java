@@ -108,66 +108,12 @@ public class PeptideAnnotation {
 	public static void parseTmpResults (File[] files) {
 		try {
 			
-			// IL replaced peptide to PBlocks
-			Hashtable<String, ArrayList<PBlock>> pBlockMapper = new Hashtable<String, ArrayList<PBlock>>();
-			pBlocks.forEach(pBlock -> {
-				String pPeptide = pBlock.getPeptideSequence(); // applied IL-replacement option.
-				ArrayList<PBlock> mPBlocks = pBlockMapper.get(pPeptide);
-				if(mPBlocks == null) mPBlocks = new ArrayList<PBlock>();
-				mPBlocks.add(pBlock);
-				
-				pBlockMapper.put(pPeptide, mPBlocks);
-			});
-			
+			// IL replaced peptide to xBlocks
 			Hashtable<String, XBlock> xBlocks = new Hashtable<String, XBlock>();
 			int maxTargetCount = 0;
 			int maxDecoyCount = 0;
 			
-			for(File file : files) {
-				System.out.println("parsing "+file.getName()+" ...");
-				BufferedReader BR = new BufferedReader(new FileReader(file));
-				String line = null;
-				
-				String uniqueID = null;
-				boolean isDecoy = false;
-				
-				while((line = BR.readLine()) != null) {
-					String[] field = line.split("\t");
-					if(field[0].equalsIgnoreCase(Constants.OUTPUT_G_UNIQUE_ID)) {
-						uniqueID = field[1];
-						// decoy decision
-						if(uniqueID.startsWith("XXX")) {
-							isDecoy = true;
-						} else {
-							isDecoy = false;
-						}
-					} else if(field[0].equalsIgnoreCase(Constants.OUTPUT_G_PEPTIDE)) {
-						// skip unknown region
-						if(field[2].contains("?")) continue;
-						
-						String key = field[3] + "_" + field[2];
-						
-						XBlock xBlock = xBlocks.get(key);
-						if(xBlock == null) {
-							xBlock = new XBlock();
-							xBlock.genomicSequence = field[3];
-							xBlock.genomicLocus = field[2];
-							xBlocks.put(key, xBlock);
-						}
-						
-						if(isDecoy) {
-							xBlock.decoyReadCount++;
-							maxDecoyCount = Math.max(maxDecoyCount, xBlock.decoyReadCount);
-						} else {
-							xBlock.targetReadCount++;
-							maxTargetCount = Math.max(maxTargetCount, xBlock.targetReadCount);
-						}
-					}
-				}
-				
-				
-				BR.close();
-			}
+			
 			
 			int[] targetCounts = new int[maxTargetCount+1];
 			int[] decoyCounts = new int[maxDecoyCount+1];
@@ -179,6 +125,7 @@ public class PeptideAnnotation {
 				if(xBlock.decoyReadCount != 0) decoyCounts[xBlock.decoyReadCount]++;
 			});
 			
+			//TODO: file name should be fixed!
 			BufferedWriter BW = new BufferedWriter(new FileWriter("readmapping.stat"));
 			
 			int maxIndex = Math.max(maxTargetCount+1, maxDecoyCount+1);

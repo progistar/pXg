@@ -27,6 +27,9 @@ public class Worker extends Thread {
 		this.startTime = System.currentTimeMillis();
 		this.tmpOutput = new File(genTmpFilePath());
 		
+		// enroll tmpOutput file path
+		Master.enrollTmpOutputFilePath(this.tmpOutput.getAbsolutePath());
+		
 		System.out.println("Worker "+this.workerID+" takes task "+task.taskID);
 	}
 	
@@ -69,7 +72,7 @@ public class Worker extends Thread {
 							output.mapGenomicAnnotation();
 						}
 						
-						writeResult(BW, matches, genomicSequence);
+						writeTmpOutput(BW, matches, genomicSequence);
 					}
 				}
 			}
@@ -89,7 +92,7 @@ public class Worker extends Thread {
 	 * @param outputs
 	 * @param gSeq
 	 */
-	public void writeResult (BufferedWriter BW, ArrayList<Output> outputs, GenomicSequence gSeq) {
+	public void writeTmpOutput (BufferedWriter BW, ArrayList<Output> outputs, GenomicSequence gSeq) {
 		try {
 
 			BW.append(Constants.OUTPUT_G_UNIQUE_ID+"\t"+gSeq.uniqueID+"_"+gSeq.getLocus());
@@ -110,15 +113,17 @@ public class Worker extends Thread {
 			for(Output output : outputs) {
 				String strand = null;
 				if(output.strand) {
-					strand = "forward";
+					strand = "+";
 				} else {
-					strand = "reverse";
+					strand = "-";
 				}
 				BW.append(Constants.OUTPUT_G_PEPTIDE);
 				BW.append("\t");
 				BW.append(output.getPeptide());
 				BW.append("\t");
 				BW.append(output.getLocus());
+				BW.append("\t");
+				BW.append(strand);
 				BW.append("\t");
 				BW.append(output.getMatchedNucleotide());
 				BW.append("\t");

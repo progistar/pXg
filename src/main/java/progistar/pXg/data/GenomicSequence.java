@@ -106,17 +106,17 @@ public class GenomicSequence {
 	
 	public String getForwardStrandTranslation (int frame) {
 		if(Parameters.leucineIsIsoleucine) {
-			return this.translation(getNucleotideString(), frame).replace("I", "L");
+			return GenomicSequence.translation(getNucleotideString(), frame).replace("I", "L");
 		} else {
-			return this.translation(getNucleotideString(), frame);
+			return GenomicSequence.translation(getNucleotideString(), frame);
 		}
 	}
 	
 	public String getReverseStrandTranslation (int frame) {
 		if(Parameters.leucineIsIsoleucine) {
-			return this.reverseComplementTranslation(this.getNucleotideString(), frame).replace("I", "L");
+			return GenomicSequence.reverseComplementTranslation(this.getNucleotideString(), frame).replace("I", "L");
 		} else {
-			return this.reverseComplementTranslation(this.getNucleotideString(), frame);
+			return GenomicSequence.reverseComplementTranslation(this.getNucleotideString(), frame);
 		}
 	}
 	/**
@@ -126,7 +126,7 @@ public class GenomicSequence {
 	 * @param frame
 	 * @return
 	 */
-	public String translation (String nucleotides, int frame) {
+	public static String translation (String nucleotides, int frame) {
 		StringBuilder peptides = new StringBuilder();
 		for(int position=frame; position<nucleotides.length()-2; position+=3) {
 			char aa = Codon.nuclToAmino(nucleotides.substring(position,position+3));
@@ -135,7 +135,7 @@ public class GenomicSequence {
 		return peptides.toString();
 	}
 	
-	public String reverseComplementTranslation (String nucleotides, int frame) {
+	public static String reverseComplementTranslation (String nucleotides, int frame) {
 		StringBuilder peptides = new StringBuilder();
 		StringBuilder reverseComplementNTs = new StringBuilder(nucleotides);
 		for(int i=0; i<nucleotides.length(); i++) {

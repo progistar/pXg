@@ -30,4 +30,19 @@ public class PBlock {
 			return this.pSeq.replace("I", "L");
 		} else return this.pSeq;
 	}
+	
+	/**
+	 * return record. <br>
+	 * 
+	 */
+	public String toString () {
+		StringBuilder recordLine = new StringBuilder();
+		
+		recordLine.append(this.record[0]);
+		for(int i=1; i<this.record.length; i++) {
+			recordLine.append("\t").append(this.record[i]);
+		}
+		
+		return recordLine.toString();
+	}
 }
