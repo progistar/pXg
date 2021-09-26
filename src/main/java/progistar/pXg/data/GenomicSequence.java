@@ -90,7 +90,7 @@ public class GenomicSequence {
 		boolean isPass = true;
 		
 		for(Cigar cigar : this.cigars) {
-			if(cigar.operation == Constants.MARK_SOFTCLIP) isPass = false;
+			if(cigar.operation == 'S') isPass = false;
 		}
 		
 		return isPass;
