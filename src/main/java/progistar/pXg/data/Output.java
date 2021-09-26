@@ -1,5 +1,7 @@
 package progistar.pXg.data;
 
+import java.util.ArrayList;
+
 import progistar.pXg.constants.Constants;
 import progistar.pXg.utils.Codon;
 import progistar.pXg.utils.IndexConvertor;
@@ -14,8 +16,10 @@ public class Output {
 	public int startPosInNGS;
 	public int endPosInNGS;
 	
-	public int startGenomicPosition;
-	public int endGenomicPosition;
+	// if the mapped region resides on junction,
+	// there are multiple genomic positions, possible.
+	public ArrayList<Integer> startGenomicPositions;
+	public ArrayList<Integer> endGenomicPositions;
 	
 	public int peptideIndex;
 	public boolean strand;
@@ -45,7 +49,7 @@ public class Output {
 		// or non-coding
 		if(tBlock == null || tBlock.transcriptCodingType == Constants.NON_CODING_TRANSCRIPT) return Constants.NO_FRAME;
 		// with soft-clip
-		if(this.startGenomicPosition == -1 || this.endGenomicPosition == -1) return Constants.NO_FRAME;
+		if(this.startGenomicPositions.isEmpty() || this.endGenomicPositions.isEmpty()) return Constants.NO_FRAME;
 		
 		
 		return Constants.NO_FRAME;
@@ -54,11 +58,16 @@ public class Output {
 	
 	public String getLocus () {
 		// unknown locus
-		if(this.startGenomicPosition == -1 || this.endGenomicPosition == -1) {
+		if(this.startGenomicPositions.isEmpty() || this.endGenomicPositions.isEmpty()) {
 			return IndexConvertor.indexToChr(gSeq.chrIndex)+":?";
 		}
 		
-		return IndexConvertor.indexToChr(gSeq.chrIndex) +":" +startGenomicPosition+"-"+endGenomicPosition;
+		String locus = "";
+		for(int i=0; i<startGenomicPositions.size(); i++) {
+			if(i!=0) locus += "|";
+			locus += IndexConvertor.indexToChr(gSeq.chrIndex) +":" +startGenomicPositions.get(i)+"-"+endGenomicPositions.get(i);
+		}
+		return locus;
 	}
 	
 	/**
@@ -134,17 +143,36 @@ public class Output {
 	 */
 	public void mapGenomicAnnotation () {
 		// genomic position setting
-		this.startGenomicPosition = -1;
-		this.endGenomicPosition = -1;
+		this.startGenomicPositions = new ArrayList<Integer>();
+		this.endGenomicPositions = new ArrayList<Integer>();
 		
 		int relPos = 0;
+		
+		int startGenomicPosition = -1;
+		int endGenomicPosition = -1;
 		for(Cigar cigar : gSeq.cigars) {
-			// append sequence
+
+			// if the cigar operation is N,
+			// there is a junction in the NGS-read.
+			if(cigar.operation == 'N') {
+				if(startGenomicPosition != -1 && endGenomicPosition != -1) {
+					this.startGenomicPositions.add(startGenomicPosition);
+					this.endGenomicPositions.add(endGenomicPosition);
+				}
+				
+				startGenomicPosition = -1;
+				endGenomicPosition = -1;
+			}
+			
 			if(cigar.operation == 'S' || cigar.operation == 'M' || cigar.operation == 'I') {
 				for(int i=0; i<cigar.annotations.length; i++) {
 					if(this.startPosInNGS <= relPos && relPos <= this.endPosInNGS) {
 						// there is no relativePosition for soft-clip!
-						if(cigar.operation == 'S') return;
+						if(cigar.operation == 'S') {
+							this.startGenomicPositions.clear();
+							this.endGenomicPositions.clear();
+							return;
+						}
 						
 						if(startGenomicPosition == -1) startGenomicPosition = cigar.relativePositions[i] + gSeq.startPosition;
 						if(endGenomicPosition == -1) endGenomicPosition = cigar.relativePositions[i] + gSeq.startPosition;
@@ -155,6 +183,11 @@ public class Output {
 					relPos++;
 				}
 			}
+		}
+		
+		if(startGenomicPosition != -1 && endGenomicPosition != -1) {
+			this.startGenomicPositions.add(startGenomicPosition);
+			this.endGenomicPositions.add(endGenomicPosition);
 		}
 	}
 }
