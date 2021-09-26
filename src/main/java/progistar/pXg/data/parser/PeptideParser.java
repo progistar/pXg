@@ -84,6 +84,9 @@ public class PeptideParser {
 		
 
 		long endTime = System.currentTimeMillis();
+		
+		// filter PSMs by delta-score threshold
+		PeptideAnnotation.filter();
 		System.out.println("\tElapsed time: "+((endTime-startTime)/1000) + " sec");
 
 		

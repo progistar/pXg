@@ -28,19 +28,19 @@ public class ParameterParser {
 					String param = line.split("\\=")[0].trim();
 					String value = line.split("\\=")[1].trim();
 					
-					if(param.equalsIgnoreCase(Parameters.gAnnPath)) {
+					if(param.equalsIgnoreCase(Parameters.GENOMIC_ANNOTATION_PATH)) {
 						Parameters.genomicAnnotationFilePath = value;
 					}
 					
-					else if(param.equalsIgnoreCase(Parameters.gSeqPath)) {
+					else if(param.equalsIgnoreCase(Parameters.GENOMIC_SEQUENCE_PATH)) {
 						Parameters.sequenceFilePath = value;
 					}
 					
-					else if(param.equalsIgnoreCase(Parameters.pAnnPath)) {
+					else if(param.equalsIgnoreCase(Parameters.PEPTIDE_ANNOTATION_PATH)) {
 						Parameters.peptideFilePath = value;
 					}
 					
-					else if(param.equalsIgnoreCase(Parameters.pColumnIndex)) {
+					else if(param.equalsIgnoreCase(Parameters.PEPTIDE_COLUMN_INDEX)) {
 						// For the purpose of user-friendly, it takes one-based and converts to zero-based. 
 						Parameters.peptideColumnIndex = Integer.parseInt(value) - 1;
 					}
@@ -53,11 +53,11 @@ public class ParameterParser {
 						Parameters.commentMarker = value;
 					}
 					
-					else if(param.equalsIgnoreCase(Parameters.gPartitionSize)) {
+					else if(param.equalsIgnoreCase(Parameters.GENOMIC_ANNOTATION_PARTITION_SIZE)) {
 						Parameters.partitionSize = Integer.parseInt(value);
 					}
 					
-					else if(param.equalsIgnoreCase(Parameters.gSeqReadSize)) {
+					else if(param.equalsIgnoreCase(Parameters.GENOMIC_SEQUENCE_PARTITION_SIZE)) {
 						Parameters.readSize = Integer.parseInt(value);
 					}
 					
@@ -65,8 +65,27 @@ public class ParameterParser {
 						Parameters.nThreads = Integer.parseInt(value);
 					}
 					
-					else if(param.equalsIgnoreCase(Parameters.oPath)) {
+					else if(param.equalsIgnoreCase(Parameters.OUTPUT_PATH)) {
 						Parameters.outputFilePath = value;
+					}
+					
+					else if(param.equalsIgnoreCase(Parameters.SCAN_COLUMN_INDICES)) {
+						String[] indicies = value.split("\\,");
+						int[] scanIndicies = new int[indicies.length];
+						for(int i=0; i<indicies.length; i++) {
+							// For the purpose of user-friendly, it takes one-based and converts to zero-based.
+							scanIndicies[i] = Integer.parseInt(indicies[i])-1;
+						}
+						Parameters.scanColumnIndices = scanIndicies;
+					}
+					
+					else if(param.equalsIgnoreCase(Parameters.SCORE_COLUMN_INDEX)) {
+						// For the purpose of user-friendly, it takes one-based and converts to zero-based.
+						Parameters.scoreColumnIndex = Integer.parseInt(value);
+					}
+					
+					else if(param.equalsIgnoreCase(Parameters.DELTA_SCORE_THRESHOLD)) {
+						Parameters.deltaScoreThreshold = Double.parseDouble(value);
 					}
 				}
 				

@@ -1,19 +1,18 @@
 package progistar.pXg.data;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Hashtable;
 
 import org.ahocorasick.trie.Emit;
 import org.ahocorasick.trie.Trie;
 
-import progistar.pXg.constants.Constants;
+import progistar.pXg.constants.Parameters;
 
 public class PeptideAnnotation {
 
@@ -104,6 +103,43 @@ public class PeptideAnnotation {
 		return sequences;
 	}
 	
+	/**
+	 * filter by score threshold <br>
+	 * 
+	 */
+	public static void filter () {
+		Hashtable<String, ArrayList<PBlock>> pBlocksByScan = new Hashtable<String, ArrayList<PBlock>>();
+		
+		// aggregate pBlocks by scanID
+		pBlocks.forEach(pBlock -> {
+			String scanID = pBlock.getScanID();
+			ArrayList<PBlock> scanPBlocks = pBlocksByScan.get(scanID);
+			if(scanPBlocks == null) {
+				scanPBlocks = new ArrayList<PBlock>();
+				pBlocksByScan.put(scanID, scanPBlocks);
+			}
+			scanPBlocks.add(pBlock);
+		});
+		
+		// remove original pBlocks
+		pBlocks.clear();
+		
+		pBlocksByScan.forEach((scanID, scanPBlocks) -> {
+			// sort pBlocks by scores, decreasing order.
+			Collections.sort(scanPBlocks);
+			
+			// cutoff
+			double topScore = scanPBlocks.get(0).score;
+			int size = scanPBlocks.size();
+			for(int i=0; i<size; i++) {
+				// add pBlocks which delta-score is equal or less than "score-threshold"
+				double deltaScore = topScore - scanPBlocks.get(i).score;
+				if(deltaScore <= Parameters.deltaScoreThreshold) {
+					pBlocks.add(scanPBlocks.get(i));
+				}
+			}
+		});
+	}
 	
 	public static void parseTmpResults (File[] files) {
 		try {
