@@ -117,6 +117,7 @@ public class Worker extends Thread {
 				} else {
 					strand = "-";
 				}
+				
 				BW.append(Constants.OUTPUT_G_PEPTIDE);
 				BW.append("\t");
 				BW.append(output.getPeptide());
@@ -128,16 +129,22 @@ public class Worker extends Thread {
 				BW.append(output.getMatchedNucleotide());
 				BW.append("\t");
 				
-				
 				for(int i=0; i<gSeq.matchedTxds; i++) {
 					if(i!=0) BW.append("|");
 					// intergenic
+					String senseMarker = "-";
 					if(gSeq.tBlocks[i] == null) {
 						BW.append("intergenic");
 					} else {
 						BW.append(gSeq.tBlocks[i].transcriptID);
+						// check sense
+						if(gSeq.tBlocks[i].strand == output.strand) {
+							senseMarker = "sense";
+						} else {
+							senseMarker = "anti-sense";
+						}
 					}
-					BW.append("(").append(output.getAARegionAnnotation(i)).append(")");
+					BW.append("(").append(output.getAARegionAnnotation(i)).append(";").append(senseMarker).append(")");
 				}
 				BW.newLine();
 			}

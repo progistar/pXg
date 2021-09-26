@@ -16,7 +16,7 @@ public class Parameters {
 	public static String outputFilePath				=	"";
 	
 	public static final String decoyMethod			=	"reverse".toLowerCase();
-	public static byte	decoys						=	Constants.DECOY_SHUFFLE;
+	public static byte	decoys						=	Constants.DECOY_REVERSE;
 	
 	// GTF partition size
 	public static final String gPartitionSize		=	"gann_size".toLowerCase();
