@@ -81,7 +81,7 @@ public class ParameterParser {
 					
 					else if(param.equalsIgnoreCase(Parameters.SCORE_COLUMN_INDEX)) {
 						// For the purpose of user-friendly, it takes one-based and converts to zero-based.
-						Parameters.scoreColumnIndex = Integer.parseInt(value);
+						Parameters.scoreColumnIndex = Integer.parseInt(value) - 1;
 					}
 					
 					else if(param.equalsIgnoreCase(Parameters.DELTA_SCORE_THRESHOLD)) {
