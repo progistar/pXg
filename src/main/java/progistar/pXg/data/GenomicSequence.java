@@ -78,6 +78,24 @@ public class GenomicSequence {
 	    	}
 		}
 	}
+	
+	/**
+	 * quality check.<br>
+	 * fail-criteria <br>
+	 * 1) soft-clip
+	 * 
+	 * @return
+	 */
+	public boolean isQualityPassed () {
+		boolean isPass = true;
+		
+		for(Cigar cigar : this.cigars) {
+			if(cigar.operation == Constants.MARK_SOFTCLIP) isPass = false;
+		}
+		
+		return isPass;
+	}
+	
 	public String getLocus () {
 		return IndexConvertor.indexToChr(chrIndex) +":" +this.startPosition+"-"+this.endPosition;
 	}

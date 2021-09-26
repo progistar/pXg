@@ -114,6 +114,10 @@ public class SamParser {
 				
 				// Genomic Sequence
 				GenomicSequence gSeq = new GenomicSequence(qName, chrIndex, startPosition, cigars);
+				
+				// quality check
+				if(!gSeq.isQualityPassed()) continue;
+				
 				gSeqs.add(gSeq);
 				
 				readCount ++;
