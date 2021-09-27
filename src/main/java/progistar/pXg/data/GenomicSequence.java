@@ -20,7 +20,7 @@ import progistar.pXg.utils.IndexConvertor;
 public class GenomicSequence {
 
 	public String uniqueID;
-	public byte chrIndex;
+	public int chrIndex;
 	public int startPosition;
 	public int endPosition;
 	public ArrayList<Cigar> cigars;
@@ -59,7 +59,7 @@ public class GenomicSequence {
 	//public byte[] 	transFrames; // byte[sizeOfTranscripts]
 	// In case of intergenic (it implies that this sequence cannot be explained by annotations), transFrames = new byte[1].
 	
-	public GenomicSequence (String uniqueID, byte chrIndex, int startPosition, ArrayList<Cigar> cigars) {
+	public GenomicSequence (String uniqueID, int chrIndex, int startPosition, ArrayList<Cigar> cigars) {
 		this.uniqueID = uniqueID;
 		this.chrIndex = chrIndex;
 		this.startPosition = startPosition;

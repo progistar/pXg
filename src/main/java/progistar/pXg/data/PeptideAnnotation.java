@@ -140,49 +140,4 @@ public class PeptideAnnotation {
 			}
 		});
 	}
-	
-	public static void parseTmpResults (File[] files) {
-		try {
-			
-			// IL replaced peptide to xBlocks
-			Hashtable<String, XBlock> xBlocks = new Hashtable<String, XBlock>();
-			int maxTargetCount = 0;
-			int maxDecoyCount = 0;
-			
-			
-			
-			int[] targetCounts = new int[maxTargetCount+1];
-			int[] decoyCounts = new int[maxDecoyCount+1];
-			
-			System.out.println(maxTargetCount+" and "+maxDecoyCount);
-			
-			xBlocks.forEach((key, xBlock) -> {
-				if(xBlock.targetReadCount != 0) targetCounts[xBlock.targetReadCount]++;
-				if(xBlock.decoyReadCount != 0) decoyCounts[xBlock.decoyReadCount]++;
-			});
-			
-			//TODO: file name should be fixed!
-			BufferedWriter BW = new BufferedWriter(new FileWriter("readmapping.stat"));
-			
-			int maxIndex = Math.max(maxTargetCount+1, maxDecoyCount+1);
-			
-			BW.append("Count\tTarget\tDecoy");
-			BW.newLine();
-			for(int i=1; i<maxIndex; i++) {
-				int targetCount = 0;
-				int decoyCount = 0;
-				
-				if(targetCounts.length > i) targetCount = targetCounts[i];
-				if(decoyCounts.length > i) decoyCount = decoyCounts[i];
-				
-				BW.append(i+"\t"+targetCount+"\t"+decoyCount);
-				BW.newLine();
-			}
-			
-			BW.close();
-			
-		}catch(IOException ioe) {
-			
-		}
-	}
 }

@@ -15,7 +15,7 @@ public class TBlock implements Comparable<TBlock> {
 	
 	public int tBlockID;
 	
-	public byte chrIndex;
+	public int chrIndex;
 	
 	public String transcriptID;
 	public String transcriptName;
@@ -32,7 +32,7 @@ public class TBlock implements Comparable<TBlock> {
 	public byte transcriptCodingType;
 	public ArrayList<ABlock> aBlocks = new ArrayList<ABlock>();
 	
-	public TBlock(int tBlockID, byte chrIndex, boolean strand, int start, int end,
+	public TBlock(int tBlockID, int chrIndex, boolean strand, int start, int end,
 			      String transcriptID, String transcriptName, String transcriptType, 
 				  String geneID,       String geneName,       String geneType) {
 		super();

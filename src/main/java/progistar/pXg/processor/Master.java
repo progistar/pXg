@@ -63,22 +63,15 @@ public class Master {
 				// the array is initialized as "false"
 				boolean[] assignedArray = new boolean[genomicSequences.size()];
 				
-				int size = genomicSequences.size();
-				int start = genomicSequences.get(0).startPosition;
-				int end = genomicSequences.get(size-1).endPosition;
-				
-				System.out.println(start+"-"+end);
-				
 				while(true) {
 					tasks = getTasks(genomicSequences, assignedArray);
-					boolean isEmpty = false;
+					boolean isEmpty = true;
 					for(int i=0; i<tasks.length; i++) {
 						if(tasks[i].isAssigned) {
 							// add task into taskQueue
 							taskQueue.add(tasks[i]);
-						} else {
-							isEmpty = true;
-						}
+							isEmpty = false;
+						} 
 					}
 					
 					while(!taskQueue.isEmpty()) {
@@ -154,7 +147,7 @@ public class Master {
 		for(int i=0; i<tasks.length; i++) tasks[i] = new Task();
 		
 		int gSeqSize	=	gSeqs.size();
-		byte chrIndex	=	0;
+		int chrIndex	=	0;
 		int start		=	0;
 		int end			=	0;
 		

@@ -17,7 +17,7 @@ public class GenomicAnnotation {
 	private ArrayList<TBlock> tBlocks = new ArrayList<TBlock>();
 	
 	public void putTBlock 
-	(         byte chrIndex, boolean strand, int start, int end,
+	(         int chrIndex, boolean strand, int start, int end,
 			  String transcriptID, String transcriptName, String transcriptType, 
 			  String geneID,       String geneName,       String geneType) {
 		int id = idToTx.size();
@@ -79,7 +79,7 @@ public class GenomicAnnotation {
 	 * @param end
 	 * @return
 	 */
-	public int[][] getIndexingBlocks (byte chrIndex, int start, int end) {
+	public int[][] getIndexingBlocks (int chrIndex, int start, int end) {
 		System.out.print("Get indexing tBlocks from the annotation... ("+start+"-"+end+")");
 		long startTime = System.currentTimeMillis();
 		

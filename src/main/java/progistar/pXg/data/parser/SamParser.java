@@ -87,9 +87,9 @@ public class SamParser {
 		ArrayList<GenomicSequence> gSeqs = new ArrayList<GenomicSequence>();
 		
 		System.out.print("reading "+file.getName()+"... ("+(totalReadCount+1)+"-"+(totalReadCount+readNum)+")");
+		String line = null;
 		try {
 			
-			String line = null;
 			
 			long readCount = 0;
 			while((line = BR.readLine()) != null) {
@@ -110,7 +110,10 @@ public class SamParser {
 				
 				// the index for that chr is automatically assigned by auto-increment key.
 				IndexConvertor.putChrIndexer(chr);
-				byte chrIndex = IndexConvertor.chrToIndex(chr);
+				int chrIndex = IndexConvertor.chrToIndex(chr);
+				
+				// check all chromosomes are well preocessed.
+				RunInfo.processedChromosomes.put(chr, chrIndex);
 				
 				// Genomic Sequence
 				GenomicSequence gSeq = new GenomicSequence(qName, chrIndex, startPosition, cigars);

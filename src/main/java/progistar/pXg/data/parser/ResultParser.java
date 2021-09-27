@@ -39,8 +39,6 @@ public class ResultParser {
 							isDecoy = false;
 						}
 					} else if(field[0].equalsIgnoreCase(Constants.OUTPUT_G_PEPTIDE)) {
-						// skip unknown region
-						if(field[2].contains("?")) continue;
 						
 						String pSeq = field[1]; // peptide sequence without I/L consideration
 						XBlock xBlock = new XBlock();

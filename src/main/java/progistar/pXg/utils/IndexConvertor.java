@@ -4,8 +4,8 @@ import java.util.Hashtable;
 
 public class IndexConvertor {
 
-	private static Hashtable<String, Byte> strToIndex = new Hashtable<String, Byte>();
-	private static Hashtable<Byte, String> indexToStr = new Hashtable<Byte, String>();
+	private static Hashtable<String, Integer> strToIndex = new Hashtable<String, Integer>();
+	private static Hashtable<Integer, String> indexToStr = new Hashtable<Integer, String>();
 	
 	/**
 	 * Supported index: chr1, chr2, ..., chr22, chrX, chrY, chrMT. <br>
@@ -15,8 +15,8 @@ public class IndexConvertor {
 	 * @param chr
 	 * @return
 	 */
-	public static byte chrToIndex (String chr) {
-		Byte indexValue = -1;
+	public static int chrToIndex (String chr) {
+		int indexValue = -1;
 		try {
 			chr = chr.toLowerCase();
 			indexValue = strToIndex.get(chr);
@@ -36,8 +36,8 @@ public class IndexConvertor {
 		chr = chr.toLowerCase();
 		if(strToIndex.get(chr) != null) return;
 		
-		strToIndex.put(chr, (byte)strToIndex.size());
-		indexToStr.put((byte)indexToStr.size(), chr);
+		strToIndex.put(chr, strToIndex.size());
+		indexToStr.put(indexToStr.size(), chr);
 		
 		if(strToIndex.size() != indexToStr.size()) {
 			System.out.println(strToIndex.size() +":" +indexToStr.size());
@@ -46,7 +46,7 @@ public class IndexConvertor {
 		}
 	}
 	
-	public static String indexToChr (byte index) {
+	public static String indexToChr (int index) {
 		return indexToStr.get(index);
 	}
 }
