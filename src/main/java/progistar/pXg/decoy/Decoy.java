@@ -37,7 +37,7 @@ public class Decoy  {
 			cigars.add(revCigar);
 		}
 		
-		GenomicSequence gDSeq = new GenomicSequence("XXX_"+gSeq.uniqueID, gSeq.chrIndex, gSeq.startPosition, cigars);
+		GenomicSequence gDSeq = new GenomicSequence("XXX_"+gSeq.uniqueID, gSeq.chrIndex, gSeq.startPosition, cigars, null);
 		
 		return gDSeq;
 	}

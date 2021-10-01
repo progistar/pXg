@@ -4,17 +4,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import progistar.pXg.constants.Parameters;
 import progistar.pXg.constants.RunInfo;
 import progistar.pXg.data.Cigar;
-import progistar.pXg.data.GenomicAnnotation;
 import progistar.pXg.data.GenomicSequence;
-import progistar.pXg.processor.Mapper;
 import progistar.pXg.utils.IndexConvertor;
 
 /**
@@ -108,6 +104,16 @@ public class SamParser {
 				// Cigar has nucleotides and relative positions to the start position.
 				ArrayList<Cigar> cigars = parseCigarString(cigarString, nucleotides);
 				
+				// find MD string
+				String mdStr = "";
+				for(int i=FieldIndex.SEQUENCE.value; i<fields.length; i++) {
+					if(fields[i].startsWith("MD:Z:")) {
+						mdStr = fields[i].replace("MD:Z:", "");
+						break;
+					}
+				}
+				
+				
 				// the index for that chr is automatically assigned by auto-increment key.
 				IndexConvertor.putChrIndexer(chr);
 				int chrIndex = IndexConvertor.chrToIndex(chr);
@@ -116,11 +122,7 @@ public class SamParser {
 				RunInfo.processedChromosomes.put(chr, chrIndex);
 				
 				// Genomic Sequence
-				GenomicSequence gSeq = new GenomicSequence(qName, chrIndex, startPosition, cigars);
-				
-				// quality check
-				if(!gSeq.isQualityPassed()) continue;
-				
+				GenomicSequence gSeq = new GenomicSequence(qName, chrIndex, startPosition, cigars, mdStr);
 				gSeqs.add(gSeq);
 				
 				readCount ++;
@@ -157,6 +159,7 @@ public class SamParser {
 	private static ArrayList<Cigar> parseCigarString (String cigarString, String nucleotides) {
 		Matcher matcher = EACH_CIGAR_REGEX.matcher(cigarString);
 		ArrayList<Cigar> results = new ArrayList<Cigar>();
+		ArrayList<Cigar> filterResults = new ArrayList<Cigar>();
 		
 	    while (matcher.find()) {
 	      int markerSize = Integer.parseInt(matcher.group(1));
@@ -168,13 +171,13 @@ public class SamParser {
 	    int ntIndex = 0;
 	    int relPos = 0;
 	    int[] relativePositions = null;
+	    // drop all cigars without MIND
 	    for(int i=0; i<results.size(); i++) {
 	    	Cigar cigar = results.get(i);
 	    	char op = cigar.operation;
 	    	
 	    	switch (op) {
 	    	case 'S': // soft clip
-	    		cigar.nucleotides = nucleotides.substring(ntIndex, ntIndex + cigar.markerSize);
 	    		ntIndex += cigar.markerSize;
 	    		break;
 	    		
@@ -188,7 +191,7 @@ public class SamParser {
 	    		}
 	    		
 	    		cigar.relativePositions = relativePositions;
-	    		
+	    		filterResults.add(cigar);
 	    		break;
 	    		
 	    	case 'I': // insertion
@@ -201,7 +204,7 @@ public class SamParser {
 	    		}
 	    		
 	    		cigar.relativePositions = relativePositions;
-	    		
+	    		filterResults.add(cigar);
 	    		break;
 	    		
 	    	case 'D': // deletion
@@ -211,12 +214,12 @@ public class SamParser {
 	    		}
 	    		
 	    		cigar.relativePositions = relativePositions;
-	    		
+	    		filterResults.add(cigar);
 	    		break;	
 	    		
 	    	case 'N': // skip (ex> exon junction)
 	    		relPos += cigar.markerSize;
-	    		
+	    		filterResults.add(cigar);
 	    		break;	
 	    		
 	    	case '*': // unmapped
@@ -225,7 +228,7 @@ public class SamParser {
 	    		break;
 	    	}
 	    }
-
-	    return results;
+	    
+	    return filterResults;
 	}
 }

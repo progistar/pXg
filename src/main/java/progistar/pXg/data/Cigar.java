@@ -16,7 +16,6 @@ public class Cigar {
 	public Cigar (int markerSize, char operation) {
 		this.markerSize = markerSize;
 		this.operation = operation;
-		this.nucleotides = ""; // default
 	}
 	
 	/**

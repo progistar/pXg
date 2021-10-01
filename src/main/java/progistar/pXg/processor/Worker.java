@@ -75,6 +75,8 @@ public class Worker extends Thread {
 						writeTmpOutput(BW, matches, genomicSequence);
 					}
 				}
+				
+				this.task.genomicSequences.clear();
 			}
 			BW.close();
 		}catch(IOException ioe) {

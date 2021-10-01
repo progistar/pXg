@@ -82,7 +82,7 @@ public class Output {
 		int relPos = 0;
 		for(Cigar cigar : gSeq.cigars) {
 			// append sequence
-			if(cigar.operation == 'S' || cigar.operation == 'M' || cigar.operation == 'I') {
+			if(cigar.operation == 'M' || cigar.operation == 'I') {
 				for(int i=0; i<cigar.annotations.length; i++) {
 					if(this.startPosInNGS <= relPos && relPos <= this.endPosInNGS) {
 						genomicRegion.append(cigar.annotations[i][transcriptNum]);
@@ -164,16 +164,9 @@ public class Output {
 				endGenomicPosition = -1;
 			}
 			
-			if(cigar.operation == 'S' || cigar.operation == 'M' || cigar.operation == 'I') {
+			if(cigar.operation == 'M' || cigar.operation == 'I') {
 				for(int i=0; i<cigar.annotations.length; i++) {
 					if(this.startPosInNGS <= relPos && relPos <= this.endPosInNGS) {
-						// there is no relativePosition for soft-clip!
-						if(cigar.operation == 'S') {
-							this.startGenomicPositions.clear();
-							this.endGenomicPositions.clear();
-							return;
-						}
-						
 						if(startGenomicPosition == -1) startGenomicPosition = cigar.relativePositions[i] + gSeq.startPosition;
 						if(endGenomicPosition == -1) endGenomicPosition = cigar.relativePositions[i] + gSeq.startPosition;
 						

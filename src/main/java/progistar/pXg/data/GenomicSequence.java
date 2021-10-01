@@ -1,6 +1,7 @@
 package progistar.pXg.data;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
@@ -19,10 +20,13 @@ import progistar.pXg.utils.IndexConvertor;
  */
 public class GenomicSequence {
 
+	private static final Pattern EACH_MD_REGEX = Pattern.compile("(([0-9]+)|([A-Z]+|\\^[A-Z]+))");
+	
 	public String uniqueID;
 	public int chrIndex;
 	public int startPosition;
 	public int endPosition;
+	public String mdString;
 	public ArrayList<Cigar> cigars;
 	
 	
@@ -59,11 +63,12 @@ public class GenomicSequence {
 	//public byte[] 	transFrames; // byte[sizeOfTranscripts]
 	// In case of intergenic (it implies that this sequence cannot be explained by annotations), transFrames = new byte[1].
 	
-	public GenomicSequence (String uniqueID, int chrIndex, int startPosition, ArrayList<Cigar> cigars) {
+	public GenomicSequence (String uniqueID, int chrIndex, int startPosition, ArrayList<Cigar> cigars, String mdStr) {
 		this.uniqueID = uniqueID;
 		this.chrIndex = chrIndex;
 		this.startPosition = startPosition;
 		this.cigars = cigars;
+		this.mdString = mdStr;
 		
 		this.endPosition = startPosition;
 		for(Cigar cigar : this.cigars) {
@@ -79,23 +84,6 @@ public class GenomicSequence {
 		}
 	}
 	
-	/**
-	 * quality check.<br>
-	 * fail-criteria <br>
-	 * 1) soft-clip
-	 * 
-	 * @return
-	 */
-	public boolean isQualityPassed () {
-		boolean isPass = true;
-		
-		for(Cigar cigar : this.cigars) {
-			if(cigar.operation == 'S') isPass = false;
-		}
-		
-		return isPass;
-	}
-	
 	public String getLocus () {
 		return IndexConvertor.indexToChr(chrIndex) +":" +this.startPosition+"-"+this.endPosition;
 	}
@@ -108,12 +96,34 @@ public class GenomicSequence {
 		}
 		return nucleotides.toString();
 	}
+	/**
+	 * [start, end] one-based. <br>
+	 * 
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	public String getReferenceStringByPositionInNGS (int start, int end) {
+		StringBuilder referenceString = new StringBuilder();
+		
+		int loci = this.startPosition;
+		for(Cigar cigar : this.cigars) {
+			// skip soft-clip
+			if(cigar.operation == 'S') continue;
+			
+			if(cigar.operation == 'M' || cigar.operation == 'I' || cigar.operation == 'N' || cigar.operation == 'D') {
+				
+			}
+		}
+		
+		return referenceString.toString();
+	}
 	
 	public String getGenomieRegion (int transcriptNum) {
 		StringBuilder genomicRegion = new StringBuilder();
 		for(Cigar cigar : cigars) {
 			// append sequence
-			if(cigar.operation == 'S' || cigar.operation == 'M' || cigar.operation == 'I') {
+			if(cigar.operation == 'M' || cigar.operation == 'I') {
 				for(int i=0; i<cigar.annotations.length; i++) {
 					genomicRegion.append(cigar.annotations[i][transcriptNum]);
 				}

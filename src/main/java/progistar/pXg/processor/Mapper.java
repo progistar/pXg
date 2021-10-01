@@ -36,10 +36,6 @@ public class Mapper {
 			char op = cigar.operation;
 			
 			switch (op) {
-	    	case 'S': // soft clip
-	    		
-	    		break;
-	    		
 	    	case 'M': // match or mismatch
 	    		for(int i=0; i<cigar.relativePositions.length; i++) {
 	    			txdIndices = genomicAnnotationIndex[gRelPos + cigar.relativePositions[i]];
@@ -76,15 +72,6 @@ public class Mapper {
 				char op = cigar.operation;
 				
 				switch (op) {
-		    	case 'S': // soft clip
-		    		cigar.annotations = new char[cigar.nucleotides.length()][1];
-		    		
-		    		for(int i=0; i<cigar.annotations.length; i++) {
-		    			cigar.annotations[i][0] = Constants.MARK_SOFTCLIP;
-		    		}
-		    		
-		    		break;
-		    		
 		    	case 'M': // match or mismatch
 		    		cigar.annotations = new char[cigar.relativePositions.length][1];
 		    		
@@ -132,17 +119,6 @@ public class Mapper {
 				char op = cigar.operation;
 				
 				switch (op) {
-		    	case 'S': // soft clip
-		    		cigar.annotations = new char[cigar.nucleotides.length()][tBlocks.length];
-		    		
-		    		for(int i=0; i<cigar.annotations.length; i++) {
-		    			for(int j=0; j<tBlocks.length; j++) {
-		    				cigar.annotations[i][j] = Constants.MARK_SOFTCLIP;
-		    			}
-		    		}
-		    		
-		    		break;
-		    		
 		    	case 'M': // match or mismatch
 		    		cigar.annotations = new char[cigar.relativePositions.length][tBlocks.length];
 		    		
