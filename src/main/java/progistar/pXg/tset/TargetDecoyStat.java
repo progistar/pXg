@@ -47,7 +47,7 @@ public class TargetDecoyStat {
 				int tCount = Integer.parseInt(field[targetIndex]);
 				int dCount = Integer.parseInt(field[decoyIndex]);
 				
-				if(tCount >= 4) {
+				if(tCount >= 6) {
 					
 					best = field;
 					

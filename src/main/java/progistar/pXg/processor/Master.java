@@ -116,7 +116,11 @@ public class Master {
 			e.printStackTrace();
 		}
 	}
-	
+	/**
+	 * waiting for all workers are done with their tasks.<br>
+	 * 
+	 * @param workers
+	 */
 	private static void waitUntilAllWorkersDone (Worker[] workers) {
 		boolean isProcessing = true;
 		while(isProcessing) {
@@ -213,6 +217,12 @@ public class Master {
 		return tasks;
 	}
 	
+	/**
+	 * Enroll temporary output file path. <br>
+	 * The enrolled file paths will be processed when making the final output file. <br>
+	 * 
+	 * @param outputFilePath
+	 */
 	public static void enrollTmpOutputFilePath (String outputFilePath) {
 		tmpOutputFilePaths.put(outputFilePath, "");
 	}

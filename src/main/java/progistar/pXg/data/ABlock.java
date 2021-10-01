@@ -1,7 +1,5 @@
 package progistar.pXg.data;
 
-import progistar.pXg.constants.Constants;
-
 /**
  * Annotation Block <br>
  * 
