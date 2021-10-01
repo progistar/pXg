@@ -110,6 +110,8 @@ public class Master {
 			});
 			
 			PxGAnnotation pXgA = ResultParser.parseResult(tmpOutputFiles);
+			// filter by pvalue
+			pXgA.filterByPvalueThreshold();
 			pXgA.write(Parameters.outputFilePath);
 			
 		}catch (Exception e) {

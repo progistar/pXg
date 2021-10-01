@@ -56,6 +56,9 @@ public class Parameters {
 	public static final String cMarker				=	"cm".toLowerCase();
 	public static String commentMarker				=	"#|@|%"; // if line starts with the pattern, the line will be skipped during parsing the file.
 	
+	// Significant NGS-read mapping
+	public static double ngsPvalue					=	0.05;
+	
 	// System Parameters
 	public static final String numOfThreads			=	"num_threads".toLowerCase();
 	public static int nThreads						=	1;
