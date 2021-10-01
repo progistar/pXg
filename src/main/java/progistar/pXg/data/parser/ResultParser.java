@@ -45,7 +45,7 @@ public class ResultParser {
 						xBlock.genomicLocus = field[2];
 						xBlock.strand = field[3].charAt(0);
 						xBlock.genomicSequence = field[4];
-						xBlock.tAnnotations = field[5];
+						xBlock.tAnnotations = field[6];
 						if(xBlock.strand == '+') {
 							xBlock.peptideSequence = GenomicSequence.translation(xBlock.genomicSequence, 0);
 						} else {

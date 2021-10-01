@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
 import progistar.pXg.data.GenomicSequence;
+import progistar.pXg.data.Mutation;
 import progistar.pXg.data.Output;
 import progistar.pXg.data.PeptideAnnotation;
-import progistar.pXg.decoy.Decoy;
 
 public class Worker extends Thread {
 
@@ -129,6 +129,18 @@ public class Worker extends Thread {
 				BW.append(strand);
 				BW.append("\t");
 				BW.append(output.getMatchedNucleotide());
+				BW.append("\t");
+				
+				// mutation check
+				ArrayList<Mutation> mutations = output.getMutations();
+				if(mutations.size() == 0) {
+					BW.append("-");
+				} else {
+					for(int i=0; i<mutations.size(); i++) {
+						if(i!=0) BW.append("|");
+						BW.append(mutations.get(i).toString());
+					}
+				}
 				BW.append("\t");
 				
 				for(int i=0; i<gSeq.matchedTxds; i++) {

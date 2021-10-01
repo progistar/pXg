@@ -1,6 +1,7 @@
 package progistar.pXg.data;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import progistar.pXg.constants.Constants;
@@ -20,7 +21,7 @@ import progistar.pXg.utils.IndexConvertor;
  */
 public class GenomicSequence {
 
-	private static final Pattern EACH_MD_REGEX = Pattern.compile("(([0-9]+)|([A-Z]+|\\^[A-Z]+))");
+	private Pattern EACH_MD_REGEX = Pattern.compile("(([0-9]+)|([A-Z]+|\\^[A-Z]+))");
 	
 	public String uniqueID;
 	public int chrIndex;
@@ -97,26 +98,112 @@ public class GenomicSequence {
 		return nucleotides.toString();
 	}
 	/**
-	 * [start, end] one-based. <br>
+	 * [start, end] zero-based. <br>
 	 * 
 	 * @param start
 	 * @param end
 	 * @return
 	 */
-	public String getReferenceStringByPositionInNGS (int start, int end) {
-		StringBuilder referenceString = new StringBuilder();
+	public ArrayList<Mutation> getMutationsByPositionInNGS (int start, int end) {
+		ArrayList<Mutation> allMutations = new ArrayList<Mutation>();
+		ArrayList<Mutation> inMutations = new ArrayList<Mutation>();
 		
-		int loci = this.startPosition;
-		for(Cigar cigar : this.cigars) {
-			// skip soft-clip
-			if(cigar.operation == 'S') continue;
+		// decoy... has no md string.
+		if(mdString == null) return inMutations;
+		
+		// MD parsing
+		Matcher mdMatcher = EACH_MD_REGEX.matcher(mdString);
+		
+		int mRelPos = 0;
+		while(mdMatcher.find()) {
+			String md = mdMatcher.group();
+			char sign = md.charAt(0);
 			
-			if(cigar.operation == 'M' || cigar.operation == 'I' || cigar.operation == 'N' || cigar.operation == 'D') {
-				
+			// match size
+			if(Character.isDigit(sign)) {
+				mRelPos += Integer.parseInt(md);
+			} 
+			// nt change
+			else if(Character.isAlphabetic(sign)) {
+				for(int i=0; i<md.length(); i++) {
+					mRelPos++;
+					Mutation mutation = new Mutation();
+					mutation.relPos = mRelPos - 1; // to zero-based
+					mutation.refSeq = md.charAt(i)+"";
+					allMutations.add(mutation);
+				}
+			} 
+			// deletion sequence
+			else if(sign == '^') {
+				Mutation mutation = new Mutation();
+				mutation.relPos = mRelPos; // to zero-based
+				mutation.refSeq = md.substring(1);
+				allMutations.add(mutation);
 			}
 		}
 		
-		return referenceString.toString();
+		int relPos = 0;
+		mRelPos = 0;
+		for(Cigar cigar : this.cigars) {
+			if(cigar.operation == 'M') {
+				for(int i=0; i<cigar.relativePositions.length; i++) {
+					if(start <= relPos && relPos <= end) {
+						
+						for(int j=0; j<allMutations.size(); j++) {
+							if(allMutations.get(j).relPos == mRelPos) {
+								allMutations.get(j).altSeq = cigar.nucleotides.charAt(i) +"";
+								allMutations.get(j).chrIndex = this.chrIndex;
+								allMutations.get(j).genomicPosition = this.startPosition + cigar.relativePositions[i];
+								allMutations.get(j).type = Constants.SNP;
+								inMutations.add(allMutations.get(j));
+							}
+						}
+						
+					}
+					mRelPos++;
+					relPos++;
+				}
+			} else if(cigar.operation == 'I') {
+				boolean isIncluded = false;
+				for(int i=0; i<cigar.relativePositions.length; i++) {
+					if(!isIncluded) {
+						if(start <= relPos && relPos <= end) {
+							Mutation mutation = new Mutation();
+							mutation.altSeq = cigar.nucleotides;
+							mutation.chrIndex = this.chrIndex;
+							mutation.genomicPosition = this.startPosition + cigar.relativePositions[i];
+							mutation.type = Constants.INS;
+							inMutations.add(mutation);
+							isIncluded = true;
+						}
+					}
+					relPos++;
+				}
+			} else if(cigar.operation == 'D') {
+				boolean isIncluded = false;
+				for(int i=0; i<cigar.relativePositions.length; i++) {
+					if(!isIncluded) {
+						if(start <= relPos && relPos <= end) {
+							for(int j=0; j<allMutations.size(); j++) {
+								if(allMutations.get(j).relPos == mRelPos) {
+									allMutations.get(j).chrIndex = this.chrIndex;
+									allMutations.get(j).genomicPosition = this.startPosition + cigar.relativePositions[i];
+									allMutations.get(j).type = Constants.DEL;
+									
+									inMutations.add(allMutations.get(j));
+									
+									isIncluded = true;
+								}
+							}
+						}
+					}
+					mRelPos++;
+					relPos++;
+				}
+			}
+		}
+		
+		return inMutations;
 	}
 	
 	public String getGenomieRegion (int transcriptNum) {

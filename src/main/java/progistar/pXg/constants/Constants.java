@@ -37,6 +37,11 @@ public class Constants {
 	public static final byte FARME_1		=	1;
 	public static final byte FRAME_2		=	2;
 	
+	// Mutation type
+	public static final byte SNP			=	0;
+	public static final byte INS			=	1;
+	public static final byte DEL			=	2;
+	
 	// RNA-Seq parameter
 	public static final byte FORWARD_STRAND_READS	=	0;
 	public static final byte REVERSE_STRAND_READS	=	1;

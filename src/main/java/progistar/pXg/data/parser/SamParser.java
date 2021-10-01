@@ -113,6 +113,9 @@ public class SamParser {
 					}
 				}
 				
+				if(mdStr.length() == 0) {
+					System.out.println(line);
+				}
 				
 				// the index for that chr is automatically assigned by auto-increment key.
 				IndexConvertor.putChrIndexer(chr);

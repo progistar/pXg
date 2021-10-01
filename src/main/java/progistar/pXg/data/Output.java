@@ -43,6 +43,10 @@ public class Output {
 		return nucleotide.substring(this.startPosInNGS, this.endPosInNGS+1);
 	}
 	
+	public ArrayList<Mutation> getMutations () {
+		return this.gSeq.getMutationsByPositionInNGS(this.startPosInNGS, this.endPosInNGS);
+	}
+	
 	public byte getFrame (int transcriptNum) {
 		TBlock tBlock = gSeq.tBlocks[transcriptNum];
 		// this is intergenic
