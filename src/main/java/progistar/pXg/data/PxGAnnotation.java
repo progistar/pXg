@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
 
 import progistar.pXg.constants.Parameters;
@@ -133,6 +134,8 @@ public class PxGAnnotation {
 				
 				Hashtable<String, XBlock> xBlocks = this.xBlockMapper.get(key);
 				
+				
+				
 				// there is no available mapping.
 				if(xBlocks == null) {
 					// skip
@@ -156,5 +159,44 @@ public class PxGAnnotation {
 		}catch(IOException ioe) {
 			
 		}
+	}
+	
+	/**
+	 * select top-scored PSM only. <br>
+	 * 
+	 */
+	public void topScoreFilter () {
+		Hashtable<String, ArrayList<PBlock>> pBlocksByScan = new Hashtable<String, ArrayList<PBlock>>();
+		ArrayList<PBlock> pBlocks = PeptideAnnotation.pBlocks;
+		
+		// aggregate pBlocks by scanID
+		pBlocks.forEach(pBlock -> {
+			String scanID = pBlock.getScanID();
+			ArrayList<PBlock> scanPBlocks = pBlocksByScan.get(scanID);
+			if(scanPBlocks == null) {
+				scanPBlocks = new ArrayList<PBlock>();
+				pBlocksByScan.put(scanID, scanPBlocks);
+			}
+			scanPBlocks.add(pBlock);
+		});
+		
+		// remove original pBlocks
+		pBlocks.clear();
+		
+		pBlocksByScan.forEach((scanID, scanPBlocks) -> {
+			// sort pBlocks by scores, decreasing order.
+			Collections.sort(scanPBlocks);
+			
+			// cutoff
+			double topScore = scanPBlocks.get(0).score;
+			int size = scanPBlocks.size();
+			for(int i=0; i<size; i++) {
+				// add only top-score
+				double deltaScore = topScore - scanPBlocks.get(i).score;
+				if(deltaScore == 0) {
+					pBlocks.add(scanPBlocks.get(i));
+				}
+			}
+		});
 	}
 }
