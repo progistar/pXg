@@ -174,7 +174,7 @@ public class GenomicSequence {
 							Mutation mutation = new Mutation();
 							mutation.altSeq = cigar.nucleotides;
 							mutation.chrIndex = this.chrIndex;
-							mutation.genomicPosition = this.startPosition + cigar.relativePositions[0];
+							mutation.genomicPosition = this.startPosition + cigar.relativePositions[0] -1;
 							mutation.type = Constants.INS;
 							inMutations.add(mutation);
 							isIncluded = true;
