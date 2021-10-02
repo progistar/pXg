@@ -1,6 +1,7 @@
 package progistar.pXg.data;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -156,6 +157,8 @@ public class GenomicSequence {
 								allMutations.get(j).genomicPosition = this.startPosition + cigar.relativePositions[i];
 								allMutations.get(j).type = Constants.SNP;
 								inMutations.add(allMutations.get(j));
+								
+								allMutations.remove(j);
 							}
 						}
 						
@@ -171,7 +174,7 @@ public class GenomicSequence {
 							Mutation mutation = new Mutation();
 							mutation.altSeq = cigar.nucleotides;
 							mutation.chrIndex = this.chrIndex;
-							mutation.genomicPosition = this.startPosition + cigar.relativePositions[i];
+							mutation.genomicPosition = this.startPosition + cigar.relativePositions[0];
 							mutation.type = Constants.INS;
 							inMutations.add(mutation);
 							isIncluded = true;
@@ -180,25 +183,19 @@ public class GenomicSequence {
 					relPos++;
 				}
 			} else if(cigar.operation == 'D') {
-				boolean isIncluded = false;
 				for(int i=0; i<cigar.relativePositions.length; i++) {
-					if(!isIncluded) {
-						if(start <= relPos && relPos <= end) {
-							for(int j=0; j<allMutations.size(); j++) {
-								if(allMutations.get(j).relPos == mRelPos) {
-									allMutations.get(j).chrIndex = this.chrIndex;
-									allMutations.get(j).genomicPosition = this.startPosition + cigar.relativePositions[i];
-									allMutations.get(j).type = Constants.DEL;
-									
-									inMutations.add(allMutations.get(j));
-									
-									isIncluded = true;
-								}
+					if(start <= relPos && relPos <= end) {
+						for(int j=0; j<allMutations.size(); j++) {
+							if(allMutations.get(j).relPos == mRelPos) {
+								allMutations.get(j).chrIndex = this.chrIndex;
+								allMutations.get(j).genomicPosition = this.startPosition + cigar.relativePositions[0];
+								allMutations.get(j).type = Constants.DEL;
+								
+								inMutations.add(allMutations.get(j));
+								allMutations.remove(j);
 							}
 						}
 					}
-					mRelPos++;
-					relPos++;
 				}
 			}
 		}

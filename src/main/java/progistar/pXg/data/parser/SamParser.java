@@ -188,7 +188,7 @@ public class SamParser {
 	    		cigar.nucleotides = nucleotides.substring(ntIndex, ntIndex + cigar.markerSize);
 	    		ntIndex += cigar.markerSize;
 	    		
-	    		relativePositions = new int[cigar.nucleotides.length()];
+	    		relativePositions = new int[cigar.markerSize];
 	    		for(int j=0; j<relativePositions.length; j++) {
 	    			relativePositions[j] = relPos++;
 	    		}
@@ -201,7 +201,7 @@ public class SamParser {
 	    		cigar.nucleotides = nucleotides.substring(ntIndex, ntIndex + cigar.markerSize); 
 	    		ntIndex += cigar.markerSize;
 	    		
-	    		relativePositions = new int[cigar.nucleotides.length()];
+	    		relativePositions = new int[cigar.markerSize];
 	    		for(int j=0; j<relativePositions.length; j++) {
 	    			relativePositions[j] = relPos; // relPos is not changed... consistent!
 	    		}
@@ -211,7 +211,7 @@ public class SamParser {
 	    		break;
 	    		
 	    	case 'D': // deletion
-	    		relativePositions = new int[cigar.nucleotides.length()];
+	    		relativePositions = new int[cigar.markerSize];
 	    		for(int j=0; j<relativePositions.length; j++) {
 	    			relativePositions[j] = relPos++;
 	    		}

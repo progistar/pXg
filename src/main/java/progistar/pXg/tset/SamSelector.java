@@ -34,7 +34,7 @@ public class SamSelector {
 				
 				// meta data is not counted.
 				if(!line.startsWith("@")) {
-					if(!line.contains("HISEQ:111:C6ADFANXX:1:2101:10310:56482")) continue;
+					if(!line.contains("HISEQ:111:C6ADFANXX:2:1203:16840:57070")) continue;
 					numOfRecords--;
 				}
 				
