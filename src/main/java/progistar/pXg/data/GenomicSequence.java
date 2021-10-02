@@ -22,6 +22,14 @@ import progistar.pXg.utils.IndexConvertor;
  */
 public class GenomicSequence {
 
+	/**
+	 * Note that about MD tag.
+	 * MD tag only presents about SNP and DEL reference sequences.
+	 * So, basically Cigar 'M' string is only considered (in case of DEL, we can infer from 'M').
+	 * Therefore, MD tag must be resolved by Cigar 'M' only! (do not use other Cigars to resolve MD tag). 
+	 * 
+	 * 
+	 */
 	private Pattern EACH_MD_REGEX = Pattern.compile("(([0-9]+)|([A-Z]+|\\^[A-Z]+))");
 	
 	public String uniqueID;
