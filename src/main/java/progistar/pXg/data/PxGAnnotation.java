@@ -114,6 +114,19 @@ public class PxGAnnotation {
 			
 			ArrayList<PBlock> pBlocks = PeptideAnnotation.pBlocks;
 			
+			
+			BW.append(PeptideAnnotation.toFields()).append("\t");
+			BW.append("tPeptide").append("\t");
+			BW.append("Loci").append("\t");
+			BW.append("Strand").append("\t");
+			BW.append("Nucleotide").append("\t");
+			BW.append("Mutations").append("\t");
+			BW.append("Transcripts").append("\t");
+			BW.append("Reads").append("\t");
+			BW.append("rReads");
+			BW.newLine();
+			
+			
 			for(PBlock pBlock : pBlocks) {
 				// peptide sequence without I/L consideration
 				String key = pBlock.getPeptideSequence();

@@ -1,9 +1,5 @@
 package progistar.pXg.data;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,6 +23,17 @@ public class PeptideAnnotation {
 	
 	public static void setFields (String[] fields) {
 		PeptideAnnotation.fields = fields;
+	}
+	
+	public static String toFields () {
+		StringBuilder fieldStr = new StringBuilder();
+		
+		for(int i=0; i<fields.length; i++) {
+			if(i!=0) fieldStr.append("\t");
+			fieldStr.append(fields[i]);
+		}
+		
+		return fieldStr.toString();
 	}
 	
 	public static void buildKeywordTrie () {

@@ -5,6 +5,7 @@ public class XBlock {
 	public int decoyReadCount		=	0;
 	public char strand				=	'+';
 	public String genomicLocus		=	null;
+	public String mutations 		=	null;
 	public String genomicSequence	=	null;
 	public String peptideSequence	=	null;
 	public String tAnnotations		=	null;
@@ -19,10 +20,10 @@ public class XBlock {
 	 * 
 	 */
 	public String toString () {
-		return peptideSequence +"\t"+genomicLocus+"\t"+strand+"\t"+genomicSequence+"\t"+tAnnotations+"\t"+targetReadCount+"\t"+decoyReadCount;
+		return peptideSequence +"\t"+genomicLocus+"\t"+strand+"\t"+genomicSequence+"\t"+mutations+"\t"+tAnnotations+"\t"+targetReadCount+"\t"+decoyReadCount;
 	}
 	
 	public static String toNullString () {
-		return "-\t-\t-\t-\t-\t0\t0";
+		return "-\t-\t-\t-\t-\t-\t0\t0";
 	}
 }

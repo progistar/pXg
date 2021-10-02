@@ -174,6 +174,8 @@ public class GenomicSequence {
 							Mutation mutation = new Mutation();
 							mutation.altSeq = cigar.nucleotides;
 							mutation.chrIndex = this.chrIndex;
+							// the relative position of insertion is shifted by + 1 when parsing Cigar.
+							// this is tiny issue, so just shift by -1.
 							mutation.genomicPosition = this.startPosition + cigar.relativePositions[0] -1;
 							mutation.type = Constants.INS;
 							inMutations.add(mutation);
