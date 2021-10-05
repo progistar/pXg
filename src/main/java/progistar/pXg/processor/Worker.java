@@ -158,7 +158,8 @@ public class Worker extends Thread {
 							senseMarker = "anti-sense";
 						}
 					}
-					BW.append("(").append(output.getAARegionAnnotation(i)).append(";").append(senseMarker).append(")");
+					char frame = output.getFrame(i);
+					BW.append("(").append(output.getAARegionAnnotation(i)).append(";").append(senseMarker).append(";").append(frame).append(")");
 				}
 				BW.newLine();
 			}

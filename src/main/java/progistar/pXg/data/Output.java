@@ -46,8 +46,14 @@ public class Output {
 	public ArrayList<Mutation> getMutations () {
 		return this.gSeq.getMutationsByPositionInNGS(this.startPosInNGS, this.endPosInNGS);
 	}
-	
-	public byte getFrame (int transcriptNum) {
+	/**
+	 * return frame annotation such as: <br>
+	 * IN_FRAME, NO_FRAME, OUT_OF_FRAME. <br>
+	 * 
+	 * @param transcriptNum
+	 * @return
+	 */
+	public char getFrame (int transcriptNum) {
 		TBlock tBlock = gSeq.tBlocks[transcriptNum];
 		// this is intergenic
 		// or non-coding
@@ -55,8 +61,44 @@ public class Output {
 		// with soft-clip
 		if(this.startGenomicPositions.isEmpty() || this.endGenomicPositions.isEmpty()) return Constants.NO_FRAME;
 		
+		int size = this.startGenomicPositions.size();
 		
-		return Constants.NO_FRAME;
+		// note that
+		// genomic size cannot be inferred from peptide length in case of INDELs.
+		int genomicSize = 0;
+		for(int i=0; i<size; i++) {
+			int startPos = this.startGenomicPositions.get(i);
+			int endPos = this.endGenomicPositions.get(i);
+			
+			genomicSize += endPos - startPos + 1;
+		}
+		byte[] frames = new byte[genomicSize];
+		
+		int fIndex = 0;
+		for(int i=0; i<size; i++) {
+			int startPos = this.startGenomicPositions.get(i);
+			int endPos = this.endGenomicPositions.get(i);
+			
+			for(int gPos=startPos; gPos<=endPos; gPos++) {
+				byte frame = tBlock.getFrameMark(gPos);
+				frames[fIndex++] = frame;
+				
+				// If FRAME_X, it means no meaningful information about frame.
+				if(frame == Constants.FRAME_X) return Constants.NO_FRAME;
+			}
+		}
+		
+		byte targetFrame = Constants.FRAME_0;
+		for(int i=0; i<frames.length; i++) {
+			if(frames[i] != targetFrame) {
+				return Constants.OUT_OF_FRAME;
+			} else {
+				targetFrame++;
+				if(targetFrame > Constants.FRAME_2) targetFrame = Constants.FRAME_0;
+			}
+		}
+		
+		return Constants.IN_FRAME;
 		
 	}
 	

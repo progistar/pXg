@@ -118,6 +118,8 @@ public class GenomicSequence {
 		ArrayList<Mutation> inMutations = new ArrayList<Mutation>();
 		
 		// decoy... has no md string.
+		// OR there is no available MD tag: because of alignment option.
+		// In the case of STAR2, add --outSAMattributes MD
 		if(mdString == null) return inMutations;
 		
 		// MD parsing

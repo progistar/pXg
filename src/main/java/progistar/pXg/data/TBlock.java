@@ -135,6 +135,12 @@ public class TBlock implements Comparable<TBlock> {
 		this.aBlocks.add(aBlock);
 	}
 	
+	/**
+	 * Take a genomic position as one-based. <br>
+	 * 
+	 * @param pos
+	 * @return
+	 */
 	public char getRegionMark (int pos) {
 		char mark = Constants.MARK_INTERGENIC;
 		
@@ -162,6 +168,40 @@ public class TBlock implements Comparable<TBlock> {
 			}
 			
 			if(mark != Constants.MARK_INTERGENIC) break;
+		}
+		
+		return mark;
+	}
+	
+	/**
+	 * currently, if not CDS, return FRAME_X. <br>
+	 * If CDS, it returns the frameMark such as: <br>
+	 * FRAME_0, FRAME_1, FRAME2. <br>
+	 * 
+	 * @param pos
+	 * @return
+	 */
+	public byte getFrameMark (int pos) {
+		byte mark = Constants.FRAME_X;
+
+		int cds = 0;
+		for(ABlock aBlock : this.aBlocks) {
+			// inclusive
+			if(aBlock.start <= pos && aBlock.end >= pos) {
+				if(aBlock.feature == Constants.CDS) {
+					cds += (pos - aBlock.start);
+					mark = (byte) ( cds % 3);
+				}
+				
+				// return NO_FRAME
+				break;
+			} 
+			// exclusive
+			else {
+				if(aBlock.feature == Constants.CDS) {
+					cds += (aBlock.end - aBlock.start + 1);
+				}
+			}
 		}
 		
 		return mark;

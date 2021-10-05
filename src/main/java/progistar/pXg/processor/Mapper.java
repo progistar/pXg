@@ -153,9 +153,5 @@ public class Mapper {
 			}
 		}
 		
-		
-		/// print test
-//		genomicSequence.toPrint();
-		
 	}
 }

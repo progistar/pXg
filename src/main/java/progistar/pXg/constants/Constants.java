@@ -27,15 +27,16 @@ public class Constants {
 	public static final byte CODING_TRANSCRIPT		=	1;
 	
 	// Frame type
-	public static final byte NO_FRAME		=	0;
-	public static final byte IN_FRAME		=	1;
-	public static final byte OUT_OF_FRAME	=	2;
+	public static final char NO_FRAME		=	'N';
+	public static final char IN_FRAME		=	'I';
+	public static final char OUT_OF_FRAME	=	'O';
 	
 	// Frame index
-	// Note that if there is no frame index, it is same to NO_FRAME
+	// Note that FRAME_X denots NO_FRAME.
 	public static final byte FRAME_0		=	0;
 	public static final byte FARME_1		=	1;
 	public static final byte FRAME_2		=	2;
+	public static final byte FRAME_X		=	3;
 	
 	// Mutation type
 	public static final byte SNP			=	0;

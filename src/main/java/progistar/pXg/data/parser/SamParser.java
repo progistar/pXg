@@ -105,7 +105,7 @@ public class SamParser {
 				ArrayList<Cigar> cigars = parseCigarString(cigarString, nucleotides);
 				
 				// find MD string
-				String mdStr = "";
+				String mdStr = null;
 				for(int i=FieldIndex.SEQUENCE.value; i<fields.length; i++) {
 					if(fields[i].startsWith("MD:Z:")) {
 						mdStr = fields[i].replace("MD:Z:", "");
@@ -113,7 +113,7 @@ public class SamParser {
 					}
 				}
 				
-				if(mdStr.length() == 0) {
+				if(mdStr == null) {
 					System.out.println(line);
 				}
 				
