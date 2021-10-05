@@ -60,6 +60,8 @@ public class Output {
 		if(tBlock == null || tBlock.transcriptCodingType == Constants.NON_CODING_TRANSCRIPT) return Constants.NO_FRAME;
 		// with soft-clip
 		if(this.startGenomicPositions.isEmpty() || this.endGenomicPositions.isEmpty()) return Constants.NO_FRAME;
+		// anti-sense
+		if(this.strand != tBlock.strand) return Constants.NO_FRAME;
 		
 		int size = this.startGenomicPositions.size();
 		
