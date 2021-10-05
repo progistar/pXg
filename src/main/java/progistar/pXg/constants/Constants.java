@@ -60,4 +60,5 @@ public class Constants {
 	public static final String OUTPUT_G_SEQUENCE	=	"[SEQ]";
 	public static final String OUTPUT_G_REGION		=	"[REGION]";
 	public static final String OUTPUT_G_PEPTIDE		=	"[PEPTIDE]";
+	
 }

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.Iterator;
 
 import progistar.pXg.constants.Parameters;
 
@@ -134,8 +135,6 @@ public class PxGAnnotation {
 				
 				Hashtable<String, XBlock> xBlocks = this.xBlockMapper.get(key);
 				
-				
-				
 				// there is no available mapping.
 				if(xBlocks == null) {
 					// skip
@@ -198,5 +197,43 @@ public class PxGAnnotation {
 				}
 			}
 		});
+	}
+	
+	public void regionScoreFilter () {
+		// filter regions in the same locus and nucleotides.
+		Iterator<String> pSeqs = (Iterator<String>) this.xBlockMapper.keys();
+		while(pSeqs.hasNext()) {
+			String pSeq = pSeqs.next();
+			Hashtable<String, XBlock> xBlocks = this.xBlockMapper.get(pSeq);
+			if(xBlocks == null || xBlocks.size() == 0) continue;
+			
+			Iterator<String> keys = (Iterator<String>) xBlocks.keys();
+			double minPriority = Double.MAX_VALUE;
+			while(keys.hasNext()) {
+				String key = keys.next();
+				XBlock xBlock = xBlocks.get(key);
+				
+				// filter-out 
+				xBlock.filterRegions();
+				
+				// find minPriority
+				minPriority = Math.min(xBlock.bestRegionPriority, minPriority);
+			}
+			
+			keys = (Iterator<String>) xBlocks.keys();
+			ArrayList<String> discardList = new ArrayList<String>();
+			while(keys.hasNext()) {
+				String key = keys.next();
+				XBlock xBlock = xBlocks.get(key);
+				if(xBlock.bestRegionPriority > minPriority) {
+					discardList.add(key);
+				}
+			}
+			
+			// remove higher priority than minPriority
+			discardList.forEach(key -> {
+				xBlocks.remove(key);
+			});
+		}
 	}
 }

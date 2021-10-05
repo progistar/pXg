@@ -114,6 +114,8 @@ public class Master {
 			pXgA.filterByPvalueThreshold();
 			// among them, use highest-scored PSM
 			pXgA.topScoreFilter();
+			// filter regions
+			pXgA.regionScoreFilter();
 			pXgA.write(Parameters.outputFilePath);
 			
 		}catch (Exception e) {
