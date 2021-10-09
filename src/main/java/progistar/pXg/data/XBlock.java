@@ -1,5 +1,7 @@
 package progistar.pXg.data;
 
+import java.util.Hashtable;
+
 import progistar.pXg.utils.ENSTMapper;
 import progistar.pXg.utils.Priority;
 
@@ -36,6 +38,7 @@ public class XBlock {
 	
 	/**
 	 * Retrieve gene names corresponding to the transcript ID. <br> 
+	 * Duplicated gene names are reported once. <br>
 	 * 
 	 * @return
 	 */
@@ -43,11 +46,17 @@ public class XBlock {
 		StringBuilder gRegions = new StringBuilder();
 		String[] tRegions = tAnnotations.split("\\|");
 		
+		Hashtable<String, Boolean> isDuplicated = new Hashtable<String, Boolean>();
 		for(String tRegion : tRegions) {
 			String transcriptID = tRegion.split("\\(")[0];
 			String geneName = ENSTMapper.getGeneNamebyENST(transcriptID);
 			String gRegion = tRegion.replace(transcriptID, geneName);
-			gRegions.append("|").append(gRegion);
+			
+			if(isDuplicated.get(gRegion) == null) {
+				isDuplicated.put(gRegion, true);
+				gRegions.append("|").append(gRegion);
+			}
+			
 		}
 		
 		return gRegions.substring(1).toString();
@@ -55,6 +64,7 @@ public class XBlock {
 	
 	/**
 	 * Retrieve gene ID corresponding to the transcript ID. <br>
+	 * Duplicated gene IDs are reported once. <br>
 	 * 
 	 * @return
 	 */
@@ -62,11 +72,16 @@ public class XBlock {
 		StringBuilder gRegions = new StringBuilder();
 		String[] tRegions = tAnnotations.split("\\|");
 		
+		Hashtable<String, Boolean> isDuplicated = new Hashtable<String, Boolean>();
 		for(String tRegion : tRegions) {
 			String transcriptID = tRegion.split("\\(")[0];
 			String geneID = ENSTMapper.getENSGbyENST(transcriptID);
 			String gRegion = tRegion.replace(transcriptID, geneID);
-			gRegions.append("|").append(gRegion);
+			
+			if(isDuplicated.get(gRegion) == null) {
+				isDuplicated.put(gRegion, true);
+				gRegions.append("|").append(gRegion);
+			}
 		}
 		
 		return gRegions.substring(1).toString();
