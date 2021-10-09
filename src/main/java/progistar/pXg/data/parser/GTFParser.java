@@ -129,6 +129,10 @@ public class GTFParser {
 			System.out.println("...\tFail to load GTF");
 		}
 		
+		
+		// update ENST mapper
+		annotation.updateENSTMapper();
+		
 		long endTime = System.currentTimeMillis();
 		System.out.println("\tElapsed time: "+((endTime-startTime)/1000) + " sec");
 		

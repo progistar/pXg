@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
 
-import progistar.pXg.constants.Constants;
-import progistar.pXg.constants.Parameters;
+import progistar.pXg.utils.ENSTMapper;
 
 public class GenomicAnnotation {
 	
@@ -31,6 +30,16 @@ public class GenomicAnnotation {
 			txToId.put(transcriptID, id);
 			tBlocks.add(tBlock);
 		}
+	}
+	
+	/**
+	 * Update ENST ID to 1) ENSG ID and 2) Gene Name hashtable in ENSTMapper class. <br>
+	 * 
+	 */
+	public void updateENSTMapper () {
+		this.tBlocks.forEach(tBlock -> {
+			ENSTMapper.putENST(tBlock.transcriptID, tBlock.geneID, tBlock.geneName);
+		});
 	}
 	
 	/**
