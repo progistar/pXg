@@ -118,8 +118,8 @@ public class PxGAnnotation {
 			
 			
 			BW.append(PeptideAnnotation.toFields()).append("\t");
-			BW.append("tPeptide").append("\t");
 			BW.append("MultipleRegions").append("\t");
+			BW.append("tPeptide").append("\t");
 			BW.append("Loci").append("\t");
 			BW.append("Strand").append("\t");
 			BW.append("Nucleotide").append("\t");
