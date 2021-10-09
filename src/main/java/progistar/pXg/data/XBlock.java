@@ -1,5 +1,6 @@
 package progistar.pXg.data;
 
+import progistar.pXg.utils.ENSTMapper;
 import progistar.pXg.utils.Priority;
 
 public class XBlock {
@@ -23,11 +24,52 @@ public class XBlock {
 	 * 
 	 */
 	public String toString () {
-		return peptideSequence +"\t"+genomicLocus+"\t"+strand+"\t"+genomicSequence+"\t"+mutations+"\t"+tAnnotations+"\t"+targetReadCount+"\t"+decoyReadCount;
+		String geneIDs = toGeneIDs();
+		int geneCount = geneIDs.split("\\|").length;
+		return peptideSequence +"\t"+genomicLocus+"\t"+strand+"\t"+genomicSequence+"\t"+mutations+"\t"+tAnnotations
+				+"\t"+geneIDs+"\t"+toGeneNames()+"\t"+geneCount+"\t"+targetReadCount+"\t"+decoyReadCount;
 	}
 	
 	public static String toNullString () {
-		return "-\t-\t-\t-\t-\t-\t0\t0";
+		return "-\t-\t-\t-\t-\t-\t-\t-\t0\t0";
+	}
+	
+	/**
+	 * Retrieve gene names corresponding to the transcript ID. <br> 
+	 * 
+	 * @return
+	 */
+	private String toGeneNames () {
+		StringBuilder gRegions = new StringBuilder();
+		String[] tRegions = tAnnotations.split("\\|");
+		
+		for(String tRegion : tRegions) {
+			String transcriptID = tRegion.split("\\(")[0];
+			String geneName = ENSTMapper.getGeneNamebyENST(transcriptID);
+			String gRegion = tRegion.replace(transcriptID, geneName);
+			gRegions.append("|").append(gRegion);
+		}
+		
+		return gRegions.substring(1).toString();
+	}
+	
+	/**
+	 * Retrieve gene ID corresponding to the transcript ID. <br>
+	 * 
+	 * @return
+	 */
+	private String toGeneIDs () {
+		StringBuilder gRegions = new StringBuilder();
+		String[] tRegions = tAnnotations.split("\\|");
+		
+		for(String tRegion : tRegions) {
+			String transcriptID = tRegion.split("\\(")[0];
+			String geneID = ENSTMapper.getENSGbyENST(transcriptID);
+			String gRegion = tRegion.replace(transcriptID, geneID);
+			gRegions.append("|").append(gRegion);
+		}
+		
+		return gRegions.substring(1).toString();
 	}
 	
 	/**

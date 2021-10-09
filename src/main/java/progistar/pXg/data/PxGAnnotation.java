@@ -119,11 +119,15 @@ public class PxGAnnotation {
 			
 			BW.append(PeptideAnnotation.toFields()).append("\t");
 			BW.append("tPeptide").append("\t");
+			BW.append("MultipleRegions").append("\t");
 			BW.append("Loci").append("\t");
 			BW.append("Strand").append("\t");
 			BW.append("Nucleotide").append("\t");
 			BW.append("Mutations").append("\t");
-			BW.append("Transcripts").append("\t");
+			BW.append("TranscriptIDs").append("\t");
+			BW.append("GeneIDs").append("\t");
+			BW.append("GeneNames").append("\t");
+			BW.append("GeneCount").append("\t");
 			BW.append("Reads").append("\t");
 			BW.append("rReads");
 			BW.newLine();
@@ -145,7 +149,7 @@ public class PxGAnnotation {
 				} else {
 					xBlocks.forEach((pSeq, xBlock) -> {
 						try {
-							BW.append(pBlock.toString()).append("\t").append(xBlock.toString());
+							BW.append(pBlock.toString()).append("\t").append(xBlocks.size()+"\t").append(xBlock.toString());
 							BW.newLine();
 						}catch(IOException ioe) {
 							
