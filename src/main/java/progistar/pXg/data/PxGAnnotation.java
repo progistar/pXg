@@ -127,6 +127,7 @@ public class PxGAnnotation {
 			BW.append("TranscriptIDs").append("\t");
 			BW.append("GeneIDs").append("\t");
 			BW.append("GeneNames").append("\t");
+			BW.append("Events").append("\t");
 			BW.append("GeneCount").append("\t");
 			BW.append("Reads").append("\t");
 			BW.append("rReads");

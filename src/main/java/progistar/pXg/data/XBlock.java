@@ -29,11 +29,28 @@ public class XBlock {
 		String geneIDs = toGeneIDs();
 		int geneCount = geneIDs.split("\\|").length;
 		return peptideSequence +"\t"+genomicLocus+"\t"+strand+"\t"+genomicSequence+"\t"+mutations+"\t"+tAnnotations
-				+"\t"+geneIDs+"\t"+toGeneNames()+"\t"+geneCount+"\t"+targetReadCount+"\t"+decoyReadCount;
+				+"\t"+geneIDs+"\t"+toGeneNames()+"\t"+toEvents(geneIDs)+"\t"+geneCount+"\t"+targetReadCount+"\t"+decoyReadCount;
 	}
 	
 	public static String toNullString () {
 		return "-\t-\t-\t-\t-\t-\t-\t-\t0\t0";
+	}
+	
+	/**
+	 * get gene events from geneIDs. <br>
+	 * 
+	 * @param geneIDs
+	 * @return
+	 */
+	public String toEvents (String geneIDs) {
+		StringBuilder events= new StringBuilder();
+		String[] genes = geneIDs.split("\\|");
+		
+		for(String gene : genes) {
+			events.append("|").append(Priority.getRegionEvent(gene));
+		}
+		
+		return events.substring(1).toString();
 	}
 	
 	/**
