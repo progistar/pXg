@@ -15,6 +15,7 @@ import progistar.pXg.data.parser.PeptideParser;
 import progistar.pXg.data.parser.ResultParser;
 import progistar.pXg.data.parser.SamParser;
 import progistar.pXg.decoy.Decoy;
+import progistar.pXg.utils.Codon;
 
 public class Master {
 
@@ -40,6 +41,9 @@ public class Master {
 		// TODO:
 		// Make available to BAM file.
 		SamParser.ready(sequenceFilePath);
+		
+		// loading Codon.
+		Codon.mapping();
 	}
 	
 	/**

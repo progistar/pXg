@@ -11,7 +11,7 @@ public class Priority {
 	// XXX smaller is better
 	// the left most digit: RegionStrVar (CDS = 0, UTR/Noncoding/Frameshift = 1, StrVar = 2)
 	// the right most digit: Number of mutations
-	public static final Pattern REGION_REG = Pattern.compile("\\([0-9A-Za-z;]*\\)");
+	public static final Pattern REGION_REG = Pattern.compile("\\([0-9A-Za-z;\\-]*\\)");
 	
 	/**
 	 * 

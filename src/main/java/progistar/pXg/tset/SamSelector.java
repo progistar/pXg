@@ -9,8 +9,19 @@ import java.io.IOException;
 
 public class SamSelector {
 	
+	private enum FieldIndex {
+		QNAME(0), CHR(2), START_POS(3), CIGAR(5), SEQUENCE(9);
+
+		private int value;
+
+		FieldIndex(int value) {
+			this.value = value;
+		}
+	}
+	
+	
 	public static void main(String[] args) throws IOException {
-		writeSam("C:\\Users\\progi\\Desktop\\Projects\\pXg\\chr1toy.sam", 2);
+		writeSam(args[0], args[1]);
 	}
 	
 	/**
@@ -20,26 +31,29 @@ public class SamSelector {
 	 * @param samFilePath
 	 * @param numOfRecords
 	 */
-	public static void writeSam (String samFilePath, int numOfRecords) {
+	public static void writeSam (String samFilePath, String targetChr) {
 		try {
 			File samFile = new File(samFilePath);
-			File outSamFile = new File(samFile.getAbsolutePath().replace(".sam", ".sub"+numOfRecords+".sam"));
+			File outSamFile = new File(samFile.getAbsolutePath().replace(".sam", ".sub."+targetChr+".sam"));
 			
 			BufferedReader BR = new BufferedReader(new FileReader(samFile));
 			BufferedWriter BW = new BufferedWriter(new FileWriter(outSamFile));
 			String line = null;
 			
 			while((line = BR.readLine()) != null) {
-				if(numOfRecords == 0) break;
-				
+
 				// meta data is not counted.
-				if(!line.startsWith("@")) {
-					if(!line.contains("HISEQ:111:C6ADFANXX:2:1203:16840:57070")) continue;
-					numOfRecords--;
+				if(line.startsWith("@")) {
+					BW.append(line);
+					BW.newLine();
+				}  else  {
+					String[] fields = line.split("\t");
+					if(fields[FieldIndex.CHR.value].equalsIgnoreCase(targetChr)) {
+						BW.append(line);
+						BW.newLine();
+					}
 				}
 				
-				BW.append(line);
-				BW.newLine();
 			}
 			
 			BR.close();

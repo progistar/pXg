@@ -43,7 +43,7 @@ public class Codon {
 	};
 	
 	
-	private static void mapping() {
+	public static void mapping() {
 		AminoToNuclArray = new String[26][];
 		NuclToAminoArray = new char[nucleoIndexes][nucleoIndexes][nucleoIndexes];
 		ReversedNuclToAminoArray = new char[nucleoIndexes][nucleoIndexes][nucleoIndexes];

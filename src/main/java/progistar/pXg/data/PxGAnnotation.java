@@ -60,6 +60,7 @@ public class PxGAnnotation {
 		}
 		
 		final int cutoff = cutoffReads;
+		ArrayList<String> zeroSizeList = new ArrayList<String>();
 		this.xBlockMapper.forEach((pSeq, xBlocks) -> {
 			ArrayList<String> removeList = new ArrayList<String>();
 			xBlocks.forEach((key, xBlock) -> {
@@ -70,7 +71,30 @@ public class PxGAnnotation {
 			
 			// filter out
 			removeList.forEach(key -> xBlocks.remove(key));
+			
+			if(xBlocks.size() == 0) {
+				zeroSizeList.add(pSeq);
+			}
+			
 		});
+		
+		// if all xBlocks are discarded?
+		zeroSizeList.forEach(key -> this.xBlockMapper.remove(key));
+		
+		ArrayList<PBlock> pBlocks = PeptideAnnotation.pBlocks;
+		
+		// update pBlocks!
+		for(int i=pBlocks.size()-1; i>=0; i--) {
+			PBlock pBlock = pBlocks.get(i);
+			// peptide sequence without I/L consideration
+			String key = pBlock.getPeptideSequence();
+			
+			Hashtable<String, XBlock> xBlocks = this.xBlockMapper.get(key);
+			if(xBlocks == null) {
+				pBlocks.remove(i);
+			}
+		}
+		
 	}
 	
 	/**
@@ -173,6 +197,7 @@ public class PxGAnnotation {
 		Hashtable<String, ArrayList<PBlock>> pBlocksByScan = new Hashtable<String, ArrayList<PBlock>>();
 		ArrayList<PBlock> pBlocks = PeptideAnnotation.pBlocks;
 		
+		
 		// aggregate pBlocks by scanID
 		pBlocks.forEach(pBlock -> {
 			String scanID = pBlock.getScanID();
@@ -207,6 +232,7 @@ public class PxGAnnotation {
 	public void regionScoreFilter () {
 		// filter regions in the same locus and nucleotides.
 		Iterator<String> pSeqs = (Iterator<String>) this.xBlockMapper.keys();
+		
 		while(pSeqs.hasNext()) {
 			String pSeq = pSeqs.next();
 			Hashtable<String, XBlock> xBlocks = this.xBlockMapper.get(pSeq);
