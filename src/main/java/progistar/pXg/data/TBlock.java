@@ -151,10 +151,10 @@ public class TBlock implements Comparable<TBlock> {
 					mark = Constants.MARK_CDS;
 					break;
 				case Constants.UTR5 :
-					mark = Constants.MARK_UTR5;
+					mark = Constants.MARK_5UTR;
 					break;
 				case Constants.UTR3 :
-					mark = Constants.MARK_UTR3;
+					mark = Constants.MARK_3UTR;
 					break;
 				case Constants.INTRON :
 					mark = Constants.MARK_INTRON;

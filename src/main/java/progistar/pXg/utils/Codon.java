@@ -124,8 +124,8 @@ public class Codon {
 		else if(nt1 == Constants.MARK_INTERGENIC || nt2 == Constants.MARK_INTERGENIC || nt3 == Constants.MARK_INTERGENIC) aaRegion = Constants.MARK_INTERGENIC;
 		else if(nt1 == Constants.MARK_INTRON || nt2 == Constants.MARK_INTRON || nt3 == Constants.MARK_INTRON) aaRegion = Constants.MARK_INTRON;
 		else if(nt1 == Constants.MARK_NCDS || nt2 == Constants.MARK_NCDS || nt3 == Constants.MARK_NCDS) aaRegion = Constants.MARK_NCDS;
-		else if(nt1 == Constants.MARK_UTR3 || nt2 == Constants.MARK_UTR3 || nt3 == Constants.MARK_UTR3) aaRegion = Constants.MARK_UTR3;
-		else if(nt1 == Constants.MARK_UTR5 || nt2 == Constants.MARK_UTR5 || nt3 == Constants.MARK_UTR5) aaRegion = Constants.MARK_UTR5;
+		else if(nt1 == Constants.MARK_3UTR || nt2 == Constants.MARK_3UTR || nt3 == Constants.MARK_3UTR) aaRegion = Constants.MARK_3UTR;
+		else if(nt1 == Constants.MARK_5UTR || nt2 == Constants.MARK_5UTR || nt3 == Constants.MARK_5UTR) aaRegion = Constants.MARK_5UTR;
 		
 		return aaRegion;
 	}

@@ -15,8 +15,8 @@ public class Constants {
 	
 	// Regional Character
 	public static final char MARK_CDS 			=	'C';
-	public static final char MARK_UTR5			=	'F';
-	public static final char MARK_UTR3			=	'T';
+	public static final char MARK_5UTR			=	'F';
+	public static final char MARK_3UTR			=	'T';
 	public static final char MARK_NCDS			=	'N';
 	public static final char MARK_INTRON		=	'I';
 	public static final char MARK_INTERGENIC	=	'-';
@@ -60,5 +60,16 @@ public class Constants {
 	public static final String OUTPUT_G_SEQUENCE	=	"[SEQ]";
 	public static final String OUTPUT_G_REGION		=	"[REGION]";
 	public static final String OUTPUT_G_PEPTIDE		=	"[PEPTIDE]";
+	
+	// Events
+	public static final String EVENT_ANTISENSE		=	"antisense";
+	public static final String EVENT_SENSE			=	"sense";
+	public static final String EVENT_5UTR			=	"5UTR";
+	public static final String EVENT_3UTR			=	"3UTR";
+	public static final String EVENT_NONCODING		=	"noncoding";
+	public static final String EVENT_INTERGENIC		=	"intergenic";
+	public static final String EVENT_INTRON			=	"intron";
+	public static final String EVENT_FRAMESHIFT		=	"frameshift";
+	public static final String EVENT_PROTEINCODING	=	"proteincoding";
 	
 }

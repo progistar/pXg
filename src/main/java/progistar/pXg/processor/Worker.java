@@ -155,7 +155,7 @@ public class Worker extends Thread {
 						if(gSeq.tBlocks[i].strand == output.strand) {
 							senseMarker = "sense";
 						} else {
-							senseMarker = "anti-sense";
+							senseMarker = "antisense";
 						}
 					}
 					char frame = output.getFrame(i);
