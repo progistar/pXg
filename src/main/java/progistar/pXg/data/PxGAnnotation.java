@@ -49,22 +49,25 @@ public class PxGAnnotation {
 	 * 
 	 */
 	public void filterByPvalueThreshold () {
-		double[] pValueTable = getPvalueTable();
+		double[][] pValueTable = getPvalueTable();
 		
-		int cutoffReads = 0;
-		for(int i=1; i<pValueTable.length; i++) {
-			if(pValueTable[i] < Parameters.ngsPvalue) {
-				cutoffReads = i;
-				break;
+		int[] cutoffReads = new int[Parameters.maxPeptLen+1];
+		for(int peptLen = Parameters.minPeptLen; peptLen <= Parameters.maxPeptLen; peptLen++) {
+			for(int i=1; i<pValueTable[peptLen].length; i++) {
+				if(pValueTable[peptLen][i] < Parameters.ngsPvalue) {
+					cutoffReads[peptLen] = i;
+					System.out.println("Cutoff for "+peptLen+" aa: "+i);
+					break;
+				}
 			}
 		}
 		
-		final int cutoff = cutoffReads;
+		final int[] cutoffs = cutoffReads;
 		ArrayList<String> zeroSizeList = new ArrayList<String>();
 		this.xBlockMapper.forEach((pSeq, xBlocks) -> {
 			ArrayList<String> removeList = new ArrayList<String>();
 			xBlocks.forEach((key, xBlock) -> {
-				if(xBlock.targetReadCount < cutoff) {
+				if(xBlock.targetReadCount < cutoffs[pSeq.length()]) {
 					removeList.add(key);
 				}
 			});
@@ -99,35 +102,41 @@ public class PxGAnnotation {
 	
 	/**
 	 * Calculate empirical p-value. <br>
+	 * By length. <br>
 	 * 
 	 * @return
 	 */
-	private double[] getPvalueTable () {
-		double[] pValueTable = new double[this.maxNGSreadCount+1];
-		double[] decoyTable = new double[this.maxNGSreadCount+1];
-		double[] targetTable = new double[this.maxNGSreadCount+1];
+	private double[][] getPvalueTable () {
+		double[][] pValueTable = new double[Parameters.maxPeptLen+1][this.maxNGSreadCount+1];
+		double[][] decoyTable = new double[Parameters.maxPeptLen+1][this.maxNGSreadCount+1];
+		double[][] targetTable = new double[Parameters.maxPeptLen+1][this.maxNGSreadCount+1];
 		
 		this.xBlockMapper.forEach((pSeq, xBlocks) -> {
 			xBlocks.forEach((key, xBlock) -> {
-				decoyTable[xBlock.decoyReadCount]++;
-				targetTable[xBlock.targetReadCount]++;
+				decoyTable[pSeq.length()][xBlock.decoyReadCount]++;
+				targetTable[pSeq.length()][xBlock.targetReadCount]++;
 			});
 		});
 		
 		// calculate cumulative decoy & target distribution
-		for(int i=decoyTable.length-2; i>0; i--) {
-			decoyTable[i] = decoyTable[i] + decoyTable[i+1];
-			targetTable[i] = targetTable[i] + targetTable[i+1];
+		for(int peptLen = Parameters.minPeptLen; peptLen <= Parameters.maxPeptLen; peptLen++) {
+			for(int i=decoyTable[peptLen].length-2; i>0; i--) {
+				decoyTable[peptLen][i] = decoyTable[peptLen][i] + decoyTable[peptLen][i+1];
+				targetTable[peptLen][i] = targetTable[peptLen][i] + targetTable[peptLen][i+1];
+			}
+			
 		}
-		
 		// calculate empirical p-value
-		for(int i=1; i<pValueTable.length; i++) {
-			pValueTable[i] = decoyTable[i] / decoyTable[1];
+		for(int peptLen = Parameters.minPeptLen; peptLen <= Parameters.maxPeptLen; peptLen++) {
+			if(decoyTable[peptLen][1] == 0) continue;
+			
+			for(int i=1; i<pValueTable[peptLen].length; i++) {
+				pValueTable[peptLen][i] = decoyTable[peptLen][i] / decoyTable[peptLen][1];
+			}
 		}
 		
-		System.out.println("reads\tp-value\tregions");
-		for(int i=1; i<pValueTable.length; i++) {
-			System.out.println(i+"\t"+pValueTable[i]+"\t"+targetTable[i]);
+		for(int peptLen = Parameters.minPeptLen; peptLen <= Parameters.maxPeptLen; peptLen++) {
+			System.out.println(peptLen+"aa peptides: "+targetTable[peptLen][1]+" targets"+decoyTable[peptLen][1]+" decoys");
 		}
 		
 		return pValueTable;

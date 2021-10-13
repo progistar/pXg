@@ -29,7 +29,7 @@ public class Parameters {
 	public static byte READ_STRAND					=	Constants.FORWARD_STRAND_READS;
 	
 	public static int minPeptLen					=	8;
-	public static int maxPeptLen					=	15;
+	public static int maxPeptLen					=	13;
 	public static boolean leucineIsIsoleucine		=	true;
 	
 	// Peptide file
