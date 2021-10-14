@@ -9,6 +9,7 @@ import org.ahocorasick.trie.Emit;
 import org.ahocorasick.trie.Trie;
 
 import progistar.pXg.constants.Parameters;
+import progistar.pXg.constants.RunInfo;
 
 public class PeptideAnnotation {
 
@@ -39,6 +40,9 @@ public class PeptideAnnotation {
 	public static void buildKeywordTrie () {
 		System.out.println("Enumerate peptide sequences...");
 		ArrayList<String> sequences = enumerateSequence();
+		
+		RunInfo.totalProcessedPeptides = sequences.size();
+		
 		System.out.println("A total of "+sequences.size()+" peptides was detected without duplications.");
 		System.out.println("Build keyword trie...");
 		trie = Trie.builder().addKeywords(sequences).build();

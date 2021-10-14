@@ -119,13 +119,24 @@ public class PxGAnnotation {
 		});
 		
 		// calculate cumulative decoy & target distribution
-		for(int peptLen = Parameters.minPeptLen; peptLen <= Parameters.maxPeptLen; peptLen++) {
-			for(int i=decoyTable[peptLen].length-2; i>0; i--) {
-				decoyTable[peptLen][i] = decoyTable[peptLen][i] + decoyTable[peptLen][i+1];
-				targetTable[peptLen][i] = targetTable[peptLen][i] + targetTable[peptLen][i+1];
+		try {
+			BufferedWriter BW = new BufferedWriter(new FileWriter(Parameters.statFilePath));
+			BW.append("PeptideLength\tReadCount\tTarget\tDecoy");
+			BW.newLine();
+			for(int peptLen = Parameters.minPeptLen; peptLen <= Parameters.maxPeptLen; peptLen++) {
+				for(int i=decoyTable[peptLen].length-2; i>0; i--) {
+					decoyTable[peptLen][i] = decoyTable[peptLen][i] + decoyTable[peptLen][i+1];
+					targetTable[peptLen][i] = targetTable[peptLen][i] + targetTable[peptLen][i+1];
+					
+					BW.append(peptLen+"\t"+i+"\t"+targetTable[peptLen][i+1]+"\t"+decoyTable[peptLen][i+1]);
+					BW.newLine();
+				}
 			}
+			BW.close();
+		}catch (IOException ioe) {
 			
 		}
+		
 		// calculate empirical p-value
 		for(int peptLen = Parameters.minPeptLen; peptLen <= Parameters.maxPeptLen; peptLen++) {
 			if(decoyTable[peptLen][1] == 0) continue;
@@ -136,8 +147,9 @@ public class PxGAnnotation {
 		}
 		
 		for(int peptLen = Parameters.minPeptLen; peptLen <= Parameters.maxPeptLen; peptLen++) {
-			System.out.println(peptLen+"aa peptides: "+targetTable[peptLen][1]+" targets"+decoyTable[peptLen][1]+" decoys");
+			System.out.println(peptLen+"aa peptides: "+targetTable[peptLen][1]+" targets  "+decoyTable[peptLen][1]+" decoys");
 		}
+		
 		
 		return pValueTable;
 	}

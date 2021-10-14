@@ -15,6 +15,8 @@ public class Parameters {
 	public static final String OUTPUT_PATH				=	"output_path".toLowerCase();
 	public static String outputFilePath				=	"";
 	
+	public static String statFilePath				=	"";
+	
 	public static final String DECOY_METHOD			=	"reverse".toLowerCase();
 	public static byte	decoys						=	Constants.DECOY_REVERSE;
 	

@@ -5,6 +5,7 @@ import java.util.Hashtable;
 public class RunInfo {
 
 	public static long totalProcessedReads = 0;
+	public static long totalProcessedPeptides = 0;
 	public static Hashtable<String, Integer> processedChromosomes = new Hashtable<String, Integer>();
 	
 	

@@ -24,6 +24,6 @@ public class App
     	long endTime = System.currentTimeMillis();
     	
     	RunInfo.printProcessedChromosomes();
-    	System.out.println("\tTotal Elapsed time: "+((endTime-startTime)/1000) + " sec with " +RunInfo.totalProcessedReads+" reads");    	
+    	System.out.println("\tTotal Elapsed time: "+((endTime-startTime)/1000) + " sec with "+RunInfo.totalProcessedPeptides +" peptides and " +RunInfo.totalProcessedReads+" reads");    	
     }
 }
