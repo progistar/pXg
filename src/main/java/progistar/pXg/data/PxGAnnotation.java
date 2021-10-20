@@ -49,6 +49,9 @@ public class PxGAnnotation {
 	 * 
 	 */
 	public void filterByPvalueThreshold () {
+		System.out.print("Calculating p-values...");
+		long startTime = System.currentTimeMillis();
+		
 		double[][] pValueTable = getPvalueTable();
 		
 		int[] cutoffReads = new int[Parameters.maxPeptLen+1];
@@ -97,6 +100,9 @@ public class PxGAnnotation {
 				pBlocks.remove(i);
 			}
 		}
+		
+		long endTime = System.currentTimeMillis();
+		System.out.println("\tElapsed time: "+((endTime-startTime)/1000) + " sec");
 		
 	}
 	
@@ -162,6 +168,10 @@ public class PxGAnnotation {
 	 * 
 	 */
 	public void markFasta () {
+		
+		System.out.print("Marking fasta ids... ");
+		long startTime = System.currentTimeMillis();
+		
 		Fasta fasta = new Fasta(Parameters.proteinFastaPath);
 		
 		ArrayList<String> sequences = PeptideAnnotation.enumerateSequence();
@@ -179,6 +189,9 @@ public class PxGAnnotation {
 				pBlock.fastaIDs = new String[0];
 			}
 		}
+		
+		long endTime = System.currentTimeMillis();
+		System.out.println("\tElapsed time: "+((endTime-startTime)/1000) + " sec");
 	}
 	
 	public void write (String fileName) {

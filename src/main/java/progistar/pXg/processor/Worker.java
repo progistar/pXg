@@ -30,7 +30,7 @@ public class Worker extends Thread {
 		// enroll tmpOutput file path
 		Master.enrollTmpOutputFilePath(this.tmpOutput.getAbsolutePath());
 		
-		System.out.println("Worker "+this.workerID+" takes task "+task.taskID);
+		//System.out.println("Worker "+this.workerID+" takes task "+task.taskID);
 	}
 	
 	public void setTask (Task task) {
@@ -85,7 +85,7 @@ public class Worker extends Thread {
 		 
 		
 		long endTime = System.currentTimeMillis();
-		System.out.println("Worker "+this.workerID+" was done with task"+task.taskID +"\tElapsed time: "+((endTime-startTime)/1000)+" sec");
+		//System.out.println("Worker "+this.workerID+" was done with task"+task.taskID +"\tElapsed time: "+((endTime-startTime)/1000)+" sec");
 	}
 	/**
 	 * Write temporary output file. <br>
