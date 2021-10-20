@@ -88,6 +88,10 @@ public class ParameterParser {
 					else if(param.equalsIgnoreCase(Parameters.PSM_RANK_THRESHOLD)) {
 						Parameters.psmRank = Integer.parseInt(value);
 					}
+					
+					else if(param.equalsIgnoreCase(Parameters.PROTEIN_SEQUENCE_PATH)) {
+						Parameters.proteinFastaPath = value;
+					}
 				}
 				
 			}

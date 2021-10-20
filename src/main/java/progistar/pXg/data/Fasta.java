@@ -19,7 +19,7 @@ public class Fasta {
 		File file = new File(fileName);
 		
 		// check if the file is available. 
-		if(!file.exists()) {
+		if(file == null || !file.exists()) {
 			return;
 		}
 		
