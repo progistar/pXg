@@ -11,7 +11,6 @@ public class Mutation {
 	public String refSeq;
 	public int relPos;
 	
-	
 	public int genomicPosition;
 	public int chrIndex;
 	

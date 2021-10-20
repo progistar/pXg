@@ -79,6 +79,7 @@ public class Fasta {
 				ArrayList<String> ids = matchedList.get(pSeq);
 				if(ids == null) {
 					ids = new ArrayList<String>();
+					matchedList.put(pSeq, ids);
 				}
 				ids.add(record.id);
 			}
