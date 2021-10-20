@@ -120,6 +120,9 @@ public class Master {
 			pXgA.topScoreFilter();
 			// filter regions
 			pXgA.regionScoreFilter();
+			// mark fasta result
+			pXgA.markFasta();
+			
 			pXgA.write(Parameters.outputFilePath);
 			
 		}catch (Exception e) {

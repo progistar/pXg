@@ -85,8 +85,8 @@ public class ParameterParser {
 						Parameters.scoreColumnIndex = Integer.parseInt(value) - 1;
 					}
 					
-					else if(param.equalsIgnoreCase(Parameters.DELTA_SCORE_THRESHOLD)) {
-						Parameters.deltaScoreThreshold = Double.parseDouble(value);
+					else if(param.equalsIgnoreCase(Parameters.PSM_RANK_THRESHOLD)) {
+						Parameters.psmRank = Integer.parseInt(value);
 					}
 				}
 				

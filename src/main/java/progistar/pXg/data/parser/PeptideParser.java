@@ -64,10 +64,8 @@ public class PeptideParser {
 						pSeq.append(matcher.group());
 					}
 					
-					if(pSeq.length() >= Parameters.minPeptLen && pSeq.length() <= Parameters.maxPeptLen) {
-						PBlock pBLock = new PBlock(record, pSeq.toString());
-						PeptideAnnotation.pBlocks.add(pBLock);
-					}
+					PBlock pBLock = new PBlock(record, pSeq.toString());
+					PeptideAnnotation.pBlocks.add(pBLock);
 					pSeq.setLength(0);
 					
 				}
@@ -87,6 +85,9 @@ public class PeptideParser {
 		
 		// filter PSMs by delta-score threshold
 		PeptideAnnotation.filter();
+		// length filter
+		PeptideAnnotation.peptideLengthFilter();
+		
 		System.out.println("\tElapsed time: "+((endTime-startTime)/1000) + " sec");
 
 		

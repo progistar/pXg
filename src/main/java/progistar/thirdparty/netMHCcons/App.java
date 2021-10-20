@@ -11,8 +11,8 @@ public class App {
 	public static void main(String[] args) {
 		int tPeptideIndex = 19;
 		
-		String pXgOutputFileName = "C:\\Users\\progi\\Desktop\\Projects\\pXg\\Laumont_NatCommun2016\\Results\\subjectM.rep1.pXg";
-		NetMHCconsResult netMHCpanResult = NetMHCconsParser.parseNetMHCcons("C:\\Users\\progi\\Desktop\\Projects\\pXg\\Laumont_NatCommun2016\\MHCBindings\\SubjectM_Rep1_NetMHCcons.txt");
+		String pXgOutputFileName = "C:\\Users\\progi\\Desktop\\Projects\\pXg\\Laumont_NatCommun2016\\Results\\subjectM.rep2.pXg";
+		NetMHCconsResult netMHCpanResult = NetMHCconsParser.parseNetMHCcons("C:\\Users\\progi\\Desktop\\Projects\\pXg\\Laumont_NatCommun2016\\MHCBindings\\SubjectM_Rep2_NetMHCcons.txt");
 		
 		try {
 			BufferedReader BR = new BufferedReader(new FileReader(pXgOutputFileName));

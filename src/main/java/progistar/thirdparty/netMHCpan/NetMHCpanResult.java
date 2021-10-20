@@ -22,7 +22,7 @@ public class NetMHCpanResult {
 			str.append("\t");
 		}
 		
-		str.append("MHC-I");
+		str.append("MHC-I").append("\t").append("elRank");
 		
 		return str.toString();
 	}
@@ -42,6 +42,7 @@ public class NetMHCpanResult {
 		
 		StringBuilder str = new StringBuilder();
 		int maxBinding = 0;
+		double bestBindingAffinity = 1;
 		if(record == null) {
 			for(int i=0; i<hlaTypes.length; i++) {
 				str.append("NB");
@@ -50,9 +51,11 @@ public class NetMHCpanResult {
 		} else {
 			for(int i=0; i<hlaTypes.length; i++) {
 				HLA hla = record.hlas.get(i);
+				
+				bestBindingAffinity = Math.min(bestBindingAffinity, hla.elRank/100);
+				
 				if(hla.elRank < 0.5) {
 					str.append("SB");
-					
 					maxBinding = Math.max(1, maxBinding);
 				} else if(hla.elRank < 2) {
 					str.append("WB");
@@ -65,11 +68,11 @@ public class NetMHCpanResult {
 		}
 		
 		if(maxBinding == 0) {
-			str.append("NB");
+			str.append("NB").append("\t"+bestBindingAffinity);
 		}else if(maxBinding == 1) {
-			str.append("WB");
+			str.append("WB").append("\t"+bestBindingAffinity);
 		}else if(maxBinding == 2) {
-			str.append("SB");
+			str.append("SB").append("\t"+bestBindingAffinity);
 		}
 		
 		return str.toString();

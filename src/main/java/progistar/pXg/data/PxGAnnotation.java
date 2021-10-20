@@ -124,12 +124,15 @@ public class PxGAnnotation {
 			BW.append("PeptideLength\tReadCount\tTarget\tDecoy");
 			BW.newLine();
 			for(int peptLen = Parameters.minPeptLen; peptLen <= Parameters.maxPeptLen; peptLen++) {
+				BW.append(peptLen+"\t"+(decoyTable[peptLen].length-1)+"\t"+targetTable[peptLen][decoyTable[peptLen].length-1]+"\t"+decoyTable[peptLen][decoyTable[peptLen].length-1]);
+				BW.newLine();
+				
 				for(int i=decoyTable[peptLen].length-2; i>0; i--) {
+					BW.append(peptLen+"\t"+i+"\t"+targetTable[peptLen][i]+"\t"+decoyTable[peptLen][i]);
+					BW.newLine();
+					
 					decoyTable[peptLen][i] = decoyTable[peptLen][i] + decoyTable[peptLen][i+1];
 					targetTable[peptLen][i] = targetTable[peptLen][i] + targetTable[peptLen][i+1];
-					
-					BW.append(peptLen+"\t"+i+"\t"+targetTable[peptLen][i+1]+"\t"+decoyTable[peptLen][i+1]);
-					BW.newLine();
 				}
 			}
 			BW.close();
@@ -152,6 +155,30 @@ public class PxGAnnotation {
 		
 		
 		return pValueTable;
+	}
+	
+	/**
+	 * 
+	 * 
+	 */
+	public void markFasta () {
+		Fasta fasta = new Fasta(Parameters.proteinFastaPath);
+		
+		ArrayList<String> sequences = PeptideAnnotation.enumerateSequence();
+		Hashtable<String, ArrayList<String>> matchedList = fasta.findAll(sequences);
+		
+		// assign fasta IDs to pBlock
+		for(PBlock pBlock : PeptideAnnotation.pBlocks) {
+			ArrayList<String> ids = matchedList.get(pBlock.getPeptideSequence());
+			if(ids != null) {
+				pBlock.fastaIDs = new String[ids.size()];
+				for(int i=0; i<pBlock.fastaIDs.length; i++) {
+					pBlock.fastaIDs[i] = ids.get(i);
+				}
+			} else {
+				pBlock.fastaIDs = new String[0];
+			}
+		}
 	}
 	
 	public void write (String fileName) {
@@ -245,6 +272,7 @@ public class PxGAnnotation {
 				double deltaScore = topScore - scanPBlocks.get(i).score;
 				if(deltaScore == 0) {
 					pBlocks.add(scanPBlocks.get(i));
+					break;
 				}
 			}
 		});

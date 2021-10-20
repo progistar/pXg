@@ -83,8 +83,6 @@ public class PeptideAnnotation {
 			}
 		}
 		
-		
-		
 		return outputs;
 	}
 	
@@ -94,8 +92,11 @@ public class PeptideAnnotation {
 	 * 
 	 * @return
 	 */
-	private static ArrayList<String> enumerateSequence () {
+	public static ArrayList<String> enumerateSequence () {
 		ArrayList<String> sequences = new ArrayList<String>();
+		
+		indexedPeptide.clear();
+		peptideIndexer.clear();
 		
 		// put peptide sequences into checks
 		pBlocks.forEach(pBlock ->
@@ -140,15 +141,26 @@ public class PeptideAnnotation {
 			Collections.sort(scanPBlocks);
 			
 			// cutoff
-			double topScore = scanPBlocks.get(0).score;
 			int size = scanPBlocks.size();
 			for(int i=0; i<size; i++) {
 				// add pBlocks which delta-score is equal or less than "score-threshold"
-				double deltaScore = topScore - scanPBlocks.get(i).score;
-				if(deltaScore <= Parameters.deltaScoreThreshold) {
+				
+				// delta-rank!
+				if(i < Parameters.psmRank) {
 					pBlocks.add(scanPBlocks.get(i));
 				}
 			}
 		});
+	}
+	
+	public static void peptideLengthFilter () {
+		for(int i=pBlocks.size()-1; i>0; i--) {
+			int peptLength = pBlocks.get(i).getPeptideSequence().length();
+			
+			// filter-out non-interesting
+			if(peptLength < Parameters.minPeptLen || peptLength > Parameters.maxPeptLen) {
+				pBlocks.remove(i);
+			}
+		}
 	}
 }

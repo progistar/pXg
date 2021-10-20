@@ -11,6 +11,9 @@ public class Parameters {
 	public static final String PEPTIDE_ANNOTATION_PATH				=	"peptide_annotation_path".toLowerCase();
 	public static String peptideFilePath			=	"";
 	
+	public static final String PROTEIN_SEQUENCE_PATH		=	"protein_fasta_path".toLowerCase();
+	public static String proteinFastaPath			=	"";
+	
 	// Output file path
 	public static final String OUTPUT_PATH				=	"output_path".toLowerCase();
 	public static String outputFilePath				=	"";
@@ -44,9 +47,10 @@ public class Parameters {
 	
 	public static final String SCORE_COLUMN_INDEX		=	"score_column_index".toLowerCase();
 	public static int scoreColumnIndex				=	0;
+
 	
-	public static final String DELTA_SCORE_THRESHOLD		=	"score_threshold".toLowerCase();
-	public static double deltaScoreThreshold				=	10;
+	public static final String PSM_RANK_THRESHOLD	=	"psm_rank".toLowerCase();
+	public static int psmRank						=	3;
 	
 	public static final String pParserRegExr		=	"aareg".toLowerCase();
 	public static String peptideParserRegExr		=	"[A-Z]"; // read sequence matched to the RegExr.
@@ -64,5 +68,4 @@ public class Parameters {
 	// System Parameters
 	public static final String numOfThreads			=	"num_threads".toLowerCase();
 	public static int nThreads						=	1;
-	
 }

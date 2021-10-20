@@ -10,6 +10,7 @@ public class PBlock implements Comparable<PBlock> {
 	private String[] record;
 	private String pSeq;
 	
+	public String[] fastaIDs = null;
 	public double score;
 	// after mapping
 	// key: peptide with I!=L
