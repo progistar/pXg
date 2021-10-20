@@ -13,7 +13,8 @@ public class XBlock {
 	public String mutations 		=	null;
 	public String genomicSequence	=	null;
 	public String peptideSequence	=	null;
-	public String tAnnotations		=	null;
+	public String tAnnotations		=	null; // transcript and additional annotations
+	public String[] fastaIDs		=	null;
 	public double bestRegionPriority 	= 	Double.MAX_VALUE;
 	
 	
@@ -27,13 +28,43 @@ public class XBlock {
 	 */
 	public String toString () {
 		String geneIDs = toGeneIDs();
-		int geneCount = geneIDs.split("\\|").length;
-		return peptideSequence +"\t"+genomicLocus+"\t"+strand+"\t"+genomicSequence+"\t"+mutations+"\t"+tAnnotations
-				+"\t"+geneIDs+"\t"+toGeneNames()+"\t"+toEvents(geneIDs)+"\t"+geneCount+"\t"+targetReadCount+"\t"+decoyReadCount;
+		String geneNames = toGeneNames();
+		String events = toEvents(geneIDs);
+		String fastaIDs = toFastaIDs();
+		
+		int transCount = tAnnotations.split("\\|").length;
+		int geneIDCount = geneIDs.split("\\|").length;
+		int geneNameCount = geneNames.split("\\|").length;
+		int eventCount = events.split("\\|").length;
+		int fastaIDCount = this.fastaIDs.length;
+		
+		return peptideSequence +"\t"+genomicLocus+"\t"
+				+strand+"\t"+genomicSequence
+				+"\t"+mutations
+				+"\t"+tAnnotations+"\t"+transCount
+				+"\t"+geneIDs+"\t"+geneIDCount
+				+"\t"+geneNames+"\t"+geneNameCount
+				+"\t"+events+"\t"+eventCount
+				+"\t"+fastaIDs+"\t"+fastaIDCount
+				+"\t"+targetReadCount;
 	}
 	
 	public static String toNullString () {
-		return "-\t-\t-\t-\t-\t-\t-\t-\t0\t0";
+		return "-\t-\t-\t-\t-\t-\t0\t-\t0\t-\t0\t-\t0\t-\t0\t0";
+	}
+	
+	public String toFastaIDs () {
+		if(this.fastaIDs.length == 0) {
+			return "-";
+		}
+		
+		StringBuilder fasta= new StringBuilder();
+		
+		for(String fastaID : this.fastaIDs) {
+			fasta.append("|").append(fastaID);
+		}
+		
+		return fasta.substring(1).toString();
 	}
 	
 	/**
@@ -46,8 +77,13 @@ public class XBlock {
 		StringBuilder events= new StringBuilder();
 		String[] genes = geneIDs.split("\\|");
 		
+		Hashtable<String, Boolean> isDuplicated = new Hashtable<String, Boolean>();
 		for(String gene : genes) {
-			events.append("|").append(Priority.getRegionEvent(gene));
+			String event = Priority.getRegionEvent(gene);
+			if(isDuplicated.get(event) == null) {
+				events.append("|").append(event);
+				isDuplicated.put(event, true);
+			}
 		}
 		
 		return events.substring(1).toString();

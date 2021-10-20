@@ -10,7 +10,7 @@ public class PBlock implements Comparable<PBlock> {
 	private String[] record;
 	private String pSeq;
 	
-	public String[] fastaIDs = null;
+	public String[] fastaIDs;
 	public double score;
 	// after mapping
 	// key: peptide with I!=L
@@ -19,6 +19,7 @@ public class PBlock implements Comparable<PBlock> {
 	public PBlock (String[] record, String pSeq) {
 		this.record = record;
 		this.pSeq = pSeq;
+		this.fastaIDs = new String[0]; // zero size, initially.
 		this.score = Double.parseDouble(record[Parameters.scoreColumnIndex]);
 	}
 	

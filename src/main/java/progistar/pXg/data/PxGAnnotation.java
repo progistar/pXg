@@ -185,8 +185,6 @@ public class PxGAnnotation {
 				for(int i=0; i<pBlock.fastaIDs.length; i++) {
 					pBlock.fastaIDs[i] = ids.get(i);
 				}
-			} else {
-				pBlock.fastaIDs = new String[0];
 			}
 		}
 		
@@ -203,19 +201,23 @@ public class PxGAnnotation {
 			
 			
 			BW.append(PeptideAnnotation.toFields()).append("\t");
-			BW.append("MultipleRegions").append("\t");
-			BW.append("tPeptide").append("\t");
-			BW.append("Loci").append("\t");
+			BW.append("GenomicLociCount").append("\t");
+			BW.append("InferredPeptide").append("\t");
+			BW.append("GenomicLoci").append("\t");
 			BW.append("Strand").append("\t");
 			BW.append("Nucleotide").append("\t");
 			BW.append("Mutations").append("\t");
 			BW.append("TranscriptIDs").append("\t");
+			BW.append("TranscriptIDCount").append("\t");
 			BW.append("GeneIDs").append("\t");
+			BW.append("GeneIDCount").append("\t");
 			BW.append("GeneNames").append("\t");
+			BW.append("GeneNameCount").append("\t");
 			BW.append("Events").append("\t");
-			BW.append("GeneCount").append("\t");
-			BW.append("Reads").append("\t");
-			BW.append("rReads");
+			BW.append("EventCount").append("\t");
+			BW.append("FastaIDs").append("\t");
+			BW.append("FastaIDCount").append("\t");
+			BW.append("Reads");
 			BW.newLine();
 			
 			
@@ -235,6 +237,9 @@ public class PxGAnnotation {
 				} else {
 					xBlocks.forEach((pSeq, xBlock) -> {
 						try {
+							// assign fastaIDs.
+							xBlock.fastaIDs = pBlock.fastaIDs;
+							
 							BW.append(pBlock.toString()).append("\t").append(xBlocks.size()+"\t").append(xBlock.toString());
 							BW.newLine();
 						}catch(IOException ioe) {
