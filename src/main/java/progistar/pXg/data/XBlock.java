@@ -29,7 +29,7 @@ public class XBlock {
 	public String toString () {
 		String geneIDs = toGeneIDs();
 		String geneNames = toGeneNames();
-		String events = toEvents(geneIDs);
+		String events = toEvents();
 		String fastaIDs = toFastaIDs();
 		
 		int transCount = tAnnotations.split("\\|").length;
@@ -70,12 +70,12 @@ public class XBlock {
 	/**
 	 * get gene events from geneIDs. <br>
 	 * 
-	 * @param geneIDs
+	 * @param transcriptIDs
 	 * @return
 	 */
-	public String toEvents (String geneIDs) {
+	public String toEvents () {
 		StringBuilder events= new StringBuilder();
-		String[] genes = geneIDs.split("\\|");
+		String[] genes = tAnnotations.split("\\|");
 		
 		Hashtable<String, Boolean> isDuplicated = new Hashtable<String, Boolean>();
 		for(String gene : genes) {
@@ -103,11 +103,10 @@ public class XBlock {
 		for(String tRegion : tRegions) {
 			String transcriptID = tRegion.split("\\(")[0];
 			String geneName = ENSTMapper.getGeneNamebyENST(transcriptID);
-			String gRegion = tRegion.replace(transcriptID, geneName);
 			
-			if(isDuplicated.get(gRegion) == null) {
-				isDuplicated.put(gRegion, true);
-				gRegions.append("|").append(gRegion);
+			if(isDuplicated.get(geneName) == null) {
+				isDuplicated.put(geneName, true);
+				gRegions.append("|").append(geneName);
 			}
 			
 		}
@@ -129,11 +128,10 @@ public class XBlock {
 		for(String tRegion : tRegions) {
 			String transcriptID = tRegion.split("\\(")[0];
 			String geneID = ENSTMapper.getENSGbyENST(transcriptID);
-			String gRegion = tRegion.replace(transcriptID, geneID);
 			
-			if(isDuplicated.get(gRegion) == null) {
-				isDuplicated.put(gRegion, true);
-				gRegions.append("|").append(gRegion);
+			if(isDuplicated.get(geneID) == null) {
+				isDuplicated.put(geneID, true);
+				gRegions.append("|").append(geneID);
 			}
 		}
 		

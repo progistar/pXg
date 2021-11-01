@@ -24,7 +24,7 @@ public class NetMHCconsResult {
 			str.append("\t");
 		}
 		
-		str.append("MHC-I");
+		str.append("MHC-I\tBestType\tBestScore");
 		
 		return str.toString();
 	}
@@ -44,12 +44,18 @@ public class NetMHCconsResult {
 		
 		StringBuilder str = new StringBuilder();
 		int maxBinding = 0;
+		String bestHLAType = "-";
+		String bestScore = "-";
 		if(record == null) {
 			for(int i=0; i<hlaTypes.length; i++) {
 				str.append("NB");
 				str.append("\t");
 			}
 		} else {
+			
+			bestHLAType = record.getBestHLAType();
+			bestScore = record.getBestScore()+"";
+			
 			for(int i=0; i<hlaTypes.length; i++) {
 				HLA hla = record.hlas.get(i);
 				if(hla.elRank < 1250) {
@@ -63,9 +69,9 @@ public class NetMHCconsResult {
 		}
 		
 		if(maxBinding == 0) {
-			str.append("NB");
+			str.append("NB\t"+bestHLAType+"\t"+bestScore);
 		}else if(maxBinding == 1) {
-			str.append("B");
+			str.append("B\t"+bestHLAType+"\t"+bestScore);
 		}
 		
 		return str.toString();

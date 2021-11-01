@@ -71,7 +71,7 @@ public class Priority {
 	}
 	
 	/**
-	 * Input region example: ENSG0000...(3F5C;sense;N).<br>
+	 * Input region example: ENST0000...(3F5C;sense;N).<br>
 	 * 
 	 * @param region
 	 * @return
