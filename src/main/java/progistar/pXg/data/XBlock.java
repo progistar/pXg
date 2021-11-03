@@ -145,17 +145,17 @@ public class XBlock {
 	 */
 	public void filterRegions () {
 		String[] regions = tAnnotations.split("\\|");
-		double[] scores = new double[regions.length];
+		double[] penalties = new double[regions.length];
 		
 		for(int i=0; i<regions.length; i++) {
-			scores[i] = Priority.getRegionScore(regions[i], mutations);
-			bestRegionPriority = Math.min(scores[i], bestRegionPriority);
+			penalties[i] = Priority.getRegionPenalty(regions[i], mutations);
+			bestRegionPriority = Math.min(penalties[i], bestRegionPriority);
 		}
 		
 		StringBuilder filteredAnnotations = new StringBuilder();
 		
 		for(int i=0; i<regions.length; i++) {
-			if(scores[i] == bestRegionPriority) {
+			if(penalties[i] == bestRegionPriority) {
 				filteredAnnotations.append("|").append(regions[i]);
 			}
 		}

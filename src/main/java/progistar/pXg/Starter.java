@@ -9,7 +9,7 @@ import progistar.pXg.processor.Master;
  * Hello world!
  *
  */
-public class App 
+public class Starter 
 {
     public static void main( String[] args )
     {

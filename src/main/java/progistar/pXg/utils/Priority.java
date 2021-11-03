@@ -15,32 +15,30 @@ public class Priority {
 	
 	/**
 	 * 
-	 * Smaller is better. <br>
-	 * 
 	 * @param region
 	 * @param mutations
 	 * @return
 	 */
-	public static double getRegionScore (String region, String mutations) {
-		double score = Double.MAX_VALUE;
+	public static double getRegionPenalty (String region, String mutations) {
+		double penalty = Double.MAX_VALUE;
 		
 		// region
 		Matcher matcher = REGION_REG.matcher(region);
 		
 		if(matcher.find()) {
-			score = 0;
+			penalty = 0;
 			
 			region = matcher.group();
 			region = region.substring(1, region.length()-1); // remove parenthesis
 			
 			String[] regions = region.split("\\;");
 			
-			double mScore = 0;
-			double rScore = 0;
+			double mPenalty = 0;
+			double rPenalty = 0;
 			
 			// mutation score
 			if(!mutations.equalsIgnoreCase("-")) {
-				mScore = mutations.split("\\|").length;
+				mPenalty = mutations.split("\\|").length;
 			}
 			
 			// region score
@@ -51,23 +49,25 @@ public class Priority {
 			if(regions[0].contains(Constants.MARK_5UTR+"") || 
 					regions[0].contains(Constants.MARK_3UTR+"") || regions[0].contains(Constants.MARK_NCDS+"") 
 					|| regions[2].charAt(0) != Constants.IN_FRAME) {
-				rScore = 10;
+				rPenalty += 10;
 			}
 			
 			// strvar
 			// I = intron
 			// - = intergenic
-			// antisense = antisense
-			
-			if(regions[0].contains(Constants.MARK_INTRON+"") || regions[0].contains(Constants.MARK_INTERGENIC+"") 
-					|| regions[1].equalsIgnoreCase("antisense")) {
-				rScore = 20;
+			if(regions[0].contains(Constants.MARK_INTRON+"") || regions[0].contains(Constants.MARK_INTERGENIC+"")) {
+				rPenalty += 20;
 			}
 			
-			score = rScore + mScore;
+			// antisense = antisense
+			if(regions[1].equalsIgnoreCase("antisense")) {
+				rPenalty += 20;
+			}
+			
+			penalty = rPenalty + mPenalty;
 		}
 		
-		return score;
+		return penalty;
 	}
 	
 	/**
