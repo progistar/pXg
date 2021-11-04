@@ -34,7 +34,7 @@ public class pXg2DeepLCInput {
 		int scanIndex = 4;
 		int peptideIndex = 19;
 		
-		String fileName = "C:\\Users\\progi\\Desktop\\Projects\\pXg\\Laumont_NatCommun2016\\Results\\subjectM.5ppm.002.rep1.netMHCcons.laumont.pXg";
+		String fileName = "C:\\Users\\progi\\Desktop\\Projects\\pXg\\Laumont_NatCommun2016\\Results\\subjectM.5ppm.002.rep1.pXg";
 		
 		BufferedReader BR = new BufferedReader(new FileReader(fileName));
 		
@@ -67,11 +67,11 @@ public class pXg2DeepLCInput {
 				fractions.put(fields[fractionIndex], fraction);
 			}
 			
-			if(rmDuplications.get(fields[fractionIndex]+"_"+fields[scanIndex]) == null) {
+			if(rmDuplications.get(fields[fractionIndex]+"_"+fields[scanIndex]+"_"+fields[peptideIndex]) == null) {
 				
 				String key = fields[peptideIndex]+","+modifications+","+fields[rtIndex];
 				fraction.add(key);
-				rmDuplications.put(fields[fractionIndex]+"_"+fields[scanIndex], "");
+				rmDuplications.put(fields[fractionIndex]+"_"+fields[scanIndex]+"_"+fields[peptideIndex], "");
 			}
 		}
 		

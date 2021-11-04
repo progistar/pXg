@@ -19,8 +19,8 @@ public class RTAppender {
 	public static String CYSTEINLY = "Cysteinyl";
 	
 	public static void main(String[] args) throws IOException {
-		String pXgFileName = "C:\\Users\\progi\\Desktop\\Projects\\pXg\\Laumont_NatCommun2016\\Results\\subjectM.5ppm.002.rep1.netMHCpan.laumont.pXg";
-		String deeplcFolder = "C:\\Users\\progi\\Desktop\\Projects\\pXg\\Laumont_NatCommun2016\\RT";
+		String pXgFileName = "C:\\Users\\progi\\Desktop\\Projects\\pXg\\Qi_MCP2021\\Results\\h1975wc.pxg.netMHCpan";
+		String deeplcFolder = "C:\\Users\\progi\\Desktop\\Projects\\pXg\\Qi_MCP2021\\RT";
 		
 		File[] files = new File(deeplcFolder).listFiles();
 		// key

@@ -61,10 +61,10 @@ public class NetMHCpanResult {
 				
 				if(hla.elRank < 0.5) {
 					str.append("SB");
-					maxBinding = Math.max(1, maxBinding);
+					maxBinding = Math.max(2, maxBinding);
 				} else if(hla.elRank < 2) {
 					str.append("WB");
-					maxBinding = Math.max(2, maxBinding);
+					maxBinding = Math.max(1, maxBinding);
 				} else {
 					str.append("NB");
 				}
