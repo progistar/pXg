@@ -101,7 +101,6 @@ nRankedByPeptLen$PSMs / MaxQuantByPeptLen$PSMs
 #data$DeltaRank > 0
 # show data$DeltaScore
 
-
 data$DeltaRank <- as.double(as.character(data$DeltaRank))
 data$DeltaScore <- as.double(as.character(data$DeltaScore))
 data$TopALCScore <- as.double(as.character(data$TopALCScore))
@@ -113,6 +112,7 @@ data$MaxQuantPeptLength <- as.double(as.character(data$MaxQuantPeptLength))
 subData <- data[data$MaxQuantPeptLength > 7 & data$MaxQuantPeptLength < 16 & data$DeltaRank >= 0 & data$Aggrement == "true", ]
 subData$DeltaRank <- subData$DeltaRank + 1
 subData$MaxQuantPeptLength <- factor(subData$MaxQuantPeptLength, levels = c('8','9','10','11','12','13', '14', '15'))
+
 
 topRankedBoxPlot <- ggplot(data=subData, aes(x=MaxQuantPeptLength, y=TopALCScore-DeltaScore, fill = as.character(MaxQuantPeptLength))) +
   theme_bw() +
