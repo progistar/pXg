@@ -18,7 +18,8 @@ public class Parameters {
 	public static final String OUTPUT_PATH				=	"output_path".toLowerCase();
 	public static String outputFilePath				=	"";
 	
-	public static String statFilePath				=	"";
+	public static String ngsStatFilePath				=	"";
+	public static String psmStatFilePath				=	"";
 	
 	public static final String DECOY_METHOD			=	"reverse".toLowerCase();
 	public static byte	decoys						=	Constants.DECOY_REVERSE;
@@ -64,6 +65,9 @@ public class Parameters {
 	
 	// Significant NGS-read mapping
 	public static double ngsPvalue					=	0.05;
+	
+	// FDR estimation at PSM level
+	public static double fdrThreshold				=	0.01;
 	
 	// System Parameters
 	public static final String numOfThreads			=	"num_threads".toLowerCase();

@@ -67,7 +67,8 @@ public class ParameterParser {
 					
 					else if(param.equalsIgnoreCase(Parameters.OUTPUT_PATH)) {
 						Parameters.outputFilePath = value;
-						Parameters.statFilePath = value+".stat";
+						Parameters.ngsStatFilePath = value+".ngs.stat";
+						Parameters.psmStatFilePath = value+".psm.stat";
 					}
 					
 					else if(param.equalsIgnoreCase(Parameters.SCAN_COLUMN_INDICES)) {

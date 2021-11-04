@@ -97,7 +97,9 @@ public class PxGAnnotation {
 			
 			Hashtable<String, XBlock> xBlocks = this.xBlockMapper.get(key);
 			if(xBlocks == null) {
-				pBlocks.remove(i);
+				pBlock.isTarget = false;
+			} else {
+				pBlock.isTarget = true;
 			}
 		}
 		
@@ -126,7 +128,7 @@ public class PxGAnnotation {
 		
 		// calculate cumulative decoy & target distribution
 		try {
-			BufferedWriter BW = new BufferedWriter(new FileWriter(Parameters.statFilePath));
+			BufferedWriter BW = new BufferedWriter(new FileWriter(Parameters.ngsStatFilePath));
 			BW.append("PeptideLength\tReadCount\tTarget\tDecoy");
 			BW.newLine();
 			for(int peptLen = Parameters.minPeptLen; peptLen <= Parameters.maxPeptLen; peptLen++) {
@@ -282,18 +284,83 @@ public class PxGAnnotation {
 			// sort pBlocks by scores, decreasing order.
 			Collections.sort(scanPBlocks);
 			
-			// cutoff
-			double topScore = scanPBlocks.get(0).score;
-			int size = scanPBlocks.size();
-			for(int i=0; i<size; i++) {
-				// add only top-score
-				double deltaScore = topScore - scanPBlocks.get(i).score;
-				if(deltaScore == 0) {
+			// topScore is determined by target or decoy status
+			// note that:
+			// target means PSMs passing RNA-cutoff threshold
+			boolean isTarget = false;
+			for(int i=0; i<scanPBlocks.size(); i++) {
+				if(scanPBlocks.get(i).isTarget) {
+					//select top score from targets
 					pBlocks.add(scanPBlocks.get(i));
+					isTarget = true;
 					break;
 				}
 			}
+			
+			// if there is no target, then add the highest scored PSM
+			if(!isTarget) pBlocks.add(scanPBlocks.get(0));
+			
 		});
+	}
+	
+	/**
+	 * 
+	 * 
+	 */
+	public void fdrEstimation () {
+		double targetCount = 0;
+		double decoyCount = 0;
+		int cutoffIndex = 0;
+		
+		// Assume that, single PSM per scan.
+		// This is because topScoreFiler only selects single PSM per scan.
+		ArrayList<PBlock> pBlocks = PeptideAnnotation.pBlocks;
+		
+		// sort pBlocks by descending order.
+		Collections.sort(pBlocks);
+		int size = pBlocks.size();
+		
+		try {
+			BufferedWriter BW = new BufferedWriter(new FileWriter(Parameters.psmStatFilePath));
+			BW.append("Class\tScore\tFDR");
+			for(int i=0; i<size; i++) {
+				double fdrRate = 1.0;
+				
+				PBlock pBlock = pBlocks.get(i);
+				
+				if(pBlock.isTarget) {
+					targetCount++;
+					BW.append("target");
+				}
+				else {
+					decoyCount++;
+					BW.append("decoy");
+				}
+				
+				if(targetCount != 0) {
+					fdrRate = decoyCount/targetCount;
+				}
+				
+				BW.append("\t"+pBlock.score+"\t"+fdrRate);
+				BW.newLine();
+				
+				if(fdrRate < Parameters.fdrThreshold) {
+					cutoffIndex = i;
+				}
+			}
+			BW.close();
+		}catch(IOException ioe) {
+			
+		}
+		
+		// remove below than fdr cutoff
+		for(int i=pBlocks.size(); i>=0; i--) {
+			PBlock pBlock = pBlocks.get(i);
+			
+			if(i >= cutoffIndex || !pBlock.isTarget) {
+				pBlocks.remove(i);
+			}
+		}
 	}
 	
 	public void regionScoreFilter () {

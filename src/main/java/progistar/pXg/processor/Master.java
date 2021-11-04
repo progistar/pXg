@@ -118,6 +118,8 @@ public class Master {
 			pXgA.filterByPvalueThreshold();
 			// among them, use highest-scored PSM
 			pXgA.topScoreFilter();
+			// fdr estimation
+			pXgA.fdrEstimation();
 			// filter regions
 			pXgA.regionScoreFilter();
 			// mark fasta result
