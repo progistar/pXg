@@ -242,7 +242,8 @@ public class PxGAnnotation {
 			BW.append("EventCount").append("\t");
 			BW.append("FastaIDs").append("\t");
 			BW.append("FastaIDCount").append("\t");
-			BW.append("Reads");
+			BW.append("Reads").append("\t");
+			BW.append("FDR");
 			BW.newLine();
 			
 			
@@ -265,7 +266,7 @@ public class PxGAnnotation {
 							// assign fastaIDs.
 							xBlock.fastaIDs = pBlock.fastaIDs;
 							
-							BW.append(pBlock.toString()).append("\t").append(xBlocks.size()+"\t").append(xBlock.toString());
+							BW.append(pBlock.toString()).append("\t").append(xBlocks.size()+"\t").append(xBlock.toString()).append("\t"+pBlock.fdrRate);
 							BW.newLine();
 						}catch(IOException ioe) {
 							
@@ -371,6 +372,8 @@ public class PxGAnnotation {
 				if(fdrRate < Parameters.fdrThreshold) {
 					cutoffIndex = i;
 				}
+				
+				pBlock.fdrRate = fdrRate;
 			}
 			BW.close();
 		}catch(IOException ioe) {

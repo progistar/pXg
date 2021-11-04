@@ -13,6 +13,7 @@ public class PBlock implements Comparable<PBlock> {
 	public String[] fastaIDs;
 	public double score;
 	public boolean isTarget = true;
+	public double fdrRate;
 	// after mapping
 	// key: peptide with I!=L
 	public Hashtable<String, XBlock> xBlocks = new Hashtable<String, XBlock>();
