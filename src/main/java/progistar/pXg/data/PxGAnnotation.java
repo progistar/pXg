@@ -67,19 +67,38 @@ public class PxGAnnotation {
 		
 		final int[] cutoffs = cutoffReads;
 		ArrayList<String> zeroSizeList = new ArrayList<String>();
+		Hashtable<String, Boolean> isDecoyPSM = new Hashtable<String, Boolean>();
+		
 		this.xBlockMapper.forEach((pSeq, xBlocks) -> {
-			ArrayList<String> removeList = new ArrayList<String>();
-			xBlocks.forEach((key, xBlock) -> {
-				if(xBlock.targetReadCount < cutoffs[pSeq.length()]) {
-					removeList.add(key);
+			if(xBlocks.size() != 0) {
+
+				ArrayList<String> removeList = new ArrayList<String>();
+				
+				boolean isMockReadOnly = true;
+				Iterator<String> keys = (Iterator<String>) xBlocks.keys();
+				while(keys.hasNext()) {
+					String key = keys.next();
+					XBlock xBlock = xBlocks.get(key);
+					if(xBlock.targetReadCount < cutoffs[pSeq.length()]) {
+						removeList.add(key);
+					}
+					
+					if(xBlock.targetReadCount > 0 || xBlock.decoyReadCount == 0) {
+						isMockReadOnly = false;
+					}
 				}
-			});
-			
-			// filter out
-			removeList.forEach(key -> xBlocks.remove(key));
-			
-			if(xBlocks.size() == 0) {
-				zeroSizeList.add(pSeq);
+				
+				// check as decoy PSM
+				if(isMockReadOnly) {
+					isDecoyPSM.put(pSeq, true);
+				}
+				
+				// filter out
+				removeList.forEach(key -> xBlocks.remove(key));
+				
+				if(xBlocks.size() == 0) {
+					zeroSizeList.add(pSeq);
+				}
 			}
 			
 		});
@@ -97,7 +116,12 @@ public class PxGAnnotation {
 			
 			Hashtable<String, XBlock> xBlocks = this.xBlockMapper.get(key);
 			if(xBlocks == null) {
-				pBlock.isTarget = false;
+				if(isDecoyPSM.get(key) != null) {
+					pBlock.isTarget = false;
+				} else {
+					// else, this cannot be determined as decoy PSM
+					pBlocks.remove(i);
+				}
 			} else {
 				pBlock.isTarget = true;
 			}
@@ -354,7 +378,7 @@ public class PxGAnnotation {
 		}
 		
 		// remove below than fdr cutoff
-		for(int i=pBlocks.size(); i>=0; i--) {
+		for(int i=pBlocks.size()-1; i>=0; i--) {
 			PBlock pBlock = pBlocks.get(i);
 			
 			if(i >= cutoffIndex || !pBlock.isTarget) {
