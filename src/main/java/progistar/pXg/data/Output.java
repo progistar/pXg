@@ -46,6 +46,7 @@ public class Output {
 	public ArrayList<Mutation> getMutations () {
 		return this.gSeq.getMutationsByPositionInNGS(this.startPosInNGS, this.endPosInNGS);
 	}
+	
 	/**
 	 * return frame annotation such as: <br>
 	 * IN_FRAME, NO_FRAME, OUT_OF_FRAME. <br>
@@ -101,6 +102,29 @@ public class Output {
 		}
 		
 		return Constants.IN_FRAME;
+		
+	}
+	
+	/**
+	 * return where the mapping is alternative splicing or canonical form <br>
+	 * MARK_ALT, MARK_CAN. <br>
+	 * 
+	 * @param transcriptNum
+	 * @return
+	 */
+	public char getAS (int transcriptNum) {
+		TBlock tBlock = gSeq.tBlocks[transcriptNum];
+		// this is intergenic
+		// in this case, we do not judge where the intergenic is alternative spliced or not
+		// just pretending to canonical form
+		if(tBlock == null) return Constants.MARK_CA;
+		// with soft-clip
+		// actually, soft-clip is not allowed.
+		if(this.startGenomicPositions.isEmpty() || this.endGenomicPositions.isEmpty()) return Constants.MARK_CA;
+		
+		// note that
+		// genomic size cannot be inferred from peptide length in case of INDELs.
+		return tBlock.isAS(this.startGenomicPositions, this.endGenomicPositions);
 		
 	}
 	

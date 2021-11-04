@@ -22,6 +22,10 @@ public class Constants {
 	public static final char MARK_INTERGENIC	=	'-';
 	public static final char MARK_SOFTCLIP		=	'?';
 	
+	// Alternative Splicing Character
+	public static final char MARK_AS			=	'A'; // for alternative splicing form
+	public static final char MARK_CA			=	'C'; // for canonical form
+	
 	// Transcript coding type
 	public static final byte NON_CODING_TRANSCRIPT	=	0;
 	public static final byte CODING_TRANSCRIPT		=	1;
@@ -71,5 +75,6 @@ public class Constants {
 	public static final String EVENT_INTRON			=	"intron";
 	public static final String EVENT_FRAMESHIFT		=	"frameshift";
 	public static final String EVENT_PROTEINCODING	=	"proteincoding";
+	public static final String EVENT_AS				=	"alt-spl";
 	
 }

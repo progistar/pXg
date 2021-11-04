@@ -159,7 +159,8 @@ public class Worker extends Thread {
 						}
 					}
 					char frame = output.getFrame(i);
-					BW.append("(").append(output.getAARegionAnnotation(i)).append(";").append(senseMarker).append(";").append(frame).append(")");
+					char as = output.getAS(i); // alternative splicing mark
+					BW.append("(").append(output.getAARegionAnnotation(i)).append(";").append(senseMarker).append(";").append(frame).append(";").append(as).append(")");
 				}
 				BW.newLine();
 			}

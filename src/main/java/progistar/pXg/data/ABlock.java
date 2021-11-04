@@ -11,6 +11,8 @@ public class ABlock implements Comparable<ABlock>{
 	public int transcriptIndex;
 	public int start;
 	public int end;
+	// features:
+	// CDS, UTR5, UTR3, NCDS, INTRON, INTERGENIC in Constants class
 	public byte feature;
 	public boolean strand;
 	

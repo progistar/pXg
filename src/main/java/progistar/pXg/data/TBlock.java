@@ -206,6 +206,97 @@ public class TBlock implements Comparable<TBlock> {
 		
 		return mark;
 	}
+	
+	/**
+	 * Taking startLoci and endLoci of a region of mapped peptide. <br>
+	 * return MARK_AS or MARK_CA. <br>
+	 * 
+	 * 
+	 * @param startLoci
+	 * @param endLoci
+	 * @return
+	 */
+	public char isAS (ArrayList<Integer> startLoci, ArrayList<Integer> endLoci) {
+		char isAS = Constants.MARK_AS;
+		
+		/**
+		 * Think!
+		 * 
+		 * EXON1 - INTRON1 - EXON2 - INTRON2 - EXON3
+		 * 
+		 * 1) EXON1 - INTRON1 => is consecutive mapping?
+		 * 2) EXON1 - EXON2 => is consecutive mapping?
+		 * 3) EXON1 - EXON3 => okay. it must be AS
+		 * 4) INTRON1 - INTRON2 => okay. it must be AS
+		 * 
+		 */
+		
+		// Consecutive mapping must be canonical form (no AS).
+		if(startLoci.size() == 1) return Constants.MARK_CA;
+		
+		// non-consecutive mapping
+		// this implies that 
+		// 1) EXON1 - INTRON1 => okay. it must be AS
+		// 2) EXON1 - EXON2 => both ends are consecutive?
+		// 3) EXON1 - EXON3 => okay. it must be AS
+		// 4) INTRON1 - INTRON2 => okay. it must be AS
+		// So! we just care about case 2. If not, it must be AS
+		int size = startLoci.size();
+		// storing aBlock number for each start and end loci
+		// if the locus resides on intergenic, store 0.
+		
+		boolean isCA = true;
+		
+		int direction = 0;
+		int prevIdx = 0;
+		for(int i=0; i<size; i++) {
+			int start = startLoci.get(i);
+			int end = endLoci.get(i);
+			
+			int idx = 0;
+			for(ABlock aBlock : this.aBlocks) {
+				if(i%2 == 0) {
+					if(aBlock.end == end) {
+						if(direction != 0) {
+							if(idx - prevIdx != 2 || direction == 1) {
+								isCA = false;
+							}
+						}
+						
+						prevIdx = idx;
+						direction = 1;
+						break;
+					}
+				} else {
+					if(aBlock.start == start) {
+						if(direction != 0) {
+							if(idx - prevIdx != 2 || direction == -1) {
+								isCA = false;
+							}
+						}
+						
+						prevIdx = idx;
+						direction = -1;
+						break;
+					}
+				}
+				idx++;
+			}
+			
+			// there is no matched regions in the transcript.
+			// it implies that one of mapped region fully resides on intergenic region.
+			// it cannot be the case of canonical form because exon junctions to intergenic region.
+			if(idx == this.aBlocks.size()) {
+				isCA = false;
+			}
+		}
+		
+		if(isCA) {
+			isAS = Constants.MARK_CA;
+		}
+		
+		return isAS;
+	}
 
 	public int compareTo(TBlock o) {
 		if(this.start < o.start) {

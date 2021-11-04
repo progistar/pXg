@@ -9,8 +9,6 @@ public class Priority {
 
 	// Region Score
 	// XXX smaller is better
-	// the left most digit: RegionStrVar (CDS = 0, UTR/Noncoding/Frameshift = 1, StrVar = 2)
-	// the right most digit: Number of mutations
 	public static final Pattern REGION_REG = Pattern.compile("\\([0-9A-Za-z;\\-]*\\)");
 	
 	/**
@@ -41,27 +39,37 @@ public class Priority {
 				mPenalty = mutations.split("\\|").length;
 			}
 			
+			// alternative splicing
+			if(regions[3].charAt(0) == Constants.MARK_AS) {
+				rPenalty += 10;
+			}
+			
 			// region score
 			// F = 5'-UTR
 			// T = 3'-UTR
 			// N = non-coding such as lncRNA/pseudogenes
 			// I = in-frame (!= I means frameshift or non-coding)
 			if(regions[0].contains(Constants.MARK_5UTR+"") || 
-					regions[0].contains(Constants.MARK_3UTR+"") || regions[0].contains(Constants.MARK_NCDS+"") 
+					regions[0].contains(Constants.MARK_3UTR+"") || 
+					regions[0].contains(Constants.MARK_NCDS+"") 
 					|| regions[2].charAt(0) != Constants.IN_FRAME) {
-				rPenalty += 10;
+				rPenalty += 20;
 			}
 			
 			// strvar
 			// I = intron
 			// - = intergenic
 			if(regions[0].contains(Constants.MARK_INTRON+"") || regions[0].contains(Constants.MARK_INTERGENIC+"")) {
-				rPenalty += 20;
+				rPenalty += 30;
+				
+				if(regions[0].contains(Constants.MARK_CDS+"")) {
+					rPenalty -= 5; // if containing CDS, up-vote.
+				}
 			}
 			
 			// antisense = antisense
 			if(regions[1].equalsIgnoreCase("antisense")) {
-				rPenalty += 20;
+				rPenalty += 30;
 			}
 			
 			penalty = rPenalty + mPenalty;
@@ -111,6 +119,10 @@ public class Priority {
 				event += ";"+Constants.EVENT_ANTISENSE;
 			} else {
 				event += ";"+Constants.EVENT_SENSE;
+			}
+			
+			if(regions[3].charAt(0) == Constants.MARK_AS) {
+				event += ";"+Constants.EVENT_AS;
 			}
 		}
 		
