@@ -67,7 +67,7 @@ public class Parameters {
 	public static double ngsPvalue					=	0.05;
 	
 	// FDR estimation at PSM level
-	public static double fdrThreshold				=	0.01;
+	public static double fdrThreshold				=	0.05;
 	
 	// System Parameters
 	public static final String numOfThreads			=	"num_threads".toLowerCase();

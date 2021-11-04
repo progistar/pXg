@@ -68,30 +68,29 @@ public class PxGAnnotation {
 		final int[] cutoffs = cutoffReads;
 		ArrayList<String> zeroSizeList = new ArrayList<String>();
 		Hashtable<String, Boolean> isDecoyPSM = new Hashtable<String, Boolean>();
-		
 		this.xBlockMapper.forEach((pSeq, xBlocks) -> {
 			if(xBlocks.size() != 0) {
 
+				// check as decoy PSM
+				isDecoyPSM.put(pSeq, true);
+				
 				ArrayList<String> removeList = new ArrayList<String>();
 				
-				boolean isMockReadOnly = true;
 				Iterator<String> keys = (Iterator<String>) xBlocks.keys();
+				int mockCount = 0;
 				while(keys.hasNext()) {
 					String key = keys.next();
 					XBlock xBlock = xBlocks.get(key);
 					if(xBlock.targetReadCount < cutoffs[pSeq.length()]) {
 						removeList.add(key);
+					} else {
+						isDecoyPSM.remove(pSeq);
 					}
 					
-					if(xBlock.targetReadCount > 0 || xBlock.decoyReadCount == 0) {
-						isMockReadOnly = false;
-					}
+					mockCount += xBlock.decoyReadCount;
 				}
 				
-				// check as decoy PSM
-				if(isMockReadOnly) {
-					isDecoyPSM.put(pSeq, true);
-				}
+				if(mockCount == 0) isDecoyPSM.remove(pSeq);
 				
 				// filter out
 				removeList.forEach(key -> xBlocks.remove(key));
@@ -347,6 +346,7 @@ public class PxGAnnotation {
 		try {
 			BufferedWriter BW = new BufferedWriter(new FileWriter(Parameters.psmStatFilePath));
 			BW.append("Class\tScore\tFDR");
+			BW.newLine();
 			for(int i=0; i<size; i++) {
 				double fdrRate = 1.0;
 				

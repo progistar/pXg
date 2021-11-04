@@ -12,7 +12,7 @@ public class PBlock implements Comparable<PBlock> {
 	
 	public String[] fastaIDs;
 	public double score;
-	public boolean isTarget;
+	public boolean isTarget = true;
 	// after mapping
 	// key: peptide with I!=L
 	public Hashtable<String, XBlock> xBlocks = new Hashtable<String, XBlock>();
@@ -65,6 +65,10 @@ public class PBlock implements Comparable<PBlock> {
 		if(this.score > o.score) {
 			return -1;
 		} else if(this.score < o.score) {
+			return 1;
+		} else if (this.isTarget && !o.isTarget){
+			return -1;
+		} else if (!this.isTarget && o.isTarget) {
 			return 1;
 		}
 		return 0;
