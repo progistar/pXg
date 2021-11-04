@@ -101,26 +101,40 @@ nRankedByPeptLen$PSMs / MaxQuantByPeptLen$PSMs
 #data$DeltaRank > 0
 # show data$DeltaScore
 
+
 data$DeltaRank <- as.double(as.character(data$DeltaRank))
 data$DeltaScore <- as.double(as.character(data$DeltaScore))
-data$MaxQuantPeptLength <- as.double(as.character(data$MaxQuantPeptLength))
-subData <- data[data$MaxQuantPeptLength > 7 & data$MaxQuantPeptLength < 14 & data$DeltaRank > 0 & data$Aggrement == "true", ]
-subData$MaxQuantPeptLength <- factor(subData$MaxQuantPeptLength, levels = c('8','9','10','11','12','13'))
+data$TopALCScore <- as.double(as.character(data$TopALCScore))
+data$DeltaPScore <- data$DeltaScore/as.double(data$TopALCScore)
 
-topRankedBoxPlot <- ggplot(data=subData, aes(x=MaxQuantPeptLength, y=DeltaScore, fill = as.character(MaxQuantPeptLength))) +
+data$MaxQuantPeptLength <- as.double(as.character(data$MaxQuantPeptLength))
+
+
+subData <- data[data$MaxQuantPeptLength > 7 & data$MaxQuantPeptLength < 16 & data$DeltaRank >= 0 & data$Aggrement == "true", ]
+subData$DeltaRank <- subData$DeltaRank + 1
+subData$MaxQuantPeptLength <- factor(subData$MaxQuantPeptLength, levels = c('8','9','10','11','12','13', '14', '15'))
+
+topRankedBoxPlot <- ggplot(data=subData, aes(x=MaxQuantPeptLength, y=TopALCScore-DeltaScore, fill = as.character(MaxQuantPeptLength))) +
   theme_bw() +
   scale_fill_brewer(palette="Set1") +
   geom_violin(position = "dodge") +
   ggtitle("Agreements in PSM-level between MaxQuant and N-ranked PEAKS") +
   theme(text = element_text(size=15), plot.title = element_text(family = "serif", face = "bold", hjust = 0, size = 15, color = "darkblue"),
         legend.position = "none") +
-  labs(x="Peptide length", y = "Delta de novo score")
+  labs(x="Peptide length", y = "Ranks") +
+  scale_y_continuous(breaks=seq(from=0, to=100, by= 10))
 
 topRankedBoxPlot
 
 nrow(subData)
-nrow(subData[subData$DeltaScore < 5, ])
+nrow(subData[subData$DeltaRank < 4, ])
+for(index in c(1:10)) {
+  print(nrow(subData[subData$DeltaRank == index, ]))
+}
 
 sum(subData$DeltaRank)
-sum(subData[subData$DeltaScore < 5, ]$DeltaRank)
+sum(subData[subData$DeltaScore <= 10, ]$DeltaRank)
+sum(subData[subData$DeltaRank < 5, ]$DeltaRank)
+sum(subData[subData$DeltaScore < 10, ]$DeltaRank)
+sum(subData[subData$DeltaPScore < 0.1, ]$DeltaRank)
 

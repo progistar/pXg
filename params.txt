@@ -1,12 +1,14 @@
 ## Genomic annotation file path
-genomic_annotation_path=C:\\Bioinformatics\\0.Databases\\1.HumanRNAs\\gencode.v19.annotation.sorted.gtf
+genomic_annotation_path=test\gencode.v19.chr1.gtf
 
 ## NGS-read file path
-genomic_sequence_path=C:\Users\progi\Desktop\Projects\pXg\chr1toy.sam
-#gseq=C:\Users\progi\Desktop\Projects\pXg\chr1toy.sub1000.sam
+genomic_sequence_path=test\chr1toy.sam
 
 ## Peptide annotation file path
-peptide_annotation_path=C:\Users\progi\Desktop\Projects\pXg\peptideAnnotationM.txt
+peptide_annotation_path=C:\Users\progi\eclipse-workspace\pXg\test\DeltaScoreFilter\BoundaryCase.txt
+
+## Protein sequence file path
+protein_fasta_path=
 
 ## Output file path
 output_path=C:\Users\progi\Desktop\Projects\pXg\hello.M.gencode19.out
@@ -15,7 +17,7 @@ output_path=C:\Users\progi\Desktop\Projects\pXg\hello.M.gencode19.out
 scan_column_indices=1,2,5
 peptide_column_index=4
 score_column_index=8
-delta_score_threshold=10
+psm_rank=3
 aareg=[A-Z]
 cm=#|@|%
 
@@ -24,4 +26,4 @@ genomic_annotation_partition_size=5000000
 genomic_sequence_partition_size=1000000
 
 ## Systems
-num_threads=2
+num_threads=1
