@@ -334,7 +334,7 @@ public class PxGAnnotation {
 	public void fdrEstimation () {
 		double targetCount = 0;
 		double decoyCount = 0;
-		int cutoffIndex = 0;
+		int fdrCutoffIndex = 0;
 		
 		// Assume that, single PSM per scan.
 		// This is because topScoreFiler only selects single PSM per scan.
@@ -370,7 +370,7 @@ public class PxGAnnotation {
 				BW.newLine();
 				
 				if(fdrRate < Parameters.fdrThreshold) {
-					cutoffIndex = i;
+					fdrCutoffIndex = i;
 				}
 				
 				pBlock.fdrRate = fdrRate;
@@ -384,9 +384,14 @@ public class PxGAnnotation {
 		for(int i=pBlocks.size()-1; i>=0; i--) {
 			PBlock pBlock = pBlocks.get(i);
 			
-			if(i >= cutoffIndex || !pBlock.isTarget) {
+			if(!pBlock.isTarget) {
 				pBlocks.remove(i);
+			} else if(i >= fdrCutoffIndex) {
+				if(!Parameters.showAllAnnotatedPSM) {
+					pBlocks.remove(i);
+				}
 			}
+			
 		}
 	}
 	

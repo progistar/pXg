@@ -69,6 +69,9 @@ public class Parameters {
 	// FDR estimation at PSM level
 	public static double fdrThreshold				=	0.05;
 	
+	// Print all annotated PSMs
+	public static boolean showAllAnnotatedPSM		=	true;
+	
 	// System Parameters
 	public static final String numOfThreads			=	"num_threads".toLowerCase();
 	public static int nThreads						=	1;
