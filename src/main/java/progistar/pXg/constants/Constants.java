@@ -75,6 +75,6 @@ public class Constants {
 	public static final String EVENT_INTRON			=	"intron";
 	public static final String EVENT_FRAMESHIFT		=	"frameshift";
 	public static final String EVENT_PROTEINCODING	=	"proteincoding";
-	public static final String EVENT_AS				=	"alt-spl";
+	public static final String EVENT_AS				=	"alternativesplicing";
 	
 }
