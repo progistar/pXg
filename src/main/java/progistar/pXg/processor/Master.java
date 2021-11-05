@@ -114,6 +114,10 @@ public class Master {
 			});
 			
 			PxGAnnotation pXgA = ResultParser.parseResult(tmpOutputFiles);
+			
+			// removing tmpOutputFiles
+			tmpOutputFiles.forEach(file -> {file.delete();});
+			
 			// filter by pvalue
 			pXgA.filterByPvalueThreshold();
 			// among them, use highest-scored PSM
