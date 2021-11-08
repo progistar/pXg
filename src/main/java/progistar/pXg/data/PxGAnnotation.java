@@ -58,8 +58,8 @@ public class PxGAnnotation {
 		for(int peptLen = Parameters.minPeptLen; peptLen <= Parameters.maxPeptLen; peptLen++) {
 			for(int i=1; i<pValueTable[peptLen].length; i++) {
 				if(pValueTable[peptLen][i] < Parameters.ngsPvalue) {
-					cutoffReads[peptLen] = i;
-					System.out.println("Cutoff for "+peptLen+" aa: "+i);
+					cutoffReads[peptLen] = i-1;
+					System.out.println("Cutoff for "+peptLen+" aa: "+(i-1));
 					break;
 				}
 			}
@@ -78,10 +78,12 @@ public class PxGAnnotation {
 				
 				Iterator<String> keys = (Iterator<String>) xBlocks.keys();
 				int mockCount = 0;
+				
+				// single peptide can be assigned to multiple loci
 				while(keys.hasNext()) {
 					String key = keys.next();
 					XBlock xBlock = xBlocks.get(key);
-					if(xBlock.targetReadCount < cutoffs[pSeq.length()]) {
+					if(xBlock.targetReadCount <= cutoffs[pSeq.length()]) {
 						removeList.add(key);
 					} else {
 						isDecoyPSM.remove(pSeq);
