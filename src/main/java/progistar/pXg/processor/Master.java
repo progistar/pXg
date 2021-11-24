@@ -116,7 +116,7 @@ public class Master {
 			PxGAnnotation pXgA = ResultParser.parseResult(tmpOutputFiles);
 			
 			// removing tmpOutputFiles
-			tmpOutputFiles.forEach(file -> {file.delete();});
+//			tmpOutputFiles.forEach(file -> {file.delete();});
 			
 			pXgA.markTargetPSM();
 			// filter by pvalue

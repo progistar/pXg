@@ -18,26 +18,22 @@ public class SamChr {
 	}
 	
 	public static void main(String[] args) throws IOException {
-		String fileName = args[0];
+		String fileName = "C:\\Users\\progi\\eclipse-workspace\\pXg\\test\\chr1toy.sam";
 		
 		BufferedReader BR = new BufferedReader(new FileReader(fileName));
 		String line = null;
 		
-		Hashtable<String, String> chrs = new Hashtable<String, String>();
-		long totalReads = 0;
+		int count = 1000;
 		while((line = BR.readLine()) != null) {
-			if(line.startsWith("@")) continue;
-			String[] fields = line.split("\\s");
-			String chr = fields[FieldIndex.CHR.value];
-			chrs.put(chr, "");
-			totalReads++;
+			if(line.startsWith("@")) {
+				count--;
+			}
+			
+			System.out.println(line);
+			
+			if(count == 0 ) break;
 		}
 		
 		BR.close();
-		
-		System.out.println(totalReads);
-		chrs.forEach((chr, value) -> {
-			System.out.println(chr);
-		});
 	}
 }

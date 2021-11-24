@@ -51,7 +51,14 @@ public class XBlock {
 	}
 	
 	public static String toNullString () {
-		return "-\t-\t-\t-\t-\t-\t0\t-\t0\t-\t0\t-\t0\t-\t0\t0";
+		return "-\t-\t"
+				+ "-\t-\t"
+				+ "-\t-\t0\t"
+				+ "-\t0\t"
+				+ "-\t0\t"
+				+ "-\t0\t"
+				+ "-\t0\t"
+				+ "0\t0";
 	}
 	
 	public String toFastaIDs () {

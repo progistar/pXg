@@ -44,9 +44,10 @@ public class Decoy  {
 			int relSize = cigar.relativePositions.length;
 			
 			for(int j=relSize-1; j>=0; j--) {
-				cigar.relativePositions[index] = cigar.relativePositions[j];
+				revCigar.relativePositions[index] = cigar.relativePositions[j];
 				index++;
 			}
+			
 		}
 		cigars.add(revCigar);
 		

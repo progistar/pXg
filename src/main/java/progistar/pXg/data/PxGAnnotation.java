@@ -50,7 +50,7 @@ public class PxGAnnotation {
 	 * 
 	 */
 	public void estimatePvalueThreshold () {
-		System.out.print("Calculating p-values...");
+		System.out.println("Calculating p-values...");
 		long startTime = System.currentTimeMillis();
 		
 		double[][] pValueTable = getPvalueTable();
@@ -79,7 +79,7 @@ public class PxGAnnotation {
 					String key = keys.next();
 					XBlock xBlock = xBlocks.get(key);
 					if(xBlock.targetReadCount <= cutoffs[pSeq.length()]) {
-						removeList.add(key);
+//						removeList.add(key);
 					}
 				}
 				
@@ -231,8 +231,8 @@ public class PxGAnnotation {
 				if(xBlocks == null) {
 					// skip
 					
-					//BW.append(pBlock.toString()).append("\t").append(XBlock.toNullString());
-					//BW.newLine();
+//					BW.append(pBlock.toString()).append("\t").append(XBlock.toNullString());
+//					BW.newLine();
 					
 				} else {
 					xBlocks.forEach((pSeq, xBlock) -> {
