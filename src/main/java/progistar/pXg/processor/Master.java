@@ -118,10 +118,11 @@ public class Master {
 			// removing tmpOutputFiles
 			tmpOutputFiles.forEach(file -> {file.delete();});
 			
+			pXgA.markTargetPSM();
 			// filter by pvalue
-			pXgA.filterByPvalueThreshold();
+			pXgA.estimatePvalueThreshold();
 			// among them, use highest-scored PSM
-			pXgA.topScoreFilter();
+//			pXgA.topScoreFilter();
 			// fdr estimation
 			pXgA.fdrEstimation();
 			// filter regions

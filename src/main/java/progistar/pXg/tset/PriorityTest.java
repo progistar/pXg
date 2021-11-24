@@ -23,7 +23,6 @@ public class PriorityTest {
 		
 		PxGAnnotation pXgA = ResultParser.parseResult(tmpOutputFiles);
 		// filter by pvalue
-		pXgA.filterByPvalueThreshold();
 		// among them, use highest-scored PSM
 		pXgA.topScoreFilter();
 		// filter regions

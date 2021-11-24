@@ -76,4 +76,7 @@ public class Constants {
 	public static final String EVENT_PROTEINCODING	=	"proteincoding";
 	public static final String EVENT_AS				=	"alternativesplicing";
 	
+	// PSM Status
+	public static final byte PSM_STATUS_DECOY		=	0;
+	public static final byte PSM_STATUS_TARGET		=	1;
 }

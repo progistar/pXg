@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Iterator;
 
+import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
 
 public class PxGAnnotation {
@@ -48,7 +49,7 @@ public class PxGAnnotation {
 	 * Filter regions below than user-specific p-value. <br>
 	 * 
 	 */
-	public void filterByPvalueThreshold () {
+	public void estimatePvalueThreshold () {
 		System.out.print("Calculating p-values...");
 		long startTime = System.currentTimeMillis();
 		
@@ -67,17 +68,11 @@ public class PxGAnnotation {
 		
 		final int[] cutoffs = cutoffReads;
 		ArrayList<String> zeroSizeList = new ArrayList<String>();
-		Hashtable<String, Boolean> isDecoyPSM = new Hashtable<String, Boolean>();
 		this.xBlockMapper.forEach((pSeq, xBlocks) -> {
 			if(xBlocks.size() != 0) {
-
-				// check as decoy PSM
-				isDecoyPSM.put(pSeq, true);
-				
 				ArrayList<String> removeList = new ArrayList<String>();
 				
 				Iterator<String> keys = (Iterator<String>) xBlocks.keys();
-				int mockCount = 0;
 				
 				// single peptide can be assigned to multiple loci
 				while(keys.hasNext()) {
@@ -85,16 +80,10 @@ public class PxGAnnotation {
 					XBlock xBlock = xBlocks.get(key);
 					if(xBlock.targetReadCount <= cutoffs[pSeq.length()]) {
 						removeList.add(key);
-					} else {
-						isDecoyPSM.remove(pSeq);
 					}
-					
-					mockCount += xBlock.mockReadCount;
 				}
 				
-				if(mockCount == 0) isDecoyPSM.remove(pSeq);
-				
-				// filter out
+				// filter out peptide with NGS count below than cut-off
 				removeList.forEach(key -> xBlocks.remove(key));
 				
 				if(xBlocks.size() == 0) {
@@ -107,26 +96,8 @@ public class PxGAnnotation {
 		// if all xBlocks are discarded?
 		zeroSizeList.forEach(key -> this.xBlockMapper.remove(key));
 		
-		ArrayList<PBlock> pBlocks = PeptideAnnotation.pBlocks;
-		
-		// update pBlocks!
-		for(int i=pBlocks.size()-1; i>=0; i--) {
-			PBlock pBlock = pBlocks.get(i);
-			// peptide sequence without I/L consideration
-			String key = pBlock.getPeptideSequence();
-			
-			Hashtable<String, XBlock> xBlocks = this.xBlockMapper.get(key);
-			if(xBlocks == null) {
-				if(isDecoyPSM.get(key) != null) {
-					pBlock.isTarget = false;
-				} else {
-					// else, this cannot be determined as decoy PSM
-					pBlocks.remove(i);
-				}
-			} else {
-				pBlock.isTarget = true;
-			}
-		}
+		// finally,
+		// xBlockMapper contains peptide with significantly-mapped RNA reads.
 		
 		long endTime = System.currentTimeMillis();
 		System.out.println("\tElapsed time: "+((endTime-startTime)/1000) + " sec");
@@ -312,22 +283,54 @@ public class PxGAnnotation {
 			Collections.sort(scanPBlocks);
 			
 			// topScore is determined by target or decoy status
-			// note that:
-			// target means PSMs passing RNA-cutoff threshold
-			boolean isTarget = false;
+			int bestIndex = 0;
 			for(int i=0; i<scanPBlocks.size(); i++) {
-				if(scanPBlocks.get(i).isTarget) {
+				
+				byte psmStatus = scanPBlocks.get(i).psmStatus;
+				
+				if(psmStatus == Constants.PSM_STATUS_TARGET) {
 					//select top score from targets
-					pBlocks.add(scanPBlocks.get(i));
-					isTarget = true;
+					bestIndex = i;
 					break;
+				} else {
+					// worse score is selected to decoy PSMs
+					bestIndex = i;
 				}
 			}
 			
-			// if there is no target, then add the highest scored PSM
-			if(!isTarget) pBlocks.add(scanPBlocks.get(0));
+			pBlocks.add(scanPBlocks.get(bestIndex));
 			
 		});
+	}
+	/**
+	 * Marking target PSM <br>
+	 * 
+	 */
+	public void markTargetPSM () {
+		long startTime = System.currentTimeMillis();
+		
+		ArrayList<PBlock> pBlocks = PeptideAnnotation.pBlocks;
+		
+		// update pBlocks!
+		for(int i=pBlocks.size()-1; i>=0; i--) {
+			PBlock pBlock = pBlocks.get(i);
+			// peptide sequence without I/L consideration
+			String key = pBlock.getPeptideSequence();
+			
+			Hashtable<String, XBlock> xBlocks = this.xBlockMapper.get(key);
+			if(xBlocks != null) {
+				
+				xBlocks.forEach((key_, xBlock) -> {
+					if(xBlock.targetReadCount > 0) {
+						pBlock.psmStatus = Constants.PSM_STATUS_TARGET;
+					}
+				});
+			}
+		}
+		
+		long endTime = System.currentTimeMillis();
+		System.out.println("\tElapsed time: "+((endTime-startTime)/1000) + " sec");
+		
 	}
 	
 	/**
@@ -356,11 +359,11 @@ public class PxGAnnotation {
 				
 				PBlock pBlock = pBlocks.get(i);
 				
-				if(pBlock.isTarget) {
+				if(pBlock.psmStatus == Constants.PSM_STATUS_TARGET) {
 					targetCount++;
 					BW.append("target");
 				}
-				else {
+				else if(pBlock.psmStatus == Constants.PSM_STATUS_DECOY){
 					decoyCount++;
 					BW.append("decoy");
 				}
@@ -387,7 +390,7 @@ public class PxGAnnotation {
 		for(int i=pBlocks.size()-1; i>=0; i--) {
 			PBlock pBlock = pBlocks.get(i);
 			
-			if(!pBlock.isTarget) {
+			if(pBlock.psmStatus != Constants.PSM_STATUS_TARGET) {
 				pBlocks.remove(i);
 			} else if(i >= fdrCutoffIndex) {
 				if(!Parameters.showAllAnnotatedPSM) {

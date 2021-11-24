@@ -51,7 +51,7 @@ public class Parameters {
 
 	
 	public static final String PSM_RANK_THRESHOLD	=	"psm_rank".toLowerCase();
-	public static int psmRank						=	3;
+	public static int psmRank						=	10;
 	
 	public static final String pParserRegExr		=	"aareg".toLowerCase();
 	public static String peptideParserRegExr		=	"[A-Z]"; // read sequence matched to the RegExr.
@@ -64,10 +64,10 @@ public class Parameters {
 	public static String commentMarker				=	"#|@|%"; // if line starts with the pattern, the line will be skipped during parsing the file.
 	
 	// Significant NGS-read mapping
-	public static double ngsPvalue					=	0.05;
+	public static double ngsPvalue					=	1;
 	
 	// FDR estimation at PSM level
-	public static double fdrThreshold				=	0.05;
+	public static double fdrThreshold				=	100;
 	
 	// Print all annotated PSMs
 	public static boolean showAllAnnotatedPSM		=	true;
