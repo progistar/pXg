@@ -54,7 +54,6 @@ public class Constants {
 	// RNA-Seq decoy
 	public static final byte DECOY_NONE			=	0;
 	public static final byte DECOY_REVERSE		=	1;
-	public static final byte DECOY_SHUFFLE		=	2;
 	
 	// TASKS
 	public static final int TASK_G_MAP				=	1;

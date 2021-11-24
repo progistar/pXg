@@ -26,14 +26,7 @@ public class Decoy  {
 		for(Cigar cigar : gSeq.cigars) {
 			Cigar revCigar = new Cigar(cigar);
 			
-			
-			// make reverse sequence
-			if(decoyMethod == Constants.DECOY_REVERSE) {
-				revCigar.nucleotides = getReverseSequence(cigar.nucleotides);
-			} else if(decoyMethod == Constants.DECOY_SHUFFLE) {
-				revCigar.nucleotides = getShuffleSequence(cigar.nucleotides);
-			}
-			
+			revCigar.nucleotides = getReverseSequence(cigar.nucleotides);
 			cigars.add(revCigar);
 		}
 		
