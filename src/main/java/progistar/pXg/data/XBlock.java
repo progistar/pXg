@@ -7,7 +7,7 @@ import progistar.pXg.utils.Priority;
 
 public class XBlock {
 	public int targetReadCount		=	0;
-	public int decoyReadCount		=	0;
+	public int mockReadCount		=	0;
 	public char strand				=	'+';
 	public String genomicLocus		=	null;
 	public String mutations 		=	null;
@@ -46,7 +46,8 @@ public class XBlock {
 				+"\t"+geneNames+"\t"+geneNameCount
 				+"\t"+events+"\t"+eventCount
 				+"\t"+fastaIDs+"\t"+fastaIDCount
-				+"\t"+targetReadCount;
+				+"\t"+targetReadCount
+				+"\t"+mockReadCount;
 	}
 	
 	public static String toNullString () {

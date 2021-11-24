@@ -36,10 +36,10 @@ public class PxGAnnotation {
 			thisXBlock = xBlock;
 			xBlocks.put(key, thisXBlock);
 		} else {
-			thisXBlock.decoyReadCount += xBlock.decoyReadCount;
+			thisXBlock.mockReadCount += xBlock.mockReadCount;
 			thisXBlock.targetReadCount += xBlock.targetReadCount;
 			
-			maxNGSreadCount = Math.max(thisXBlock.decoyReadCount, maxNGSreadCount);
+			maxNGSreadCount = Math.max(thisXBlock.mockReadCount, maxNGSreadCount);
 			maxNGSreadCount = Math.max(thisXBlock.targetReadCount, maxNGSreadCount);
 		}
 	}
@@ -89,7 +89,7 @@ public class PxGAnnotation {
 						isDecoyPSM.remove(pSeq);
 					}
 					
-					mockCount += xBlock.decoyReadCount;
+					mockCount += xBlock.mockReadCount;
 				}
 				
 				if(mockCount == 0) isDecoyPSM.remove(pSeq);
@@ -146,7 +146,7 @@ public class PxGAnnotation {
 		
 		this.xBlockMapper.forEach((pSeq, xBlocks) -> {
 			xBlocks.forEach((key, xBlock) -> {
-				decoyTable[pSeq.length()][xBlock.decoyReadCount]++;
+				decoyTable[pSeq.length()][xBlock.mockReadCount]++;
 				targetTable[pSeq.length()][xBlock.targetReadCount]++;
 			});
 		});
@@ -245,6 +245,7 @@ public class PxGAnnotation {
 			BW.append("FastaIDs").append("\t");
 			BW.append("FastaIDCount").append("\t");
 			BW.append("Reads").append("\t");
+			BW.append("mockReads").append("\t");
 			BW.append("FDR");
 			BW.newLine();
 			

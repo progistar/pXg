@@ -54,7 +54,7 @@ public class ResultParser {
 						}
 						
 						if(isDecoy) {
-							xBlock.decoyReadCount++;
+							xBlock.mockReadCount++;
 						} else {
 							xBlock.targetReadCount++;
 						}

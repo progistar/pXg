@@ -17,18 +17,4 @@ public class Cigar {
 		this.markerSize = markerSize;
 		this.operation = operation;
 	}
-	
-	/**
-	 * Deep copy.<br>
-	 * 
-	 * @param cigar
-	 */
-	public Cigar (Cigar cigar) {
-		this.markerSize = cigar.markerSize;
-		this.operation = cigar.operation;
-		this.nucleotides = cigar.nucleotides;
-		// relative position and annotations are shallow copied.
-		this.relativePositions = cigar.relativePositions;
-		this.annotations = cigar.annotations;
-	}
 }
