@@ -79,7 +79,10 @@ public class PxGAnnotation {
 					String key = keys.next();
 					XBlock xBlock = xBlocks.get(key);
 					if(xBlock.targetReadCount <= cutoffs[pSeq.length()]) {
-//						removeList.add(key);
+						// if debug mode turns on, do not filter out annotations by reads
+						if(Parameters.debugMode) {
+							removeList.add(key);
+						}
 					}
 				}
 				
@@ -228,13 +231,7 @@ public class PxGAnnotation {
 				Hashtable<String, XBlock> xBlocks = this.xBlockMapper.get(key);
 				
 				// there is no available mapping.
-				if(xBlocks == null) {
-					// skip
-					
-//					BW.append(pBlock.toString()).append("\t").append(XBlock.toNullString());
-//					BW.newLine();
-					
-				} else {
+				if(xBlocks != null) {
 					xBlocks.forEach((pSeq, xBlock) -> {
 						try {
 							// assign fastaIDs.
@@ -260,6 +257,9 @@ public class PxGAnnotation {
 	 * 
 	 */
 	public void topScoreFilter () {
+		// if debug-mode turns on, print all of PSMs regardless of filtering
+		if(Parameters.debugMode) return;
+		
 		Hashtable<String, ArrayList<PBlock>> pBlocksByScan = new Hashtable<String, ArrayList<PBlock>>();
 		ArrayList<PBlock> pBlocks = PeptideAnnotation.pBlocks;
 		
@@ -393,7 +393,7 @@ public class PxGAnnotation {
 			if(pBlock.psmStatus != Constants.PSM_STATUS_TARGET) {
 				pBlocks.remove(i);
 			} else if(i >= fdrCutoffIndex) {
-				if(!Parameters.showAllAnnotatedPSM) {
+				if(!Parameters.debugMode) {
 					pBlocks.remove(i);
 				}
 			}

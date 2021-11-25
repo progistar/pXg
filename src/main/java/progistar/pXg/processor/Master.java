@@ -122,7 +122,7 @@ public class Master {
 			// filter by pvalue
 			pXgA.estimatePvalueThreshold();
 			// among them, use highest-scored PSM
-//			pXgA.topScoreFilter();
+			pXgA.topScoreFilter();
 			// fdr estimation
 			pXgA.fdrEstimation();
 			// filter regions

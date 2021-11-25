@@ -70,7 +70,7 @@ public class Parameters {
 	public static double fdrThreshold				=	100;
 	
 	// Print all annotated PSMs
-	public static boolean showAllAnnotatedPSM		=	true;
+	public static boolean debugMode					=	false;
 	
 	// System Parameters
 	public static final String numOfThreads			=	"num_threads".toLowerCase();
