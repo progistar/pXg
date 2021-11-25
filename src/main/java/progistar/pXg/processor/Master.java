@@ -229,7 +229,7 @@ public class Master {
 					tasks[i].taskID = ++Master.taskCount;
 					tasks[i].taskType = Constants.TASK_G_MAP;
 					
-					System.out.println(tasks[i].description());
+//					System.out.println(tasks[i].description());
 				}
 			}
 		}
