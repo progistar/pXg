@@ -22,7 +22,7 @@ public class Parameters {
 	public static String psmStatFilePath				=	"";
 	
 	public static final String DECOY_METHOD			=	"reverse".toLowerCase();
-	public static byte	decoys						=	Constants.DECOY_REVERSE;
+	public static byte	mocks						=	Constants.MOCK_REVERSE;
 	
 	// GTF partition size
 	public static final String GENOMIC_ANNOTATION_PARTITION_SIZE		=	"genomic_annotatino_partition_size".toLowerCase();

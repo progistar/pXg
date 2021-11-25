@@ -14,7 +14,7 @@ import progistar.pXg.data.parser.GTFParser;
 import progistar.pXg.data.parser.PeptideParser;
 import progistar.pXg.data.parser.ResultParser;
 import progistar.pXg.data.parser.SamParser;
-import progistar.pXg.decoy.Decoy;
+import progistar.pXg.decoy.Mock;
 import progistar.pXg.utils.Codon;
 
 public class Master {
@@ -213,8 +213,8 @@ public class Master {
 			for(int i=0; i<partitionInSize; i++) {
 				// target NGS-read
 				tasks[taskIndex].genomicSequences.add(gSeqPartitionIn.get(i));
-				// decoy NGS-read
-				tasks[taskIndex].genomicSequences.add(Decoy.makeDecoy(gSeqPartitionIn.get(i), Parameters.decoys));
+				// mock NGS-read
+				tasks[taskIndex].genomicSequences.add(Mock.makeMockRead(gSeqPartitionIn.get(i), Parameters.mocks));
 				
 				taskIndex++;
 				if(taskIndex == tasks.length) taskIndex = 0;
