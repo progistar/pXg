@@ -23,6 +23,7 @@ public class Parameters {
 	
 	public static final String DECOY_METHOD			=	"reverse".toLowerCase();
 	public static byte	mocks						=	Constants.MOCK_REVERSE;
+	public static byte	mockPolicy				=	Constants.MOCK_ALL;
 	
 	// GTF partition size
 	public static final String GENOMIC_ANNOTATION_PARTITION_SIZE		=	"genomic_annotatino_partition_size".toLowerCase();
@@ -64,13 +65,13 @@ public class Parameters {
 	public static String commentMarker				=	"#|@|%"; // if line starts with the pattern, the line will be skipped during parsing the file.
 	
 	// Significant NGS-read mapping
-	public static double ngsPvalue					=	1;
+	public static double ngsPvalue					=	0.05;
 	
 	// FDR estimation at PSM level
-	public static double fdrThreshold				=	100;
+	public static double fdrThreshold				=	0.05;
 	
 	// Print all annotated PSMs
-	public static boolean debugMode					=	false;
+	public static boolean debugMode					=	true;
 	
 	// System Parameters
 	public static final String numOfThreads			=	"num_threads".toLowerCase();

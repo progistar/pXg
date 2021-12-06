@@ -36,7 +36,7 @@ public class XBlock {
 		int geneIDCount = geneIDs.split("\\|").length;
 		int geneNameCount = geneNames.split("\\|").length;
 		int eventCount = events.split("\\|").length;
-		int fastaIDCount = this.fastaIDs.length;
+		int fastaIDCount = fastaIDs.split("\\|").length;
 		
 		return peptideSequence +"\t"+genomicLocus+"\t"
 				+strand+"\t"+genomicSequence
@@ -67,9 +67,13 @@ public class XBlock {
 		}
 		
 		StringBuilder fasta= new StringBuilder();
+		Hashtable<String, Boolean> isDuplicated = new Hashtable<String, Boolean>();
 		
 		for(String fastaID : this.fastaIDs) {
-			fasta.append("|").append(fastaID);
+			if(isDuplicated.get(fastaID) == null) {
+				fasta.append("|").append(fastaID);
+				isDuplicated.put(fastaID, true);
+			}
 		}
 		
 		return fasta.substring(1).toString();

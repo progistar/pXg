@@ -14,7 +14,7 @@ import progistar.pXg.data.parser.GTFParser;
 import progistar.pXg.data.parser.PeptideParser;
 import progistar.pXg.data.parser.ResultParser;
 import progistar.pXg.data.parser.SamParser;
-import progistar.pXg.decoy.Mock;
+import progistar.pXg.mock.Mock;
 import progistar.pXg.utils.Codon;
 
 public class Master {
@@ -118,6 +118,9 @@ public class Master {
 			// removing tmpOutputFiles
 //			tmpOutputFiles.forEach(file -> {file.delete();});
 			
+			// balancing mock read count
+			pXgA.mockReadAssignPolicy();
+			// marking target PSMs
 			pXgA.markTargetPSM();
 			// filter by pvalue
 			pXgA.estimatePvalueThreshold();
@@ -214,7 +217,9 @@ public class Master {
 				// target NGS-read
 				tasks[taskIndex].genomicSequences.add(gSeqPartitionIn.get(i));
 				// mock NGS-read
-				tasks[taskIndex].genomicSequences.add(Mock.makeMockRead(gSeqPartitionIn.get(i), Parameters.mocks));
+				if(Parameters.mocks != Constants.MOCK_NONE) {
+					tasks[taskIndex].genomicSequences.add(Mock.makeMockRead(gSeqPartitionIn.get(i), Parameters.mocks));
+				}
 				
 				taskIndex++;
 				if(taskIndex == tasks.length) taskIndex = 0;

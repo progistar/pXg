@@ -51,9 +51,13 @@ public class Constants {
 	public static final byte FORWARD_STRAND_READS	=	0;
 	public static final byte REVERSE_STRAND_READS	=	1;
 	
-	// RNA-Seq decoy
+	// RNA-Seq Mock
 	public static final byte MOCK_NONE			=	0;
 	public static final byte MOCK_REVERSE		=	1;
+	
+	public static final byte MOCK_ALL			=	0; // use all multiply-assigned read count
+	public static final byte MOCK_MAX_ONE		=	1; // use maximum one as a representative
+	public static final byte MOCK_MEAN			=	2; // use mean as a representative
 	
 	// TASKS
 	public static final int TASK_G_MAP				=	1;
@@ -79,4 +83,5 @@ public class Constants {
 	// PSM Status
 	public static final byte PSM_STATUS_DECOY		=	0;
 	public static final byte PSM_STATUS_TARGET		=	1;
+	
 }

@@ -80,7 +80,7 @@ public class PxGAnnotation {
 					XBlock xBlock = xBlocks.get(key);
 					if(xBlock.targetReadCount <= cutoffs[pSeq.length()]) {
 						// if debug mode turns on, do not filter out annotations by reads
-						if(Parameters.debugMode) {
+						if(!Parameters.debugMode) {
 							removeList.add(key);
 						}
 					}
@@ -252,6 +252,77 @@ public class PxGAnnotation {
 		}
 	}
 	
+	public void mockReadAssignPolicy () {
+		byte policy = Parameters.mockPolicy;
+		
+		// default behavior
+		if(policy == Constants.MOCK_ALL) {
+			return;
+		} else {
+			
+			ArrayList<PBlock> pBlocks = PeptideAnnotation.pBlocks;
+			
+			// update mock reads following policy
+			for(int i=pBlocks.size()-1; i>=0; i--) {
+				PBlock pBlock = pBlocks.get(i);
+				// peptide sequence without I/L consideration
+				String key = pBlock.getPeptideSequence();
+				
+				float nonZeroMockReadCount = 0;
+				float mean = 0;
+				int max = 0;
+				
+				Hashtable<String, XBlock> xBlocks = this.xBlockMapper.get(key);
+				if(xBlocks != null) {
+					
+					if(xBlocks.size() == 0) continue;
+					// calculate mean and max
+					Iterator<String> xBlockKeys = (Iterator<String>) xBlocks.keys();
+					while(xBlockKeys.hasNext()) {
+						String xBlockKey = xBlockKeys.next();
+						XBlock xBlock = xBlocks.get(xBlockKey);
+						
+						if(xBlock.mockReadCount > 0) {
+							nonZeroMockReadCount++;
+							mean += xBlock.mockReadCount;
+							max = Math.max(xBlock.mockReadCount, max);
+						}
+					}
+					
+					if(nonZeroMockReadCount != 0) {
+						mean /= nonZeroMockReadCount;
+					}
+					
+					if(max != 0) {
+						// assign max or mean by policy
+						// note that:
+						// we do not need preserve consistency between read-count and genomic locus
+						// this is because mock reads are such a virtual read count.
+						xBlockKeys = (Iterator<String>) xBlocks.keys();
+						int index = 0;
+						while(xBlockKeys.hasNext()) {
+							String xBlockKey = xBlockKeys.next();
+							XBlock xBlock = xBlocks.get(xBlockKey);
+							
+							if(xBlock.mockReadCount > 0) {
+								if(index == 0) {
+									if(policy == Constants.MOCK_MAX_ONE) {
+										xBlock.mockReadCount = max;
+									} else if(policy == Constants.MOCK_MEAN) {
+										xBlock.mockReadCount = Math.round(mean);
+									}
+								} else {
+									xBlock.mockReadCount = 0;
+								}
+								index++;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
 	/**
 	 * select top-scored PSM only. <br>
 	 * 
@@ -299,7 +370,6 @@ public class PxGAnnotation {
 			}
 			
 			pBlocks.add(scanPBlocks.get(bestIndex));
-			
 		});
 	}
 	/**
@@ -325,6 +395,7 @@ public class PxGAnnotation {
 						pBlock.psmStatus = Constants.PSM_STATUS_TARGET;
 					}
 				});
+				
 			}
 		}
 		
@@ -391,7 +462,9 @@ public class PxGAnnotation {
 			PBlock pBlock = pBlocks.get(i);
 			
 			if(pBlock.psmStatus != Constants.PSM_STATUS_TARGET) {
-				pBlocks.remove(i);
+				if(!Parameters.debugMode) {
+					pBlocks.remove(i);
+				}
 			} else if(i >= fdrCutoffIndex) {
 				if(!Parameters.debugMode) {
 					pBlocks.remove(i);

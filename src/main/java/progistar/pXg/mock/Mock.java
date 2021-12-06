@@ -1,4 +1,4 @@
-package progistar.pXg.decoy;
+package progistar.pXg.mock;
 
 import java.util.ArrayList;
 
