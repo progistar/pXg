@@ -457,7 +457,7 @@ public class PxGAnnotation {
 			
 		}
 		
-		// remove below than fdr cutoff
+		// remove below than fdr cutoff or ngs-cutoff
 		for(int i=pBlocks.size()-1; i>=0; i--) {
 			PBlock pBlock = pBlocks.get(i);
 			
