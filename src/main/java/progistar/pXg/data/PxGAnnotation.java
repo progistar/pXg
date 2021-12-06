@@ -128,7 +128,7 @@ public class PxGAnnotation {
 		// calculate cumulative decoy & target distribution
 		try {
 			BufferedWriter BW = new BufferedWriter(new FileWriter(Parameters.ngsStatFilePath));
-			BW.append("PeptideLength\tReadCount\tTarget\tDecoy");
+			BW.append("PeptideLength\tReadCount\tExperiment\tMock");
 			BW.newLine();
 			for(int peptLen = Parameters.minPeptLen; peptLen <= Parameters.maxPeptLen; peptLen++) {
 				BW.append(peptLen+"\t"+(decoyTable[peptLen].length-1)+"\t"+targetTable[peptLen][decoyTable[peptLen].length-1]+"\t"+decoyTable[peptLen][decoyTable[peptLen].length-1]);
@@ -155,11 +155,11 @@ public class PxGAnnotation {
 				pValueTable[peptLen][i] = decoyTable[peptLen][i] / decoyTable[peptLen][0];
 			}
 		}
-		
+		/*
 		for(int peptLen = Parameters.minPeptLen; peptLen <= Parameters.maxPeptLen; peptLen++) {
-			System.out.println(peptLen+"aa peptides: "+targetTable[peptLen][1]+" targets  "+decoyTable[peptLen][1]+" decoys");
+			System.out.println(peptLen+"aa peptides: "+targetTable[peptLen][0]+" for experiment,  "+decoyTable[peptLen][0]+" for mock");
 		}
-		
+		*/
 		
 		return pValueTable;
 	}
