@@ -134,7 +134,7 @@ public class PxGAnnotation {
 				BW.append(peptLen+"\t"+(decoyTable[peptLen].length-1)+"\t"+targetTable[peptLen][decoyTable[peptLen].length-1]+"\t"+decoyTable[peptLen][decoyTable[peptLen].length-1]);
 				BW.newLine();
 				
-				for(int i=decoyTable[peptLen].length-2; i>0; i--) {
+				for(int i=decoyTable[peptLen].length-2; i>=0; i--) {
 					BW.append(peptLen+"\t"+i+"\t"+targetTable[peptLen][i]+"\t"+decoyTable[peptLen][i]);
 					BW.newLine();
 					
@@ -149,10 +149,10 @@ public class PxGAnnotation {
 		
 		// calculate empirical p-value
 		for(int peptLen = Parameters.minPeptLen; peptLen <= Parameters.maxPeptLen; peptLen++) {
-			if(decoyTable[peptLen][1] == 0) continue;
+			if(decoyTable[peptLen][0] == 0) continue;
 			
-			for(int i=1; i<pValueTable[peptLen].length; i++) {
-				pValueTable[peptLen][i] = decoyTable[peptLen][i] / decoyTable[peptLen][1];
+			for(int i=0; i<pValueTable[peptLen].length; i++) {
+				pValueTable[peptLen][i] = decoyTable[peptLen][i] / decoyTable[peptLen][0];
 			}
 		}
 		
