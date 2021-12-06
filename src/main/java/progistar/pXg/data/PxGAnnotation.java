@@ -364,7 +364,7 @@ public class PxGAnnotation {
 					bestIndex = i;
 					break;
 				} else {
-					// worse score is selected to decoy PSMs
+					// worst score is selected to decoy PSMs
 					bestIndex = i;
 				}
 			}
@@ -395,7 +395,6 @@ public class PxGAnnotation {
 						pBlock.psmStatus = Constants.PSM_STATUS_TARGET;
 					}
 				});
-				
 			}
 		}
 		

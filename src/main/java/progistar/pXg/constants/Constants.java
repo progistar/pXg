@@ -82,6 +82,6 @@ public class Constants {
 	
 	// PSM Status
 	public static final byte PSM_STATUS_DECOY		=	0;
-	public static final byte PSM_STATUS_TARGET		=	1;
-	
+	public static final byte PSM_STATUS_ENTRAPMENT	=	1;
+
 }
