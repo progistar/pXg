@@ -355,6 +355,7 @@ public class PxGAnnotation {
 			
 			// topScore is determined by target or decoy status
 			int bestIndex = 0;
+			byte bestStatus = Constants.PSM_STATUS_RANDOM;
 			for(int i=0; i<scanPBlocks.size(); i++) {
 				
 				byte psmStatus = scanPBlocks.get(i).psmStatus;
@@ -362,9 +363,13 @@ public class PxGAnnotation {
 				if(psmStatus == Constants.PSM_STATUS_TARGET) {
 					//select top score from targets
 					bestIndex = i;
+					bestStatus = psmStatus;
 					break;
-				} else {
-					// worst score is selected to decoy PSMs
+				} else if(psmStatus == Constants.PSM_STATUS_DECOY && psmStatus > bestStatus) {
+					bestStatus = psmStatus;
+					bestIndex = i;
+				} else if(bestStatus == Constants.PSM_STATUS_RANDOM){
+					// worst score is selected to random PSMs
 					bestIndex = i;
 				}
 			}
@@ -392,7 +397,11 @@ public class PxGAnnotation {
 				
 				xBlocks.forEach((key_, xBlock) -> {
 					if(xBlock.targetReadCount > 0) {
-						pBlock.psmStatus = Constants.PSM_STATUS_TARGET;
+						pBlock.psmStatus = Constants.PSM_STATUS_TARGET > pBlock.psmStatus ? Constants.PSM_STATUS_TARGET : pBlock.psmStatus;
+					} 
+					// entrapment psms
+					else if(xBlock.mockReadCount > 0) {
+						pBlock.psmStatus = Constants.PSM_STATUS_DECOY > pBlock.psmStatus ? Constants.PSM_STATUS_DECOY : pBlock.psmStatus;
 					}
 				});
 			}
@@ -409,6 +418,7 @@ public class PxGAnnotation {
 	 */
 	public void fdrEstimation () {
 		double targetCount = 0;
+		double randomCount = 0;
 		double decoyCount = 0;
 		int fdrCutoffIndex = 0;
 		
@@ -422,7 +432,7 @@ public class PxGAnnotation {
 		
 		try {
 			BufferedWriter BW = new BufferedWriter(new FileWriter(Parameters.psmStatFilePath));
-			BW.append("Class\tScore\tFDR");
+			BW.append("Class\tScore\tFDR\tTargetCount\tDecoyCount\tRandomCount");
 			BW.newLine();
 			for(int i=0; i<size; i++) {
 				double fdrRate = 1.0;
@@ -433,16 +443,20 @@ public class PxGAnnotation {
 					targetCount++;
 					BW.append("target");
 				}
-				else if(pBlock.psmStatus == Constants.PSM_STATUS_DECOY){
+				else if(pBlock.psmStatus == Constants.PSM_STATUS_RANDOM){
+					randomCount++;
+					BW.append("random");
+				}
+				else if(pBlock.psmStatus == Constants.PSM_STATUS_DECOY) {
 					decoyCount++;
 					BW.append("decoy");
 				}
 				
-				if(targetCount != 0) {
-					fdrRate = decoyCount/targetCount;
+				if(targetCount != 0 || decoyCount != 0) {
+					fdrRate = (randomCount*0.5 + decoyCount)/(targetCount+randomCount*0.5);
 				}
 				
-				BW.append("\t"+pBlock.score+"\t"+fdrRate);
+				BW.append("\t"+pBlock.score+"\t"+fdrRate+"\t"+targetCount+"\t"+decoyCount+"\t"+randomCount);
 				BW.newLine();
 				
 				if(fdrRate < Parameters.fdrThreshold) {

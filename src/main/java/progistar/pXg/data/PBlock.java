@@ -13,7 +13,7 @@ public class PBlock implements Comparable<PBlock> {
 	
 	public String[] fastaIDs;
 	public double score;
-	public byte psmStatus = Constants.PSM_STATUS_DECOY;
+	public byte psmStatus = Constants.PSM_STATUS_RANDOM;
 	public double fdrRate;
 	// after mapping
 	// key: peptide with I!=L
