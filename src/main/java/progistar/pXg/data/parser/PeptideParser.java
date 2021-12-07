@@ -68,15 +68,6 @@ public class PeptideParser {
 					}
 					
 					PBlock pBlock = new PBlock(record, pSeq.toString());
-					String id = pBlock.getScanID();
-					Integer rank = ranks.get(id);
-					if(rank == null) {
-						rank = 0;
-						ranks.put(id, rank);
-					}
-					// assign rank
-					pBlock.rank = ++rank;
-					ranks.put(id, rank);
 					
 					PeptideAnnotation.pBlocks.add(pBlock);
 					pSeq.setLength(0);

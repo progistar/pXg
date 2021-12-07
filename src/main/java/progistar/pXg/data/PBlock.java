@@ -17,7 +17,7 @@ public class PBlock implements Comparable<PBlock> {
 	public double fdrRate;
 	// after mapping
 	// key: peptide with I!=L
-	public int rank;
+	public int rank = -1;
 	
 	public Hashtable<String, XBlock> xBlocks = new Hashtable<String, XBlock>();
 	

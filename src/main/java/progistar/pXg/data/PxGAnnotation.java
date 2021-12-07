@@ -360,6 +360,8 @@ public class PxGAnnotation {
 			for(int i=0; i<scanPBlocks.size(); i++) {
 				
 				byte psmStatus = scanPBlocks.get(i).psmStatus;
+				// assign rank
+				scanPBlocks.get(i).rank = (i+1);
 				
 				if(psmStatus == Constants.PSM_STATUS_TARGET) {
 					//select top score from targets
