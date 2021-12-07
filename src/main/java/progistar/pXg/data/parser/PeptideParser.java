@@ -76,6 +76,7 @@ public class PeptideParser {
 					}
 					// assign rank
 					pBlock.rank = ++rank;
+					ranks.put(id, rank);
 					
 					PeptideAnnotation.pBlocks.add(pBlock);
 					pSeq.setLength(0);

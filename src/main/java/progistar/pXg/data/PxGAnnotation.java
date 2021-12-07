@@ -432,40 +432,86 @@ public class PxGAnnotation {
 		int size = pBlocks.size();
 		
 		try {
-			BufferedWriter BW = new BufferedWriter(new FileWriter(Parameters.psmStatFilePath));
-			BW.append("Class\tScore\tFDR\tTargetCount\tDecoyCount\tRandomCount");
-			BW.newLine();
+			ArrayList<Double> scores = new ArrayList<Double>();
+			Hashtable<Double, Boolean> scoreList = new Hashtable<Double, Boolean>();
+			Hashtable<Double, Double> targetCounts = new Hashtable<Double, Double>();
+			Hashtable<Double, Double> decoyCounts = new Hashtable<Double, Double>();
+			Hashtable<Double, Double> randomCounts = new Hashtable<Double, Double>();
+			
 			for(int i=0; i<size; i++) {
 				double fdrRate = 1.0;
 				
 				PBlock pBlock = pBlocks.get(i);
+				byte case_ = pBlock.psmStatus;
+				double score = pBlock.score;
+				if(scoreList.get(score) == null) {
+					scores.add(score);
+					scoreList.put(score, true);
+				}
 				
-				if(pBlock.psmStatus == Constants.PSM_STATUS_TARGET) {
+				if(case_ == Constants.PSM_STATUS_TARGET) {
 					targetCount++;
-					BW.append("target");
+					Double count = targetCounts.get(score);
+					if(count == null) {
+						count = 0.0;
+					}
+					targetCounts.put(score, count);
+					count++;
 				}
-				else if(pBlock.psmStatus == Constants.PSM_STATUS_RANDOM){
+				// NA (Not Assigned)
+				else if(case_ == Constants.PSM_STATUS_RANDOM){
 					randomCount++;
-					BW.append("random");
+					Double count = randomCounts.get(score);
+					if(count == null) {
+						count = 0.0;
+					}
+					randomCounts.put(score, count);
+					count++;
 				}
-				else if(pBlock.psmStatus == Constants.PSM_STATUS_DECOY) {
+				else if(case_ == Constants.PSM_STATUS_DECOY) {
 					decoyCount++;
-					BW.append("decoy");
+					Double count = decoyCounts.get(score);
+					if(count == null) {
+						count = 0.0;
+					}
+					count++;
+					decoyCounts.put(score, count);
 				}
 				
 				if(targetCount != 0 || decoyCount != 0) {
 					fdrRate = (randomCount*0.5 + decoyCount)/(targetCount+randomCount*0.5);
 				}
-				
-				BW.append("\t"+pBlock.score+"\t"+fdrRate+"\t"+targetCount+"\t"+decoyCount+"\t"+randomCount);
-				BW.newLine();
-				
 				if(fdrRate < Parameters.fdrThreshold) {
 					fdrCutoffIndex = i;
 				}
 				
 				pBlock.fdrRate = fdrRate;
 			}
+			
+			BufferedWriter BW = new BufferedWriter(new FileWriter(Parameters.psmStatFilePath));
+			BW.append("Score\tTargetCount\tDecoyCount\tNACount\teTargetCount\teDecoyCount");
+			BW.newLine();
+			
+			for(int i=0; i<scores.size(); i++) {
+				Double score = scores.get(i);
+				Double tCount = targetCounts.get(score);
+				Double dCount = decoyCounts.get(score);
+				Double nCount = randomCounts.get(score);
+				
+				if(tCount == null) {
+					tCount = 0.0;
+				}
+				if(dCount == null) {
+					dCount = 0.0;
+				}
+				if(nCount == null) {
+					nCount = 0.0;
+				}
+				
+				BW.append(score+"\t").append(tCount+"\t").append(dCount+"\t").append(nCount+"\t").append(tCount+nCount*0.5+"\t").append(dCount+nCount*0.5+"");
+				BW.newLine();
+			}
+			
 			BW.close();
 		}catch(IOException ioe) {
 			
