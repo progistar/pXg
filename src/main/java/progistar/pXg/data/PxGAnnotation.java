@@ -455,8 +455,8 @@ public class PxGAnnotation {
 					if(count == null) {
 						count = 0.0;
 					}
-					targetCounts.put(score, count);
 					count++;
+					targetCounts.put(score, count);
 				}
 				// NA (Not Assigned)
 				else if(case_ == Constants.PSM_STATUS_RANDOM){
@@ -465,8 +465,8 @@ public class PxGAnnotation {
 					if(count == null) {
 						count = 0.0;
 					}
-					randomCounts.put(score, count);
 					count++;
+					randomCounts.put(score, count);
 				}
 				else if(case_ == Constants.PSM_STATUS_DECOY) {
 					decoyCount++;
