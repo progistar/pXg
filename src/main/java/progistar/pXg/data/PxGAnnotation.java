@@ -202,6 +202,7 @@ public class PxGAnnotation {
 			
 			
 			BW.append(PeptideAnnotation.toFields()).append("\t");
+			BW.append("Rank").append("\t");
 			BW.append("GenomicLociCount").append("\t");
 			BW.append("InferredPeptide").append("\t");
 			BW.append("GenomicLoci").append("\t");
@@ -237,7 +238,7 @@ public class PxGAnnotation {
 							// assign fastaIDs.
 							xBlock.fastaIDs = pBlock.fastaIDs;
 							
-							BW.append(pBlock.toString()).append("\t").append(xBlocks.size()+"\t").append(xBlock.toString()).append("\t"+pBlock.fdrRate);
+							BW.append(pBlock.toString()).append("\t").append(pBlock.rank+"\t").append(xBlocks.size()+"\t").append(xBlock.toString()).append("\t"+pBlock.fdrRate);
 							BW.newLine();
 						}catch(IOException ioe) {
 							

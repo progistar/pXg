@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,6 +42,8 @@ public class PeptideParser {
 			String line = null;
 
 			int recordCount = -1;
+			// rank by scan ID
+			Hashtable<String, Integer> ranks = new Hashtable<String, Integer>();
 			while((line = BR.readLine()) != null) {
 				// skip header marker
 				// comment marker is not considered record.
@@ -64,8 +67,17 @@ public class PeptideParser {
 						pSeq.append(matcher.group());
 					}
 					
-					PBlock pBLock = new PBlock(record, pSeq.toString());
-					PeptideAnnotation.pBlocks.add(pBLock);
+					PBlock pBlock = new PBlock(record, pSeq.toString());
+					String id = pBlock.getScanID();
+					Integer rank = ranks.get(id);
+					if(rank == null) {
+						rank = 0;
+						ranks.put(id, rank);
+					}
+					// assign rank
+					pBlock.rank = ++rank;
+					
+					PeptideAnnotation.pBlocks.add(pBlock);
 					pSeq.setLength(0);
 					
 				}
