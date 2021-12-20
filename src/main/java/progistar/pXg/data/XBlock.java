@@ -2,6 +2,7 @@ package progistar.pXg.data;
 
 import java.util.Hashtable;
 
+import progistar.pXg.constants.Constants;
 import progistar.pXg.utils.ENSTMapper;
 import progistar.pXg.utils.Priority;
 
@@ -17,6 +18,19 @@ public class XBlock {
 	public String[] fastaIDs		=	null;
 	public double bestRegionPriority 	= 	Double.MAX_VALUE;
 	
+	public boolean isCannonical () {
+		String events = toEvents();
+		boolean isCannonical = false;
+		// wildtype
+		if(mutations.equalsIgnoreCase("-")) {
+			// proteincoding;sense
+			if(events.contains(Constants.EVENT_PROTEINCODING) && events.contains(Constants.EVENT_SENSE) && !events.contains(Constants.EVENT_AS)) {
+				isCannonical = true;
+			}
+		}
+		
+		return isCannonical;
+	}
 	
 	public String getKey () {
 		return this.genomicSequence+"_"+this.genomicLocus;
@@ -32,11 +46,12 @@ public class XBlock {
 		String events = toEvents();
 		String fastaIDs = toFastaIDs();
 		
-		int transCount = tAnnotations.split("\\|").length;
-		int geneIDCount = geneIDs.split("\\|").length;
-		int geneNameCount = geneNames.split("\\|").length;
-		int eventCount = events.split("\\|").length;
-		int fastaIDCount = fastaIDs.split("\\|").length;
+		int transCount = tAnnotations.equalsIgnoreCase("-") ? 0 : tAnnotations.split("\\|").length;
+		int geneIDCount = geneIDs.equalsIgnoreCase("-") ? 0 : geneIDs.split("\\|").length;
+		int geneNameCount = geneNames.equalsIgnoreCase("-") ? 0 : geneNames.split("\\|").length;
+		int eventCount = events.equalsIgnoreCase("-") ? 0 : events.split("\\|").length;
+		int fastaIDCount = fastaIDs.equalsIgnoreCase("-") ? 0 : fastaIDs.split("\\|").length;
+		
 		
 		return peptideSequence +"\t"+genomicLocus+"\t"
 				+strand+"\t"+genomicSequence

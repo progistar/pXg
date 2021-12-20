@@ -65,15 +65,19 @@ public class PBlock implements Comparable<PBlock> {
 	}
 
 	@Override
+	/**
+	 * Higher scores and decoy first.<br>
+	 * 
+	 */
 	public int compareTo(PBlock o) {
 		if(this.score > o.score) {
 			return -1;
 		} else if(this.score < o.score) {
 			return 1;
 		} else if (this.psmStatus > o.psmStatus){
-			return -1;
-		} else if (this.psmStatus < o.psmStatus) {
 			return 1;
+		} else if (this.psmStatus < o.psmStatus) {
+			return -1;
 		}
 		return 0;
 	}

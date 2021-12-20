@@ -444,6 +444,7 @@ public class PxGAnnotation {
 				double fdrRate = 1.0;
 				
 				PBlock pBlock = pBlocks.get(i);
+				
 				byte case_ = pBlock.psmStatus;
 				double score = pBlock.score;
 				if(scoreList.get(score) == null) {
