@@ -401,10 +401,12 @@ public class PxGAnnotation {
 				xBlocks.forEach((key_, xBlock) -> {
 					if(xBlock.targetReadCount > 0) {
 						pBlock.psmStatus = Constants.PSM_STATUS_TARGET > pBlock.psmStatus ? Constants.PSM_STATUS_TARGET : pBlock.psmStatus;
+						pBlock.isCannonical |= xBlock.isCannonical();
 					} 
 					// entrapment psms
 					else if(xBlock.mockReadCount > 0) {
 						pBlock.psmStatus = Constants.PSM_STATUS_DECOY > pBlock.psmStatus ? Constants.PSM_STATUS_DECOY : pBlock.psmStatus;
+						pBlock.isCannonical |= xBlock.isCannonical();
 					}
 				});
 			}
@@ -421,7 +423,6 @@ public class PxGAnnotation {
 	 */
 	public void fdrEstimation () {
 		double targetCount = 0;
-		double randomCount = 0;
 		double decoyCount = 0;
 		int fdrCutoffIndex = 0;
 		
@@ -436,14 +437,16 @@ public class PxGAnnotation {
 		try {
 			ArrayList<Double> scores = new ArrayList<Double>();
 			Hashtable<Double, Boolean> scoreList = new Hashtable<Double, Boolean>();
-			Hashtable<Double, Double> targetCounts = new Hashtable<Double, Double>();
-			Hashtable<Double, Double> decoyCounts = new Hashtable<Double, Double>();
-			Hashtable<Double, Double> randomCounts = new Hashtable<Double, Double>();
+			Hashtable<Double, Double> cTargetCounts = new Hashtable<Double, Double>();
+			Hashtable<Double, Double> cDecoyCounts = new Hashtable<Double, Double>();
+			Hashtable<Double, Double> ncTargetCounts = new Hashtable<Double, Double>();
+			Hashtable<Double, Double> ncDecoyCounts = new Hashtable<Double, Double>();
 			
 			for(int i=0; i<size; i++) {
 				double fdrRate = 1.0;
 				
 				PBlock pBlock = pBlocks.get(i);
+				String key = pBlock.getPeptideSequence();
 				
 				byte case_ = pBlock.psmStatus;
 				double score = pBlock.score;
@@ -454,35 +457,35 @@ public class PxGAnnotation {
 				
 				if(case_ == Constants.PSM_STATUS_TARGET) {
 					targetCount++;
-					Double count = targetCounts.get(score);
+					Double count = .0;
+					if(pBlock.isCannonical) {
+						count = cTargetCounts.get(score);
+					} else {
+						count = ncTargetCounts.get(score);
+					}
 					if(count == null) {
 						count = 0.0;
 					}
 					count++;
-					targetCounts.put(score, count);
-				}
-				// NA (Not Assigned)
-				else if(case_ == Constants.PSM_STATUS_RANDOM){
-					randomCount++;
-					Double count = randomCounts.get(score);
-					if(count == null) {
-						count = 0.0;
-					}
-					count++;
-					randomCounts.put(score, count);
+					cTargetCounts.put(score, count);
 				}
 				else if(case_ == Constants.PSM_STATUS_DECOY) {
 					decoyCount++;
-					Double count = decoyCounts.get(score);
+					Double count = .0;
+					if(pBlock.isCannonical) {
+						count = cDecoyCounts.get(score);
+					} else {
+						count = ncDecoyCounts.get(score);
+					}
 					if(count == null) {
 						count = 0.0;
 					}
 					count++;
-					decoyCounts.put(score, count);
+					cDecoyCounts.put(score, count);
 				}
 				
 				if(targetCount != 0 || decoyCount != 0) {
-					fdrRate = (randomCount*0.5 + decoyCount)/(targetCount+randomCount*0.5);
+					fdrRate = decoyCount/targetCount;
 				}
 				if(fdrRate < Parameters.fdrThreshold) {
 					fdrCutoffIndex = i;
@@ -492,26 +495,31 @@ public class PxGAnnotation {
 			}
 			
 			BufferedWriter BW = new BufferedWriter(new FileWriter(Parameters.psmStatFilePath));
-			BW.append("Score\tTargetCount\tDecoyCount\tNACount\teTargetCount\teDecoyCount");
+			BW.append("Score\tcTargetCount\tcDecoyCount\tncTargetCount\tncDecoyCount");
 			BW.newLine();
 			
 			for(int i=0; i<scores.size(); i++) {
 				Double score = scores.get(i);
-				Double tCount = targetCounts.get(score);
-				Double dCount = decoyCounts.get(score);
-				Double nCount = randomCounts.get(score);
+				Double ctCount = cTargetCounts.get(score);
+				Double cdCount = cDecoyCounts.get(score);
+				Double nctCount = cTargetCounts.get(score);
+				Double ncdCount = cDecoyCounts.get(score);
 				
-				if(tCount == null) {
-					tCount = 0.0;
+				
+				if(ctCount == null) {
+					ctCount = 0.0;
 				}
-				if(dCount == null) {
-					dCount = 0.0;
+				if(cdCount == null) {
+					cdCount = 0.0;
 				}
-				if(nCount == null) {
-					nCount = 0.0;
+				if(nctCount == null) {
+					nctCount = 0.0;
+				}
+				if(ncdCount == null) {
+					ncdCount = 0.0;
 				}
 				
-				BW.append(score+"\t").append(tCount+"\t").append(dCount+"\t").append(nCount+"\t").append(tCount+nCount*0.5+"\t").append(dCount+nCount*0.5+"");
+				BW.append(score+"\t").append(ctCount+"\t").append(cdCount+"\t").append(nctCount+"\t").append(ncdCount+"");
 				BW.newLine();
 			}
 			
