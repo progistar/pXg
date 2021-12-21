@@ -117,9 +117,7 @@ public class Master {
 			
 			// removing tmpOutputFiles
 			tmpOutputFiles.forEach(file -> {file.delete();});
-			
-			// balancing mock read count
-			pXgA.mockReadAssignPolicy();
+
 			// marking target PSMs
 			pXgA.markTargetPSM();
 			// filter by pvalue

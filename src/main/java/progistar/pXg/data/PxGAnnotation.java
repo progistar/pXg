@@ -115,15 +115,108 @@ public class PxGAnnotation {
 	 */
 	private double[][] getPvalueTable () {
 		double[][] pValueTable = new double[Parameters.maxPeptLen+1][this.maxNGSreadCount+1];
-		double[][] decoyTable = new double[Parameters.maxPeptLen+1][this.maxNGSreadCount+1];
-		double[][] targetTable = new double[Parameters.maxPeptLen+1][this.maxNGSreadCount+1];
+		double[][] mockTable = new double[Parameters.maxPeptLen+1][this.maxNGSreadCount+1];
+		double[][] expTable = new double[Parameters.maxPeptLen+1][this.maxNGSreadCount+1];
+		// all peptides
+		ArrayList<String> peptides = PeptideAnnotation.enumerateSequence();
 		
-		this.xBlockMapper.forEach((pSeq, xBlocks) -> {
-			xBlocks.forEach((key, xBlock) -> {
-				decoyTable[pSeq.length()][xBlock.mockReadCount]++;
-				targetTable[pSeq.length()][xBlock.targetReadCount]++;
-			});
-		});
+		for(String peptide : peptides) {
+			Hashtable<String, XBlock> xBlocks = this.xBlockMapper.get(peptide);
+			int length = peptide.length();
+			int[] mockCounts = new int[1];
+			int[] expCounts = new int[1];
+			if(xBlocks != null) {
+				mockCounts = new int[xBlocks.size()];
+				expCounts = new int[xBlocks.size()];
+				Iterator<String> keys = (Iterator<String>) xBlocks.keys();
+				int idx = 0;
+				while(keys.hasNext()) {
+					String key =keys.next();
+					XBlock xBlock = xBlocks.get(key);
+					
+					if(xBlock.mockReadCount > 0) {
+						mockCounts[idx] = xBlock.mockReadCount;
+					}
+					if(xBlock.targetReadCount > 0) {
+						expCounts[idx] = xBlock.targetReadCount;
+					}
+					idx++;
+				}
+				
+				
+			}
+			
+			if(Parameters.mockPolicy == Constants.MOCK_ALL) {
+				// mock counts for all possible regions
+				boolean isZeroCount = true;
+				for(int mockCount : mockCounts) {
+					if(mockCount > 0) {
+						mockTable[length][mockCount]++;
+						isZeroCount = false;
+					}
+				}
+				// there is no matched region for the peptide,
+				// just count zero at once.
+				if(isZeroCount) {
+					mockTable[length][0]++;
+				}
+				
+				// exp counts for all possible regions
+				isZeroCount = true;
+				for(int expCount : expCounts) {
+					if(expCount > 0) {
+						expTable[length][expCount]++;
+						isZeroCount = false;
+					}
+				}
+				if(isZeroCount) {
+					expTable[length][0]++;
+				}
+			} else if(Parameters.mockPolicy == Constants.MOCK_MAX_ONE) {
+				// find max one through traversing counts
+				int maxCount = 0;
+				for(int mockCount : mockCounts) {
+					maxCount = Math.max(mockCount, maxCount);
+				}
+				mockTable[length][maxCount]++;
+				
+				maxCount = 0;
+				for(int expCount : expCounts) {
+					maxCount = Math.max(expCount, maxCount);
+				}
+				expTable[length][maxCount]++;
+				
+			} else if(Parameters.mockPolicy == Constants.MOCK_MEAN) {
+				// sum all counts through traversing counts
+				// and get the average values
+				double count = 0;
+				double size = 0;
+				for(int mockCount : mockCounts) {
+					if(mockCount > 0) {
+						count += mockCount;
+						size ++;
+					}
+				}
+				if(size != 0) {
+					count = Math.round(count/size);
+				}
+				mockTable[length][(int)count]++;
+				
+				count = 0;
+				size = 0;
+				for(int expCount : expCounts) {
+					if(expCount > 0) {
+						count += expCount;
+						size ++;
+					}
+				}
+				if(size != 0) {
+					count = Math.round(count/size);
+				}
+				expTable[length][(int)count]++;
+				
+			}
+		}
 		
 		// calculate cumulative decoy & target distribution
 		try {
@@ -131,15 +224,15 @@ public class PxGAnnotation {
 			BW.append("PeptideLength\tReadCount\tExperiment\tMock");
 			BW.newLine();
 			for(int peptLen = Parameters.minPeptLen; peptLen <= Parameters.maxPeptLen; peptLen++) {
-				BW.append(peptLen+"\t"+(decoyTable[peptLen].length-1)+"\t"+targetTable[peptLen][decoyTable[peptLen].length-1]+"\t"+decoyTable[peptLen][decoyTable[peptLen].length-1]);
+				BW.append(peptLen+"\t"+(mockTable[peptLen].length-1)+"\t"+expTable[peptLen][mockTable[peptLen].length-1]+"\t"+mockTable[peptLen][mockTable[peptLen].length-1]);
 				BW.newLine();
 				
-				for(int i=decoyTable[peptLen].length-2; i>=0; i--) {
-					BW.append(peptLen+"\t"+i+"\t"+targetTable[peptLen][i]+"\t"+decoyTable[peptLen][i]);
+				for(int i=mockTable[peptLen].length-2; i>=0; i--) {
+					BW.append(peptLen+"\t"+i+"\t"+expTable[peptLen][i]+"\t"+mockTable[peptLen][i]);
 					BW.newLine();
 					
-					decoyTable[peptLen][i] = decoyTable[peptLen][i] + decoyTable[peptLen][i+1];
-					targetTable[peptLen][i] = targetTable[peptLen][i] + targetTable[peptLen][i+1];
+					mockTable[peptLen][i] = mockTable[peptLen][i] + mockTable[peptLen][i+1];
+					expTable[peptLen][i] = expTable[peptLen][i] + expTable[peptLen][i+1];
 				}
 			}
 			BW.close();
@@ -149,10 +242,10 @@ public class PxGAnnotation {
 		
 		// calculate empirical p-value
 		for(int peptLen = Parameters.minPeptLen; peptLen <= Parameters.maxPeptLen; peptLen++) {
-			if(decoyTable[peptLen][0] == 0) continue;
+			if(mockTable[peptLen][0] == 0) continue;
 			
 			for(int i=0; i<pValueTable[peptLen].length; i++) {
-				pValueTable[peptLen][i] = decoyTable[peptLen][i] / decoyTable[peptLen][0];
+				pValueTable[peptLen][i] = mockTable[peptLen][i] / mockTable[peptLen][0];
 			}
 		}
 		/*
@@ -250,77 +343,6 @@ public class PxGAnnotation {
 			BW.close();
 		}catch(IOException ioe) {
 			
-		}
-	}
-	
-	public void mockReadAssignPolicy () {
-		byte policy = Parameters.mockPolicy;
-		
-		// default behavior
-		if(policy == Constants.MOCK_ALL) {
-			return;
-		} else {
-			
-			ArrayList<PBlock> pBlocks = PeptideAnnotation.pBlocks;
-			
-			// update mock reads following policy
-			for(int i=pBlocks.size()-1; i>=0; i--) {
-				PBlock pBlock = pBlocks.get(i);
-				// peptide sequence without I/L consideration
-				String key = pBlock.getPeptideSequence();
-				
-				float nonZeroMockReadCount = 0;
-				float mean = 0;
-				int max = 0;
-				
-				Hashtable<String, XBlock> xBlocks = this.xBlockMapper.get(key);
-				if(xBlocks != null) {
-					
-					if(xBlocks.size() == 0) continue;
-					// calculate mean and max
-					Iterator<String> xBlockKeys = (Iterator<String>) xBlocks.keys();
-					while(xBlockKeys.hasNext()) {
-						String xBlockKey = xBlockKeys.next();
-						XBlock xBlock = xBlocks.get(xBlockKey);
-						
-						if(xBlock.mockReadCount > 0) {
-							nonZeroMockReadCount++;
-							mean += xBlock.mockReadCount;
-							max = Math.max(xBlock.mockReadCount, max);
-						}
-					}
-					
-					if(nonZeroMockReadCount != 0) {
-						mean /= nonZeroMockReadCount;
-					}
-					
-					if(max != 0) {
-						// assign max or mean by policy
-						// note that:
-						// we do not need preserve consistency between read-count and genomic locus
-						// this is because mock reads are such a virtual read count.
-						xBlockKeys = (Iterator<String>) xBlocks.keys();
-						int index = 0;
-						while(xBlockKeys.hasNext()) {
-							String xBlockKey = xBlockKeys.next();
-							XBlock xBlock = xBlocks.get(xBlockKey);
-							
-							if(xBlock.mockReadCount > 0) {
-								if(index == 0) {
-									if(policy == Constants.MOCK_MAX_ONE) {
-										xBlock.mockReadCount = max;
-									} else if(policy == Constants.MOCK_MEAN) {
-										xBlock.mockReadCount = Math.round(mean);
-									}
-								} else {
-									xBlock.mockReadCount = 0;
-								}
-								index++;
-							}
-						}
-					}
-				}
-			}
 		}
 	}
 	
@@ -446,7 +468,6 @@ public class PxGAnnotation {
 				double fdrRate = 1.0;
 				
 				PBlock pBlock = pBlocks.get(i);
-				String key = pBlock.getPeptideSequence();
 				
 				byte case_ = pBlock.psmStatus;
 				double score = pBlock.score;
@@ -467,7 +488,11 @@ public class PxGAnnotation {
 						count = 0.0;
 					}
 					count++;
-					cTargetCounts.put(score, count);
+					if(pBlock.isCannonical) {
+						cTargetCounts.put(score, count);
+					} else {
+						ncTargetCounts.put(score, count);
+					}
 				}
 				else if(case_ == Constants.PSM_STATUS_DECOY) {
 					decoyCount++;
@@ -481,7 +506,12 @@ public class PxGAnnotation {
 						count = 0.0;
 					}
 					count++;
-					cDecoyCounts.put(score, count);
+					if(pBlock.isCannonical) {
+						cDecoyCounts.put(score, count);
+					} else {
+						ncDecoyCounts.put(score, count);
+					}
+					
 				}
 				
 				if(targetCount != 0 || decoyCount != 0) {
@@ -502,8 +532,8 @@ public class PxGAnnotation {
 				Double score = scores.get(i);
 				Double ctCount = cTargetCounts.get(score);
 				Double cdCount = cDecoyCounts.get(score);
-				Double nctCount = cTargetCounts.get(score);
-				Double ncdCount = cDecoyCounts.get(score);
+				Double nctCount = ncTargetCounts.get(score);
+				Double ncdCount = ncDecoyCounts.get(score);
 				
 				
 				if(ctCount == null) {
