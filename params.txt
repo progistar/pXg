@@ -1,29 +1,32 @@
 ## Genomic annotation file path
-genomic_annotation_path=test\gencode.v19.chr1.gtf
+genomic_annotation_path=test/gencode.v38.chr_patch_hapl_scaff.annotation.CCDC.gtf
 
 ## NGS-read file path
-genomic_sequence_path=test\chr1toy.sam
+genomic_sequence_path=test/SRR1925276_2pass_Aligned.un.sam
+
 
 ## Peptide annotation file path
-peptide_annotation_path=C:\Users\progi\eclipse-workspace\pXg\test\DeltaScoreFilter\BoundaryCase.txt
+peptide_annotation_path=test/PeptideAnnotation_Short.txt
 
-## Protein sequence file path
-protein_fasta_path=
+## Protein fasta file path
+#protein_fasta_path=/mnt/d/Proteins/uniprot_iso_202103.fasta
 
 ## Output file path
-output_path=C:\Users\progi\Desktop\Projects\pXg\hello.M.gencode19.out
+output_path=test.pXg
 
 ## one-based column index
 scan_column_indices=1,2,5
 peptide_column_index=4
 score_column_index=8
-psm_rank=3
+psm_rank=10
 aareg=[A-Z]
 cm=#|@|%
 
 ## Genomic annotation indexing
 genomic_annotation_partition_size=5000000
-genomic_sequence_partition_size=1000000
+genomic_sequence_partition_size=4000000
+
 
 ## Systems
 num_threads=1
+
