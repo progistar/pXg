@@ -87,7 +87,7 @@ public class PeptideParser {
 
 		long endTime = System.currentTimeMillis();
 		
-		// filter PSMs by delta-score threshold
+		// filter PSMs by delta-rank
 		PeptideAnnotation.filter();
 		// length filter
 		PeptideAnnotation.peptideLengthFilter();

@@ -9,6 +9,7 @@ import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
 import progistar.pXg.data.GenomicAnnotation;
 import progistar.pXg.data.GenomicSequence;
+import progistar.pXg.data.PeptideAnnotation;
 import progistar.pXg.data.PxGAnnotation;
 import progistar.pXg.data.parser.GTFParser;
 import progistar.pXg.data.parser.PeptideParser;
@@ -116,7 +117,7 @@ public class Master {
 			PxGAnnotation pXgA = ResultParser.parseResult(tmpOutputFiles);
 			
 			// removing tmpOutputFiles
-			tmpOutputFiles.forEach(file -> {file.delete();});
+//			tmpOutputFiles.forEach(file -> {file.delete();});
 
 			// marking target PSMs
 			pXgA.markTargetPSM();
@@ -131,6 +132,8 @@ public class Master {
 			// mark fasta result
 			pXgA.markFasta();
 			
+			
+			System.out.println(PeptideAnnotation.pBlocks.size()+" size of pblock at last");
 			pXgA.write(Parameters.outputFilePath);
 			
 		}catch (Exception e) {
@@ -212,11 +215,13 @@ public class Master {
 			int[][] gIndex = genomicAnnotation.getIndexingBlocks(chrIndex, start, end);
 			int taskIndex = 0;
 			for(int i=0; i<partitionInSize; i++) {
+				GenomicSequence gSeq = gSeqPartitionIn.get(i);
+				
 				// target NGS-read
-				tasks[taskIndex].genomicSequences.add(gSeqPartitionIn.get(i));
+				tasks[taskIndex].genomicSequences.add(gSeq);
 				// mock NGS-read
-				if(Parameters.mocks != Constants.MOCK_NONE) {
-					tasks[taskIndex].genomicSequences.add(Mock.makeMockRead(gSeqPartitionIn.get(i), Parameters.mocks));
+				if(Parameters.mocks != Constants.MOCK_NONE && gSeq.isMapped()) {
+					tasks[taskIndex].genomicSequences.add(Mock.makeMockRead(gSeq, Parameters.mocks));
 				}
 				
 				taskIndex++;

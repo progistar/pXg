@@ -148,7 +148,11 @@ public class Worker extends Thread {
 					// intergenic
 					String senseMarker = "-";
 					if(gSeq.tBlocks[i] == null) {
-						BW.append("intergenic");
+						if(gSeq.isMapped()) {
+							BW.append("intergenic");
+						} else {
+							BW.append("unmapped");
+						}
 					} else {
 						BW.append(gSeq.tBlocks[i].transcriptID);
 						// check sense
@@ -163,6 +167,12 @@ public class Worker extends Thread {
 					BW.append("(").append(output.getAARegionAnnotation(i)).append(";").append(senseMarker).append(";").append(frame).append(";").append(as).append(")");
 				}
 				BW.newLine();
+				
+				// for unmapped we need more sequence information
+				if(!gSeq.isMapped()) {
+					BW.append(Constants.OUTPUT_G_SEQUENCE).append("\t").append(gSeq.getNucleotideString());
+					BW.newLine();
+				}
 			}
 		}catch(IOException ioe) {
 			

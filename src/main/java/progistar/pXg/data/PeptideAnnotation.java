@@ -116,7 +116,7 @@ public class PeptideAnnotation {
 	}
 	
 	/**
-	 * filter by score threshold <br>
+	 * filter by rank <br>
 	 * 
 	 */
 	public static void filter () {
@@ -154,7 +154,7 @@ public class PeptideAnnotation {
 	}
 	
 	public static void peptideLengthFilter () {
-		for(int i=pBlocks.size()-1; i>0; i--) {
+		for(int i=pBlocks.size()-1; i>=0; i--) {
 			int peptLength = pBlocks.get(i).getPeptideSequence().length();
 			
 			// filter-out non-interesting

@@ -79,8 +79,8 @@ public class GenomicSequence {
 		this.startPosition = startPosition;
 		this.cigars = cigars;
 		this.mdString = mdStr;
-		
 		this.endPosition = startPosition;
+		
 		for(Cigar cigar : this.cigars) {
 			char op = cigar.operation;
 			
@@ -88,9 +88,30 @@ public class GenomicSequence {
 	    	case 'M': case 'I':// match or mismatch or Insertion
 	    		this.endPosition = Math.max(this.endPosition, this.startPosition+cigar.relativePositions[cigar.relativePositions.length-1]);
 	    		break;
+	    	case '*': // for unmapped
+	    		this.startPosition = 1;
+	    		this.endPosition = this.startPosition + cigar.markerSize - 1;
+	    		break;
     		default :
     			break;
 	    	}
+		}
+	}
+	
+	/**
+	 * Check unmapped status by cigar string.<br>
+	 * If there is a cigar with '*', it will return 'false'.<br>
+	 * Currently, we do not generate mock reads of unmapped reads. <br>
+	 * 
+	 * @return
+	 */
+	public boolean isMapped () {
+		assert this.cigars.size() != 0;
+		
+		if(this.cigars.get(0).operation == '*') {
+			return false;
+		} else {
+			return true;
 		}
 	}
 	

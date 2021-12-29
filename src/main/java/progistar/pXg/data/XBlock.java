@@ -77,7 +77,7 @@ public class XBlock {
 	}
 	
 	public String toFastaIDs () {
-		if(this.fastaIDs.length == 0) {
+		if(this.fastaIDs == null || this.fastaIDs.length == 0) {
 			return "-";
 		}
 		

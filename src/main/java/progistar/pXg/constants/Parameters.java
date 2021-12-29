@@ -68,7 +68,7 @@ public class Parameters {
 	public static double ngsPvalue					=	0.05;
 	
 	// FDR estimation at PSM level
-	public static double fdrThreshold				=	100;
+	public static double fdrThreshold				=	10;
 	
 	// Print all annotated PSMs
 	public static boolean debugMode					=	false;

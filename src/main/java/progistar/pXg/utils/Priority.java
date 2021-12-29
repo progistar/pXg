@@ -72,6 +72,11 @@ public class Priority {
 				rPenalty += 30;
 			}
 			
+			// worst-case... unmapped
+			if(regions[0].contains(Constants.MARK_UNMAPPED+"")) {
+				rPenalty += 100;
+			}
+			
 			penalty = rPenalty + mPenalty;
 		}
 		
@@ -113,6 +118,8 @@ public class Priority {
 				event = Constants.EVENT_INTRON;
 			} else if(regions[2].contains(Constants.OUT_OF_FRAME+"")) {
 				event = Constants.EVENT_FRAMESHIFT;
+			} else if(regions[0].contains(Constants.MARK_UNMAPPED+"")) {
+				event = Constants.EVENT_UNKNOWN;
 			}
 			
 			if(regions[1].equalsIgnoreCase("antisense")) {

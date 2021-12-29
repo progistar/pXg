@@ -101,6 +101,10 @@ public class SamParser {
 				String cigarString = fields[FieldIndex.CIGAR.value];
 				String nucleotides = fields[FieldIndex.SEQUENCE.value];
 				
+				// Note that
+				// Chr of unmapped reads are marked as *
+				// Frome this, we can recognize unmapped reads
+				
 				// Cigar has nucleotides and relative positions to the start position.
 				ArrayList<Cigar> cigars = parseCigarString(cigarString, nucleotides);
 				
@@ -114,7 +118,7 @@ public class SamParser {
 				}
 				
 				if(mdStr == null) {
-					System.out.println(line);
+					//System.out.println(line);
 				}
 				
 				// the index for that chr is automatically assigned by auto-increment key.
@@ -164,11 +168,18 @@ public class SamParser {
 		ArrayList<Cigar> results = new ArrayList<Cigar>();
 		ArrayList<Cigar> filterResults = new ArrayList<Cigar>();
 		
+		// unmapped reads have no matcher...!
 	    while (matcher.find()) {
 	      int markerSize = Integer.parseInt(matcher.group(1));
 	      char operation = matcher.group(2).charAt(0);
-
+	      
 	      results.add(new Cigar(markerSize, operation));
+	    }
+	    
+	    // Unmapped read checker
+	    if(results.size() == 0 && cigarString.equalsIgnoreCase("*")) {
+	    	// add unmapped read cigar
+	    	results.add(new Cigar(nucleotides.length(), '*'));
 	    }
 	    
 	    int ntIndex = 0;
@@ -226,8 +237,14 @@ public class SamParser {
 	    		break;	
 	    		
 	    	case '*': // unmapped
-	    		//TODO unmapped reads
+	    		cigar.nucleotides = nucleotides;
+	    		relativePositions = new int[cigar.markerSize];
+	    		for(int j=0; j<relativePositions.length; j++) {
+	    			relativePositions[j] = relPos++;
+	    		}
+	    		cigar.relativePositions = relativePositions;
 	    		
+	    		filterResults.add(cigar);
 	    		break;
 	    	}
 	    }

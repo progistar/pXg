@@ -120,7 +120,8 @@ public class Codon {
 		
 		// worst annotation has the highest priority.
 		// soft-clip is the worst case... will be discarded!
-		if(nt1 == Constants.MARK_SOFTCLIP || nt2 == Constants.MARK_SOFTCLIP || nt3 == Constants.MARK_SOFTCLIP) aaRegion = Constants.MARK_SOFTCLIP;
+		if(nt1 == Constants.MARK_UNMAPPED || nt2 == Constants.MARK_UNMAPPED || nt3 == Constants.MARK_UNMAPPED) aaRegion = Constants.MARK_UNMAPPED;
+		else if(nt1 == Constants.MARK_SOFTCLIP || nt2 == Constants.MARK_SOFTCLIP || nt3 == Constants.MARK_SOFTCLIP) aaRegion = Constants.MARK_SOFTCLIP;
 		else if(nt1 == Constants.MARK_INTERGENIC || nt2 == Constants.MARK_INTERGENIC || nt3 == Constants.MARK_INTERGENIC) aaRegion = Constants.MARK_INTERGENIC;
 		else if(nt1 == Constants.MARK_INTRON || nt2 == Constants.MARK_INTRON || nt3 == Constants.MARK_INTRON) aaRegion = Constants.MARK_INTRON;
 		else if(nt1 == Constants.MARK_NCDS || nt2 == Constants.MARK_NCDS || nt3 == Constants.MARK_NCDS) aaRegion = Constants.MARK_NCDS;

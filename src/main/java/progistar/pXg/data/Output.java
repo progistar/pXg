@@ -154,7 +154,7 @@ public class Output {
 		int relPos = 0;
 		for(Cigar cigar : gSeq.cigars) {
 			// append sequence
-			if(cigar.operation == 'M' || cigar.operation == 'I') {
+			if(cigar.operation == 'M' || cigar.operation == 'I' || cigar.operation == '*') {
 				for(int i=0; i<cigar.annotations.length; i++) {
 					if(this.startPosInNGS <= relPos && relPos <= this.endPosInNGS) {
 						genomicRegion.append(cigar.annotations[i][transcriptNum]);
@@ -176,8 +176,8 @@ public class Output {
 	 */
 	public String getAARegionAnnotation (int transcriptNum) {
 		String genomicRegion = getGenomicRegion(transcriptNum);
-		StringBuilder aaRegionAnnotation = new StringBuilder();
 		
+		StringBuilder aaRegionAnnotation = new StringBuilder();
 		for(int i=0; i<genomicRegion.length(); i+=3) {
 			char ntMark1 = genomicRegion.charAt(i);
 			char ntMark2 = genomicRegion.charAt(i+1);
@@ -210,7 +210,7 @@ public class Output {
 	}
 	/**
 	 * Genomic positions of mapped peptides <br>
-	 * Plus, frame-decision <br>
+	 *
 	 * 
 	 */
 	public void mapGenomicAnnotation () {
@@ -236,7 +236,7 @@ public class Output {
 				endGenomicPosition = -1;
 			}
 			
-			if(cigar.operation == 'M' || cigar.operation == 'I') {
+			if(cigar.operation == 'M' || cigar.operation == 'I' || cigar.operation == '*') {
 				for(int i=0; i<cigar.annotations.length; i++) {
 					if(this.startPosInNGS <= relPos && relPos <= this.endPosInNGS) {
 						if(startGenomicPosition == -1) startGenomicPosition = cigar.relativePositions[i] + gSeq.startPosition;

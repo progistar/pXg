@@ -21,6 +21,7 @@ public class Constants {
 	public static final char MARK_INTRON		=	'I';
 	public static final char MARK_INTERGENIC	=	'-';
 	public static final char MARK_SOFTCLIP		=	'?';
+	public static final char MARK_UNMAPPED		=	'*';
 	
 	// Alternative Splicing Character
 	public static final char MARK_AS			=	'A'; // for alternative splicing form
@@ -79,6 +80,7 @@ public class Constants {
 	public static final String EVENT_FRAMESHIFT		=	"frameshift";
 	public static final String EVENT_PROTEINCODING	=	"proteincoding";
 	public static final String EVENT_AS				=	"alternativesplicing";
+	public static final String EVENT_UNKNOWN		=	"unknown";
 	
 	// PSM Status
 	public static final byte PSM_STATUS_RANDOM		=	0;

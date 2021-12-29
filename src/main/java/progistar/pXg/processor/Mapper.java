@@ -56,13 +56,16 @@ public class Mapper {
 	    	case 'N': // skip (ex> exon junction)
 	    		break;
 	    		
+	    	case '*': // unmapped
+	    		// NOTHING TO DO
+	    		break;
     		default :
     			break;
 	    	}
 		}
 		
 		// matched transcripts...
-		// if the size of matched transcripts is zero, then this is intergenic mapping
+		// if the size of matched transcripts is zero, then this is intergenic mapping or unmapped
 		if(txdIndexer.size() == 0) {
 			genomicSequence.matchedTxds = 1;
 			genomicSequence.tBlocks = new TBlock[1];
@@ -96,6 +99,14 @@ public class Mapper {
 		    	case 'N': // skip (ex> exon junction)
 		    		break;
 		    		
+		    	case '*': // unmapped
+		    		cigar.annotations = new char[cigar.relativePositions.length][1];
+		    		
+		    		for(int i=0; i<cigar.annotations.length; i++) {
+		    			cigar.annotations[i][0] = Constants.MARK_UNMAPPED;
+		    		}
+		    		
+		    		break;
 	    		default :
 	    			break;
 		    	}

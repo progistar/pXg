@@ -317,7 +317,6 @@ public class PxGAnnotation {
 			BW.append("FDR");
 			BW.newLine();
 			
-			
 			for(PBlock pBlock : pBlocks) {
 				// peptide sequence without I/L consideration
 				String key = pBlock.getPeptideSequence();
@@ -514,7 +513,7 @@ public class PxGAnnotation {
 					
 				}
 				
-				if(targetCount != 0 || decoyCount != 0) {
+				if(targetCount != 0) {
 					fdrRate = decoyCount/targetCount;
 				}
 				if(fdrRate < Parameters.fdrThreshold) {
@@ -566,7 +565,7 @@ public class PxGAnnotation {
 				if(!Parameters.debugMode) {
 					pBlocks.remove(i);
 				}
-			} else if(i >= fdrCutoffIndex) {
+			} else if(i > fdrCutoffIndex) {
 				if(!Parameters.debugMode) {
 					pBlocks.remove(i);
 				}
@@ -576,6 +575,8 @@ public class PxGAnnotation {
 	}
 	
 	public void regionScoreFilter () {
+		// prevent zeor-size
+		if(this.xBlockMapper.size() == 0) return;
 		// filter regions in the same locus and nucleotides.
 		Iterator<String> pSeqs = (Iterator<String>) this.xBlockMapper.keys();
 		
