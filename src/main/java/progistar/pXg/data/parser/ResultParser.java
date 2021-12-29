@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import progistar.pXg.assemble.Assembler;
 import progistar.pXg.constants.Constants;
 import progistar.pXg.data.GenomicSequence;
 import progistar.pXg.data.PxGAnnotation;
@@ -28,6 +29,8 @@ public class ResultParser {
 				String uniqueID = null;
 				boolean isDecoy = false;
 				
+				// for unmapped reads
+				String fullReads = null;
 				while((line = BR.readLine()) != null) {
 					String[] field = line.split("\t");
 					if(field[0].equalsIgnoreCase(Constants.OUTPUT_G_UNIQUE_ID)) {
@@ -38,6 +41,11 @@ public class ResultParser {
 						} else {
 							isDecoy = false;
 						}
+						
+						fullReads = null;
+						
+					} else if(field[0].equalsIgnoreCase(Constants.OUTPUT_G_SEQUENCE)) {
+						fullReads = field[1];
 					} else if(field[0].equalsIgnoreCase(Constants.OUTPUT_G_PEPTIDE)) {
 						
 						String pSeq = field[1]; // peptide sequence without I/L consideration
@@ -47,6 +55,9 @@ public class ResultParser {
 						xBlock.genomicSequence = field[4];
 						xBlock.mutations = field[5];
 						xBlock.tAnnotations = field[6];
+						xBlock.fullReadSequence = fullReads;
+						// If unmapped reads, merging xBlocks and making a single contig xBlock.
+						
 						if(xBlock.strand == '+') {
 							xBlock.peptideSequence = GenomicSequence.translation(xBlock.genomicSequence, 0);
 						} else {
@@ -59,8 +70,13 @@ public class ResultParser {
 							xBlock.targetReadCount++;
 						}
 						
-						// put xBlock
-						annotation.putXBlock(pSeq, xBlock);
+						if(fullReads == null) {
+							// put xBlock
+							annotation.putXBlock(pSeq, xBlock);
+						} else {
+							// those xBlocks are needed to merge into contig.
+							Assembler.addXBlock(pSeq, xBlock);
+						}
 					}
 				}
 				
@@ -70,6 +86,13 @@ public class ResultParser {
 			
 		}
 		
+		// assemble xBlocks
+		ArrayList<XBlock> xBlocks = Assembler.assemble();
+		
+		xBlocks.forEach(xBlock -> {
+			String pSeq = Assembler.getPSeq(xBlock);
+			annotation.putXBlock(pSeq, xBlock);
+		});
 		
 		return annotation;
 	}

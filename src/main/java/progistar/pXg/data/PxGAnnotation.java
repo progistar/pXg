@@ -39,10 +39,10 @@ public class PxGAnnotation {
 		} else {
 			thisXBlock.mockReadCount += xBlock.mockReadCount;
 			thisXBlock.targetReadCount += xBlock.targetReadCount;
-			
-			maxNGSreadCount = Math.max(thisXBlock.mockReadCount, maxNGSreadCount);
-			maxNGSreadCount = Math.max(thisXBlock.targetReadCount, maxNGSreadCount);
 		}
+		
+		maxNGSreadCount = Math.max(thisXBlock.mockReadCount, maxNGSreadCount);
+		maxNGSreadCount = Math.max(thisXBlock.targetReadCount, maxNGSreadCount);
 	}
 	
 	/**

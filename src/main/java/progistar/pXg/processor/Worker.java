@@ -100,6 +100,13 @@ public class Worker extends Thread {
 			BW.append(Constants.OUTPUT_G_UNIQUE_ID+"\t"+gSeq.uniqueID+"_"+gSeq.getLocus());
 			BW.newLine();
 			
+
+			// for unmapped we need more sequence information
+			if(!gSeq.isMapped()) {
+				BW.append(Constants.OUTPUT_G_SEQUENCE).append("\t").append(gSeq.getNucleotideString());
+				BW.newLine();
+			}
+			
 			/*
 			 * These information are needed to confirm.
 			 * Not informative for the last result.
@@ -168,11 +175,6 @@ public class Worker extends Thread {
 				}
 				BW.newLine();
 				
-				// for unmapped we need more sequence information
-				if(!gSeq.isMapped()) {
-					BW.append(Constants.OUTPUT_G_SEQUENCE).append("\t").append(gSeq.getNucleotideString());
-					BW.newLine();
-				}
 			}
 		}catch(IOException ioe) {
 			

@@ -132,8 +132,6 @@ public class Master {
 			// mark fasta result
 			pXgA.markFasta();
 			
-			
-			System.out.println(PeptideAnnotation.pBlocks.size()+" size of pblock at last");
 			pXgA.write(Parameters.outputFilePath);
 			
 		}catch (Exception e) {

@@ -9,7 +9,7 @@ public class Priority {
 
 	// Region Score
 	// XXX smaller is better
-	public static final Pattern REGION_REG = Pattern.compile("\\([0-9A-Za-z;\\-]*\\)");
+	public static final Pattern REGION_REG = Pattern.compile("\\([0-9A-Za-z;\\*\\-]*\\)");
 	
 	/**
 	 * 
@@ -122,14 +122,17 @@ public class Priority {
 				event = Constants.EVENT_UNKNOWN;
 			}
 			
-			if(regions[1].equalsIgnoreCase("antisense")) {
-				event += ";"+Constants.EVENT_ANTISENSE;
-			} else {
-				event += ";"+Constants.EVENT_SENSE;
-			}
-			
-			if(regions[3].charAt(0) == Constants.MARK_AS) {
-				event += ";"+Constants.EVENT_AS;
+			// we cannot decide sense/antisense and structural variations against unmapped reads
+			if(!event.equalsIgnoreCase( Constants.EVENT_UNKNOWN)) {
+				if(regions[1].equalsIgnoreCase("antisense")) {
+					event += ";"+Constants.EVENT_ANTISENSE;
+				} else {
+					event += ";"+Constants.EVENT_SENSE;
+				}
+				
+				if(regions[3].charAt(0) == Constants.MARK_AS) {
+					event += ";"+Constants.EVENT_AS;
+				}
 			}
 		}
 		
