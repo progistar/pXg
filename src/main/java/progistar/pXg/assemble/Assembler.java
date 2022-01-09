@@ -1,8 +1,13 @@
 package progistar.pXg.assemble;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import progistar.pXg.constants.Parameters;
 import progistar.pXg.data.XBlock;
 
 public class Assembler {
@@ -53,6 +58,56 @@ public class Assembler {
 		
 		return contigXBlocks;
 	}
+	
+	/**
+	 * For unmapped reads output<br>
+	 * 
+	 */
+	public static void write () {
+		
+		// zero size list
+		if(xBlocks.size() == 0) {
+			return;
+		}
+		
+		Hashtable<String, ArrayList<XBlock>> hashXBlocks = new Hashtable<String, ArrayList<XBlock>>();
+		for(XBlock xBlock : xBlocks) {
+			// strand and genomic sequence are enough to represent singularity.
+			String key = xBlock.peptideSequence;
+			
+			ArrayList<XBlock> thisXBlocks = hashXBlocks.get(key);
+			if(thisXBlocks == null) {
+				thisXBlocks = new ArrayList<XBlock>();
+			}
+			
+			thisXBlocks.add(xBlock);
+			hashXBlocks.put(key, thisXBlocks);
+		}
+		
+		try {
+			File outFile = new File(Parameters.unmappedFilePath);
+			BufferedWriter BW = new BufferedWriter(new FileWriter(outFile));
+			
+			hashXBlocks.forEach((peptide, xBlocks) -> {
+				try {
+					BW.append(">"+peptide);
+					BW.newLine();
+					for(XBlock xBlock : xBlocks) {
+						BW.append(xBlock.sequenceID).append("\t").append(xBlock.fullReadSequence).append("\t")
+						.append(xBlock.genomicLocus).append("\t").append(xBlock.genomicSequence);
+						BW.newLine();
+					}
+				}catch(IOException ioe) {
+					
+				}
+			});
+			
+			BW.close();
+		}catch(IOException ioe) {
+			
+		}
+	}
+	
 	
 	/**
 	 * Assume that all Xblocks here have the same genomicseuqence for peptide with same strand. <br> 

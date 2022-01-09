@@ -103,7 +103,7 @@ public class SamParser {
 				
 				// Note that
 				// Chr of unmapped reads are marked as *
-				// Frome this, we can recognize unmapped reads
+				// From this, we can recognize unmapped reads
 				
 				// Cigar has nucleotides and relative positions to the start position.
 				ArrayList<Cigar> cigars = parseCigarString(cigarString, nucleotides);

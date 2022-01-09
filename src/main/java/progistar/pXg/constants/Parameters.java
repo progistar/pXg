@@ -20,6 +20,7 @@ public class Parameters {
 	
 	public static String ngsStatFilePath				=	"";
 	public static String psmStatFilePath				=	"";
+	public static String unmappedFilePath				=	"";
 	
 	public static final String DECOY_METHOD			=	"reverse".toLowerCase();
 	public static byte	mocks						=	Constants.MOCK_REVERSE;

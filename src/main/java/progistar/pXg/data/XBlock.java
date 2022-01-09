@@ -7,6 +7,10 @@ import progistar.pXg.utils.ENSTMapper;
 import progistar.pXg.utils.Priority;
 
 public class XBlock {
+	// Note that only unmapped reads store sequenceID.
+	// Mapped reads do not need this information
+	public String sequenceID		=	null;
+	
 	public int targetReadCount		=	0;
 	public int mockReadCount		=	0;
 	public char strand				=	'+';
