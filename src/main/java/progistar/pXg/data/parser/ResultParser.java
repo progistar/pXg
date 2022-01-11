@@ -76,6 +76,7 @@ public class ResultParser {
 						} else {
 							// those xBlocks are needed to merge into contig.
 							xBlock.sequenceID = uniqueID;
+							xBlock.genomicLocus = "-";
 							annotation.putXBlock(pSeq, xBlock);
 							
 							// TODO: assembly?
