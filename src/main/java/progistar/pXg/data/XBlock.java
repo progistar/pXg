@@ -37,8 +37,19 @@ public class XBlock {
 		return isCannonical;
 	}
 	
+	public boolean isMapped () {
+		if(fullReadSequence == null) {
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public String getKey () {
-		return this.genomicSequence+"_"+this.genomicLocus;
+		if(isMapped()) {
+			return this.genomicSequence+"_"+this.genomicLocus;
+		}
+		return this.genomicSequence;
 	}
 	
 	/**

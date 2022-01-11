@@ -13,7 +13,7 @@ public class PBlock implements Comparable<PBlock> {
 	
 	public String[] fastaIDs;
 	public double score;
-	public byte psmStatus = Constants.PSM_STATUS_RANDOM;
+	public byte psmStatus = Constants.PSM_STATUS_UNDEF;
 	public boolean isCannonical = false;
 	public double fdrRate;
 	// after mapping

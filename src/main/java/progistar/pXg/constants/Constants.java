@@ -83,7 +83,7 @@ public class Constants {
 	public static final String EVENT_UNKNOWN		=	"unknown";
 	
 	// PSM Status
-	public static final byte PSM_STATUS_RANDOM		=	0;
+	public static final byte PSM_STATUS_UNDEF		=	0;
 	public static final byte PSM_STATUS_DECOY		=	1;
 	public static final byte PSM_STATUS_TARGET		=	2;
 

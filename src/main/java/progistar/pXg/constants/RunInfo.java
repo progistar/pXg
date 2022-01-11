@@ -6,6 +6,9 @@ public class RunInfo {
 
 	public static long totalProcessedReads = 0;
 	public static long totalProcessedPeptides = 0;
+	public static int[] cutoffReads = null;
+	public static double cPSMScoreTreshold = 0;
+	public static double ncPSMScoreTreshold = 0;
 	public static Hashtable<String, Integer> processedChromosomes = new Hashtable<String, Integer>();
 	
 	

@@ -11,6 +11,7 @@ import java.util.Iterator;
 
 import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
+import progistar.pXg.constants.RunInfo;
 
 public class PxGAnnotation {
 
@@ -47,7 +48,16 @@ public class PxGAnnotation {
 	
 	/**
 	 * Filter regions below than user-specific p-value. <br>
-	 * 
+	 * As a result, there are only two possible xBlocks are remained. <br>
+	 * 1) xBlocks with passing the threshold. <br>
+	 * 2) xBlocks with only matched to mock reads. <br>
+	 * <br>
+	 * Note that the first case will be regarded as target PSMs; <br>
+	 * and the second one will be regarded as decoy PSMs<br>
+	 * <br>
+	 * We enforce xBlocks with passing the threshold to have zero-mock reads. <br>
+	 * This is because existence of mock read count will be used to recognize target and decoy PSMs. <br>
+	 * And then, pSeq must be determined by exp read or mock read.<br> 
 	 */
 	public void estimatePvalueThreshold () {
 		System.out.println("Calculating p-values...");
@@ -55,18 +65,23 @@ public class PxGAnnotation {
 		
 		double[][] pValueTable = getPvalueTable();
 		
-		int[] cutoffReads = new int[Parameters.maxPeptLen+1];
+		RunInfo.cutoffReads = new int[Parameters.maxPeptLen+1];
 		for(int peptLen = Parameters.minPeptLen; peptLen <= Parameters.maxPeptLen; peptLen++) {
 			for(int i=1; i<pValueTable[peptLen].length; i++) {
 				if(pValueTable[peptLen][i] < Parameters.ngsPvalue) {
-					cutoffReads[peptLen] = i-1;
+					RunInfo.cutoffReads[peptLen] = i-1;
 					System.out.println("Cutoff for "+peptLen+" aa: "+(i-1));
 					break;
 				}
 			}
 		}
 		
-		final int[] cutoffs = cutoffReads;
+		/**
+		 * After filter xBlock by threshold, if there is at least one xBlock with exp read,<br>
+		 * then the all xBlocks with mock will be discarded in corresponding to pSeq.<br>
+		 * 
+		 */
+		final int[] cutoffs = RunInfo.cutoffReads;
 		ArrayList<String> zeroSizeList = new ArrayList<String>();
 		this.xBlockMapper.forEach((pSeq, xBlocks) -> {
 			if(xBlocks.size() != 0) {
@@ -74,23 +89,50 @@ public class PxGAnnotation {
 				
 				Iterator<String> keys = (Iterator<String>) xBlocks.keys();
 				
+				boolean hasExpRead = false;
 				// single peptide can be assigned to multiple loci
 				while(keys.hasNext()) {
 					String key = keys.next();
 					XBlock xBlock = xBlocks.get(key);
 					if(xBlock.targetReadCount <= cutoffs[pSeq.length()]) {
+						// this xBlock is definitely assigned to random matches.
+						// it will be used to separate target and decoy PSMs 
+						if(xBlock.targetReadCount == 0 && xBlock.mockReadCount > 0) {
+							continue;
+						}
+						
 						// if debug mode turns on, do not filter out annotations by reads
 						if(!Parameters.debugMode) {
 							removeList.add(key);
 						}
+					} else {
+						// decide to assign exp. reads!
+						// this is a trick to seprate Target and Decoy PSMs.
+						xBlock.mockReadCount = 0;
+						hasExpRead = true;
 					}
 				}
 				
 				// filter out peptide with NGS count below than cut-off
 				removeList.forEach(key -> xBlocks.remove(key));
+				removeList.clear();
 				
+				// pSeq will be determined by either exp read or mock read.
 				if(xBlocks.size() == 0) {
 					zeroSizeList.add(pSeq);
+				} 
+				// there is at least one exp read.
+				// then, remove all mocks!
+				else if(hasExpRead) {
+					xBlocks.forEach((key, xBlock) -> {
+						if(xBlock.mockReadCount > 0) {
+							removeList.add(key);
+						}
+					});
+					
+					// remove all mocks.
+					removeList.forEach(key -> xBlocks.remove(key));
+					removeList.clear();
 				}
 			}
 			
@@ -377,7 +419,6 @@ public class PxGAnnotation {
 			
 			// topScore is determined by target or decoy status
 			int bestIndex = 0;
-			byte bestStatus = Constants.PSM_STATUS_RANDOM;
 			for(int i=0; i<scanPBlocks.size(); i++) {
 				
 				byte psmStatus = scanPBlocks.get(i).psmStatus;
@@ -387,14 +428,10 @@ public class PxGAnnotation {
 				if(psmStatus == Constants.PSM_STATUS_TARGET) {
 					//select top score from targets
 					bestIndex = i;
-					bestStatus = psmStatus;
 					break;
-				} else if(psmStatus == Constants.PSM_STATUS_DECOY && psmStatus > bestStatus) {
-					bestStatus = psmStatus;
+				} else if(psmStatus == Constants.PSM_STATUS_DECOY) {
 					bestIndex = i;
-				} else if(bestStatus == Constants.PSM_STATUS_RANDOM){
-					// worst score is selected to random PSMs
-					bestIndex = i;
+					break;
 				}
 			}
 			
@@ -405,7 +442,7 @@ public class PxGAnnotation {
 	 * Marking target PSM <br>
 	 * 
 	 */
-	public void markTargetPSM () {
+	public void markTargetPSMs () {
 		long startTime = System.currentTimeMillis();
 		
 		ArrayList<PBlock> pBlocks = PeptideAnnotation.pBlocks;
@@ -419,17 +456,26 @@ public class PxGAnnotation {
 			Hashtable<String, XBlock> xBlocks = this.xBlockMapper.get(key);
 			if(xBlocks != null) {
 				
+				// check error!
+				boolean[] expAndMocks = new boolean[2];
 				xBlocks.forEach((key_, xBlock) -> {
 					if(xBlock.targetReadCount > 0) {
 						pBlock.psmStatus = Constants.PSM_STATUS_TARGET > pBlock.psmStatus ? Constants.PSM_STATUS_TARGET : pBlock.psmStatus;
 						pBlock.isCannonical |= xBlock.isCannonical();
+						expAndMocks[0] = true;
 					} 
-					// entrapment psms
+					// decoy PSMs
 					else if(xBlock.mockReadCount > 0) {
 						pBlock.psmStatus = Constants.PSM_STATUS_DECOY > pBlock.psmStatus ? Constants.PSM_STATUS_DECOY : pBlock.psmStatus;
 						pBlock.isCannonical |= xBlock.isCannonical();
+						expAndMocks[1] = true;
 					}
 				});
+				
+				if(expAndMocks[0] && expAndMocks[1]) {
+					System.out.println("markTargetPSMs was being invalid behavior!::");
+					System.out.println("-- exp and mock read xBlocks were coincident!");
+				}
 			}
 		}
 		
@@ -443,9 +489,12 @@ public class PxGAnnotation {
 	 * 
 	 */
 	public void fdrEstimation () {
-		double targetCount = 0;
-		double decoyCount = 0;
-		int fdrCutoffIndex = 0;
+		double cTargetCount = 0;
+		double ncTargetCount = 0;
+		double cDecoyCount = 0;
+		double ncDecoyCount = 0;
+		int cFDRCutoffIndex = 0;
+		int ncFDRCutoffIndex = 0;
 		
 		// Assume that, single PSM per scan.
 		// This is because topScoreFiler only selects single PSM per scan.
@@ -476,11 +525,12 @@ public class PxGAnnotation {
 				}
 				
 				if(case_ == Constants.PSM_STATUS_TARGET) {
-					targetCount++;
 					Double count = .0;
 					if(pBlock.isCannonical) {
+						cTargetCount++;
 						count = cTargetCounts.get(score);
 					} else {
+						ncTargetCount++;
 						count = ncTargetCounts.get(score);
 					}
 					if(count == null) {
@@ -492,13 +542,15 @@ public class PxGAnnotation {
 					} else {
 						ncTargetCounts.put(score, count);
 					}
+					
 				}
 				else if(case_ == Constants.PSM_STATUS_DECOY) {
-					decoyCount++;
 					Double count = .0;
 					if(pBlock.isCannonical) {
+						cDecoyCount++;
 						count = cDecoyCounts.get(score);
 					} else {
+						ncDecoyCount++;
 						count = ncDecoyCounts.get(score);
 					}
 					if(count == null) {
@@ -510,14 +562,25 @@ public class PxGAnnotation {
 					} else {
 						ncDecoyCounts.put(score, count);
 					}
-					
 				}
 				
-				if(targetCount != 0) {
-					fdrRate = decoyCount/targetCount;
-				}
-				if(fdrRate < Parameters.fdrThreshold) {
-					fdrCutoffIndex = i;
+				
+				if(pBlock.isCannonical) {
+					// for canonical cutoff
+					if(cTargetCount != 0) {
+						fdrRate = cDecoyCount/cTargetCount;
+					}
+					if(fdrRate < Parameters.fdrThreshold) {
+						cFDRCutoffIndex = i;
+					}
+				} else {
+					// for noncanonical cutoff
+					if(ncTargetCount != 0) {
+						fdrRate = ncDecoyCount/ncTargetCount;
+					}
+					if(fdrRate < Parameters.fdrThreshold) {
+						ncFDRCutoffIndex = i;
+					}
 				}
 				
 				pBlock.fdrRate = fdrRate;
@@ -565,15 +628,33 @@ public class PxGAnnotation {
 				if(!Parameters.debugMode) {
 					pBlocks.remove(i);
 				}
-			} else if(i > fdrCutoffIndex) {
-				if(!Parameters.debugMode) {
-					pBlocks.remove(i);
+			} else {
+				if(pBlock.isCannonical) {
+					if(i > cFDRCutoffIndex) {
+						RunInfo.cPSMScoreTreshold = pBlock.score;
+						if(!Parameters.debugMode) {
+							pBlocks.remove(i);
+						}
+					}
+				} else {
+					if(i > ncFDRCutoffIndex) {
+						RunInfo.ncPSMScoreTreshold = pBlock.score;
+						if(!Parameters.debugMode) {
+							pBlocks.remove(i);
+						}
+					}
 				}
 			}
-			
 		}
 	}
 	
+	/**
+	 * This method expects that: <br>
+	 * 1) following estimatePvalueTreshold.<br>
+	 * 2) so, pSeq has exp or mock read only.<br>
+	 * 
+	 * 
+	 */
 	public void regionScoreFilter () {
 		// prevent zeor-size
 		if(this.xBlockMapper.size() == 0) return;
@@ -586,6 +667,7 @@ public class PxGAnnotation {
 			if(xBlocks == null || xBlocks.size() == 0) continue;
 			
 			Iterator<String> keys = (Iterator<String>) xBlocks.keys();
+			
 			double minPriority = Double.MAX_VALUE;
 			while(keys.hasNext()) {
 				String key = keys.next();

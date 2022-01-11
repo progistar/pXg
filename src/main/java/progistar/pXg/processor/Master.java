@@ -117,18 +117,18 @@ public class Master {
 			PxGAnnotation pXgA = ResultParser.parseResult(tmpOutputFiles);
 			
 			// removing tmpOutputFiles
-			tmpOutputFiles.forEach(file -> {file.delete();});
+//			tmpOutputFiles.forEach(file -> {file.delete();});
 
-			// marking target PSMs
-			pXgA.markTargetPSM();
 			// filter by pvalue
 			pXgA.estimatePvalueThreshold();
+			// filter regions
+			pXgA.regionScoreFilter();
+			// marking target PSMs
+			pXgA.markTargetPSMs();
 			// among them, use highest-scored PSM
 			pXgA.topScoreFilter();
 			// fdr estimation
 			pXgA.fdrEstimation();
-			// filter regions
-			pXgA.regionScoreFilter();
 			// mark fasta result
 			pXgA.markFasta();
 			

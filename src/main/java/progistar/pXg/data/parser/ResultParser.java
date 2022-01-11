@@ -76,6 +76,9 @@ public class ResultParser {
 						} else {
 							// those xBlocks are needed to merge into contig.
 							xBlock.sequenceID = uniqueID;
+							annotation.putXBlock(pSeq, xBlock);
+							
+							// TODO: assembly?
 							Assembler.addXBlock(pSeq, xBlock);
 						}
 					}
@@ -88,7 +91,7 @@ public class ResultParser {
 		}
 		
 		// just write down unmapped reads (which mapped to any peptides)
-		Assembler.write();
+		//Assembler.write();
 		
 		/*
 		// assemble xBlocks
