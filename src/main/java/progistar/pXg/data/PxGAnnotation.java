@@ -359,6 +359,9 @@ public class PxGAnnotation {
 			BW.append("FDR");
 			BW.newLine();
 			
+			File outFile = new File(Parameters.unmappedFilePath);
+			BufferedWriter BWUnmapped = new BufferedWriter(new FileWriter(outFile));
+			
 			for(PBlock pBlock : pBlocks) {
 				// peptide sequence without I/L consideration
 				String key = pBlock.getPeptideSequence();
@@ -374,6 +377,16 @@ public class PxGAnnotation {
 							
 							BW.append(pBlock.toString()).append("\t").append(pBlock.rank+"\t").append(xBlocks.size()+"\t").append(xBlock.toString()).append("\t"+pBlock.fdrRate);
 							BW.newLine();
+							
+							// if this is unmapped, then store.
+							if(!xBlock.isMapped()) {
+								BWUnmapped.append(">"+xBlock.peptideSequence);
+								BWUnmapped.newLine();
+								BWUnmapped.append(xBlock.sequenceID).append("\t").append(xBlock.fullReadSequence).append("\t")
+								.append(xBlock.genomicLocus).append("\t").append(xBlock.genomicSequence);
+								BWUnmapped.newLine();
+							}
+							
 						}catch(IOException ioe) {
 							
 						}
@@ -382,6 +395,8 @@ public class PxGAnnotation {
 			}
 			
 			BW.close();
+			BWUnmapped.close();
+			
 		}catch(IOException ioe) {
 			
 		}
@@ -506,7 +521,6 @@ public class PxGAnnotation {
 		
 		try {
 			ArrayList<Double> scores = new ArrayList<Double>();
-			Hashtable<Double, Boolean> scoreList = new Hashtable<Double, Boolean>();
 			Hashtable<Double, Double> cTargetCounts = new Hashtable<Double, Double>();
 			Hashtable<Double, Double> cDecoyCounts = new Hashtable<Double, Double>();
 			Hashtable<Double, Double> ncTargetCounts = new Hashtable<Double, Double>();
@@ -518,11 +532,12 @@ public class PxGAnnotation {
 				PBlock pBlock = pBlocks.get(i);
 				
 				byte case_ = pBlock.psmStatus;
-				double score = pBlock.score;
-				if(scoreList.get(score) == null) {
-					scores.add(score);
-					scoreList.put(score, true);
+				
+				if(case_ == Constants.PSM_STATUS_UNDEF) {
+					continue;
 				}
+				
+				double score = pBlock.score;
 				
 				if(case_ == Constants.PSM_STATUS_TARGET) {
 					Double count = .0;

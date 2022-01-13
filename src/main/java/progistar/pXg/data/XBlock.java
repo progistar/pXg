@@ -37,6 +37,13 @@ public class XBlock {
 		return isCannonical;
 	}
 	
+	public boolean isMapped () {
+		if(this.fullReadSequence == null) {
+			return true;
+		}
+		return false;
+	}
+	
 	public String getKey () {
 		return this.genomicSequence+"_"+this.genomicLocus;
 	}

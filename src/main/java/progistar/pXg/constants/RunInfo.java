@@ -20,4 +20,9 @@ public class RunInfo {
 		
 		System.out.println(chrList.substring(1));
 	}
+	
+	public static void printPSMCutoff () {
+		System.out.println("PSM FDR cutoff for canonical: "+cPSMScoreTreshold);
+		System.out.println("PSM FDR cutoff for noncanonical: "+ncPSMScoreTreshold);
+	}
 }
