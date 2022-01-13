@@ -1,5 +1,6 @@
 package progistar.pXg.data;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 import progistar.pXg.constants.Constants;
@@ -22,6 +23,10 @@ public class XBlock {
 	public String[] fastaIDs		=	null;
 	public String fullReadSequence	=	null; // for unmapped read
 	public double bestRegionPriority 	= 	Double.MAX_VALUE;
+	
+	// with the same key value block
+	// the block will be null if there is no next sibling.
+	public ArrayList<XBlock> siblingXBlocks	=	new ArrayList<XBlock>();
 	
 	public boolean isCannonical () {
 		String events = toEvents();

@@ -40,6 +40,7 @@ public class PxGAnnotation {
 		} else {
 			thisXBlock.mockReadCount += xBlock.mockReadCount;
 			thisXBlock.targetReadCount += xBlock.targetReadCount;
+			thisXBlock.siblingXBlocks.add(xBlock); // 
 		}
 		
 		maxNGSreadCount = Math.max(thisXBlock.mockReadCount, maxNGSreadCount);
@@ -380,11 +381,17 @@ public class PxGAnnotation {
 							
 							// if this is unmapped, then store.
 							if(!xBlock.isMapped()) {
+								ArrayList<XBlock> unmappedXBlocks = new ArrayList<XBlock>();
+								unmappedXBlocks.add(xBlock);
+								unmappedXBlocks.addAll(xBlock.siblingXBlocks);
+								
 								BWUnmapped.append(">"+xBlock.peptideSequence);
 								BWUnmapped.newLine();
-								BWUnmapped.append(xBlock.sequenceID).append("\t").append(xBlock.fullReadSequence).append("\t")
-								.append(xBlock.genomicLocus).append("\t").append(xBlock.genomicSequence);
-								BWUnmapped.newLine();
+								for(XBlock thisXBlock : unmappedXBlocks) {
+									BWUnmapped.append(thisXBlock.sequenceID).append("\t").append(thisXBlock.fullReadSequence).append("\t").append(thisXBlock.genomicSequence);
+									BWUnmapped.newLine();
+								}
+								
 							}
 							
 						}catch(IOException ioe) {
