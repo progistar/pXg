@@ -84,33 +84,29 @@ public class PxGAnnotation {
 		 */
 		final int[] cutoffs = RunInfo.cutoffReads;
 		ArrayList<String> zeroSizeList = new ArrayList<String>();
+		
 		this.xBlockMapper.forEach((pSeq, xBlocks) -> {
 			if(xBlocks.size() != 0) {
 				ArrayList<String> removeList = new ArrayList<String>();
 				
 				Iterator<String> keys = (Iterator<String>) xBlocks.keys();
 				
-				boolean hasExpRead = false;
 				// single peptide can be assigned to multiple loci
 				while(keys.hasNext()) {
 					String key = keys.next();
 					XBlock xBlock = xBlocks.get(key);
+					
+					if(xBlock.targetReadCount == 0 && xBlock.mockReadCount > 0) {
+						continue;
+					}
+					
 					if(xBlock.targetReadCount <= cutoffs[pSeq.length()]) {
-						// this xBlock is definitely assigned to random matches.
-						// it will be used to separate target and decoy PSMs 
-						if(xBlock.targetReadCount == 0 && xBlock.mockReadCount > 0) {
-							continue;
-						}
-						
 						// if debug mode turns on, do not filter out annotations by reads
 						if(!Parameters.debugMode) {
 							removeList.add(key);
 						}
 					} else {
-						// decide to assign exp. reads!
-						// this is a trick to seprate Target and Decoy PSMs.
 						xBlock.mockReadCount = 0;
-						hasExpRead = true;
 					}
 				}
 				
@@ -121,19 +117,6 @@ public class PxGAnnotation {
 				// pSeq will be determined by either exp read or mock read.
 				if(xBlocks.size() == 0) {
 					zeroSizeList.add(pSeq);
-				} 
-				// there is at least one exp read.
-				// then, remove all mocks!
-				else if(hasExpRead) {
-					xBlocks.forEach((key, xBlock) -> {
-						if(xBlock.mockReadCount > 0) {
-							removeList.add(key);
-						}
-					});
-					
-					// remove all mocks.
-					removeList.forEach(key -> xBlocks.remove(key));
-					removeList.clear();
 				}
 			}
 			
@@ -452,8 +435,8 @@ public class PxGAnnotation {
 					bestIndex = i;
 					break;
 				} else if(psmStatus == Constants.PSM_STATUS_DECOY) {
+					// to select completely decoyed PSMs as possible
 					bestIndex = i;
-					break;
 				}
 			}
 			
@@ -528,6 +511,7 @@ public class PxGAnnotation {
 		
 		try {
 			ArrayList<Double> scores = new ArrayList<Double>();
+			Hashtable<Double, Boolean> isScored = new Hashtable<Double, Boolean>(); // to print score at once.
 			Hashtable<Double, Double> cTargetCounts = new Hashtable<Double, Double>();
 			Hashtable<Double, Double> cDecoyCounts = new Hashtable<Double, Double>();
 			Hashtable<Double, Double> ncTargetCounts = new Hashtable<Double, Double>();
@@ -594,6 +578,7 @@ public class PxGAnnotation {
 					}
 					if(fdrRate < Parameters.fdrThreshold) {
 						cFDRCutoffIndex = i;
+						RunInfo.cPSMScoreTreshold = pBlock.score;
 					}
 				} else {
 					// for noncanonical cutoff
@@ -602,9 +587,14 @@ public class PxGAnnotation {
 					}
 					if(fdrRate < Parameters.fdrThreshold) {
 						ncFDRCutoffIndex = i;
+						RunInfo.ncPSMScoreTreshold = pBlock.score;
 					}
 				}
 				
+				if(isScored.get(score) == null) {
+					scores.add(score);
+					isScored.put(score, true);
+				}
 				pBlock.fdrRate = fdrRate;
 			}
 			
@@ -642,32 +632,33 @@ public class PxGAnnotation {
 			
 		}
 		
-		// remove below than fdr cutoff
-		for(int i=pBlocks.size()-1; i>=0; i--) {
+		System.out.println("cFDR cutoff idx: "+cFDRCutoffIndex);
+		System.out.println("ncFDR cutoff idx: "+ncFDRCutoffIndex);
+		System.out.println("cTarget counts: "+cTargetCount);
+		System.out.println("cDecoy counts: "+cDecoyCount);
+		System.out.println("ncTarget counts: "+ncTargetCount);
+		System.out.println("ncDecoy counts: "+ncDecoyCount);
+		
+		// remove below than FDR cutoff
+		ArrayList<PBlock> cutoffedPBlocks = new ArrayList<PBlock>();
+		for(int i=0; i<pBlocks.size(); i++) {
 			PBlock pBlock = pBlocks.get(i);
 			
-			if(pBlock.psmStatus != Constants.PSM_STATUS_TARGET) {
-				if(!Parameters.debugMode) {
-					pBlocks.remove(i);
-				}
-			} else {
+			if(pBlock.psmStatus == Constants.PSM_STATUS_TARGET) {
 				if(pBlock.isCannonical) {
-					if(i > cFDRCutoffIndex) {
-						RunInfo.cPSMScoreTreshold = pBlock.score;
-						if(!Parameters.debugMode) {
-							pBlocks.remove(i);
-						}
+					if(i < cFDRCutoffIndex) {
+						cutoffedPBlocks.add(pBlock);
 					}
 				} else {
-					if(i > ncFDRCutoffIndex) {
-						RunInfo.ncPSMScoreTreshold = pBlock.score;
-						if(!Parameters.debugMode) {
-							pBlocks.remove(i);
-						}
+					if(i < ncFDRCutoffIndex) {
+						cutoffedPBlocks.add(pBlock);
 					}
 				}
 			}
 		}
+		
+		// update
+		PeptideAnnotation.pBlocks = cutoffedPBlocks;
 	}
 	
 	/**
@@ -690,7 +681,10 @@ public class PxGAnnotation {
 			
 			Iterator<String> keys = (Iterator<String>) xBlocks.keys();
 			
-			double minPriority = Double.MAX_VALUE;
+			double minExpXBlockPenalty = Double.MAX_VALUE;
+			double minMockXBlockPenalty = Double.MAX_VALUE;
+			boolean isExpXBlock = false;
+			
 			while(keys.hasNext()) {
 				String key = keys.next();
 				XBlock xBlock = xBlocks.get(key);
@@ -698,8 +692,13 @@ public class PxGAnnotation {
 				// filter-out 
 				xBlock.filterRegions();
 				
-				// find minPriority
-				minPriority = Math.min(xBlock.bestRegionPriority, minPriority);
+				// find min penalty
+				if(xBlock.targetReadCount > 0) {
+					minExpXBlockPenalty = Math.min(xBlock.bestRegionPriority, minExpXBlockPenalty);
+					isExpXBlock = true;
+				} else if(xBlock.mockReadCount > 0) {
+					minMockXBlockPenalty = Math.min(xBlock.bestRegionPriority, minMockXBlockPenalty);
+				}
 			}
 			
 			keys = (Iterator<String>) xBlocks.keys();
@@ -707,12 +706,20 @@ public class PxGAnnotation {
 			while(keys.hasNext()) {
 				String key = keys.next();
 				XBlock xBlock = xBlocks.get(key);
-				if(xBlock.bestRegionPriority > minPriority) {
+				
+				// if there is at least one exp read,
+				// xBlocks with mock reads will be discarded.
+				if(isExpXBlock && xBlock.mockReadCount > 0) {
+					discardList.add(key);
+					continue;
+				}
+				
+				if(xBlock.bestRegionPriority > minExpXBlockPenalty) {
 					discardList.add(key);
 				}
 			}
 			
-			// remove higher priority than minPriority
+			// remove higher penalties
 			discardList.forEach(key -> {
 				xBlocks.remove(key);
 			});

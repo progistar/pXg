@@ -24,7 +24,7 @@ public class Parameters {
 	
 	public static final String DECOY_METHOD			=	"reverse".toLowerCase();
 	public static byte	mocks						=	Constants.MOCK_REVERSE;
-	public static byte	mockPolicy				=	Constants.MOCK_ALL;
+	public static byte	mockPolicy				=	Constants.MOCK_MAX_ONE;
 	
 	// GTF partition size
 	public static final String GENOMIC_ANNOTATION_PARTITION_SIZE		=	"genomic_annotatino_partition_size".toLowerCase();
