@@ -16,6 +16,10 @@ public class Fasta {
 	private ArrayList<FastaRecord> records = new ArrayList<FastaRecord>();
 	
 	public Fasta (String fileName) {
+		if(fileName == null) {
+			return;
+		}
+		
 		File file = new File(fileName);
 		
 		// check if the file is available. 

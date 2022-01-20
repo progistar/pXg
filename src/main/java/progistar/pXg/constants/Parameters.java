@@ -2,57 +2,67 @@ package progistar.pXg.constants;
 
 public class Parameters {
 	// Input file paths
-	public static final String GENOMIC_ANNOTATION_PATH				=	"genomic_annotation_path".toLowerCase();
-	public static String genomicAnnotationFilePath	=	"C:\\Bioinformatics\\0.Databases\\1.HumanRNAs\\gencode.v19.annotation.sorted.gtf";
+	public static final String CMD_GENOMIC_ANNOTATION_PATH				=	"-gtf".toLowerCase();
+	public static String genomicAnnotationFilePath	=	null;
 	
-	public static final String GENOMIC_SEQUENCE_PATH				=	"genomic_sequence_path".toLowerCase();
-	public static String sequenceFilePath			=	"C:\\Users\\progi\\Desktop\\Projects\\pXg\\chr1toy.sam";
+	public static final String CMD_GENOMIC_SEQUENCE_PATH				=	"-sam".toLowerCase();
+	public static String sequenceFilePath			=	null;
 	
-	public static final String PEPTIDE_ANNOTATION_PATH				=	"peptide_annotation_path".toLowerCase();
-	public static String peptideFilePath			=	"";
+	public static final String CMD_PEPTIDE_ANNOTATION_PATH				=	"-psm".toLowerCase();
+	public static String peptideFilePath			=	null;
 	
-	public static final String PROTEIN_SEQUENCE_PATH		=	"protein_fasta_path".toLowerCase();
-	public static String proteinFastaPath			=	"";
+	public static final String CMD_PROTEIN_SEQUENCE_PATH		=	"-fasta".toLowerCase();
+	public static String proteinFastaPath			=	null;
 	
 	// Output file path
-	public static final String OUTPUT_PATH				=	"output_path".toLowerCase();
-	public static String outputFilePath				=	"";
+	public static final String CMD_OUTPUT_PATH				=	"-out".toLowerCase();
+	public static String outputFilePath				=	null;
+	public static String ngsStatFilePath				=	null;
+	public static String psmStatFilePath				=	null;
+	public static String unmappedFilePath				=	null;
 	
-	public static String ngsStatFilePath				=	"";
-	public static String psmStatFilePath				=	"";
-	public static String unmappedFilePath				=	"";
+
+	// Significant NGS-read mapping
+	public static final String CMD_P_VALUE			=	"-pval".toLowerCase();
+	public static double pvalue						=	0.05;
 	
-	public static final String DECOY_METHOD			=	"reverse".toLowerCase();
-	public static byte	mocks						=	Constants.MOCK_REVERSE;
-	public static byte	mockPolicy				=	Constants.MOCK_MAX_ONE;
+	// FDR estimation at PSM level
+	public static final String CMD_FDR				=	"-fdr".toLowerCase();
+	public static double fdr						=	0.05;
 	
-	// GTF partition size
-	public static final String GENOMIC_ANNOTATION_PARTITION_SIZE		=	"genomic_annotatino_partition_size".toLowerCase();
-	public static int partitionSize					=	5000000; // 5 * 10^6 * 10 * 8 = 0.4 G
-	
-	public static final String GENOMIC_SEQUENCE_PARTITION_SIZE			=	"genomic_sequence_partition_size".toLowerCase();
-	public static int readSize						=	1000000; // 1 * 10^7
-	
-	// READ sequencing 
-	public static byte READ_STRAND					=	Constants.FORWARD_STRAND_READS;
-	
+	// Peptide length
+	public static final String CMD_LENGTH			=	"-length".toLowerCase();
 	public static int minPeptLen					=	8;
 	public static int maxPeptLen					=	15;
 	public static boolean leucineIsIsoleucine		=	true;
 	
+	// Those options cannot be accessed by users.
+	// It is only used for test which method is more adaptable.
+	public static byte	mocks						=	Constants.MOCK_REVERSE;
+	public static byte	mockPolicy				=	Constants.MOCK_MAX_ONE;
+	
+	// GTF partition size
+	public static final String CMD_GENOMIC_ANNOTATION_PARTITION_SIZE		=	"-gtf_partition_size".toLowerCase();
+	public static int partitionSize					=	5000000; // 5 * 10^6 * 10 * 8 = 0.4 G
+	
+	public static final String CMD_GENOMIC_SEQUENCE_PARTITION_SIZE			=	"sam_partition_size".toLowerCase();
+	public static int readSize						=	1000000; // 1 * 10^6
+	
+	// READ sequencing 
+	public static byte READ_STRAND					=	Constants.FORWARD_STRAND_READS;
+	
 	// Peptide file
 	// for user-friendly purpose, peptideColumnIndex is taken one-based and converted to zero-based.
-	public static final String PEPTIDE_COLUMN_INDEX			=	"peptide_column_index".toLowerCase();
-	public static int peptideColumnIndex			=	0; // user-specific peptide index
+	public static final String CMD_PEPTIDE_COLUMN_INDEX	=	"-pept_col".toLowerCase();
+	public static int peptideColumnIndex			=	-1; // user-specific peptide index
 	
-	public static final String SCAN_COLUMN_INDICES	=	"scan_column_indices".toLowerCase();
+	public static final String CMD_SCAN_COLUMN_INDICES	=	"-scan_cols".toLowerCase();
 	public static int[] scanColumnIndices			=	null; // user-specific scan index
 	
-	public static final String SCORE_COLUMN_INDEX		=	"score_column_index".toLowerCase();
-	public static int scoreColumnIndex				=	0;
-
+	public static final String CMD_SCORE_COLUMN_INDEX	=	"-score_col".toLowerCase();
+	public static int scoreColumnIndex				=	-1;
 	
-	public static final String PSM_RANK_THRESHOLD	=	"psm_rank".toLowerCase();
+	public static final String CMD_CANDIDATE_RANK	=	"-rank".toLowerCase();
 	public static int psmRank						=	10;
 	
 	public static final String pParserRegExr		=	"aareg".toLowerCase();
@@ -65,16 +75,10 @@ public class Parameters {
 	public static final String cMarker				=	"cm".toLowerCase();
 	public static String commentMarker				=	"#|@|%"; // if line starts with the pattern, the line will be skipped during parsing the file.
 	
-	// Significant NGS-read mapping
-	public static double ngsPvalue					=	0.05;
-	
-	// FDR estimation at PSM level
-	public static double fdrThreshold				=	0.05;
-	
 	// Print all annotated PSMs
 	public static boolean debugMode					=	false;
 	
 	// System Parameters
-	public static final String numOfThreads			=	"num_threads".toLowerCase();
+	public static final String CMD_THREADS			=	"-threads".toLowerCase();
 	public static int nThreads						=	1;
 }

@@ -16,7 +16,7 @@ public class Starter
     	
     	long startTime = System.currentTimeMillis();
     	
-    	ParameterParser.parseParams("params.txt");
+    	ParameterParser.parseParams(args);
     	
     	Master.ready(Parameters.genomicAnnotationFilePath, Parameters.sequenceFilePath, Parameters.peptideFilePath);
     	Master.run();

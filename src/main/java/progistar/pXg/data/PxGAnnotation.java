@@ -69,7 +69,7 @@ public class PxGAnnotation {
 		RunInfo.cutoffReads = new int[Parameters.maxPeptLen+1];
 		for(int peptLen = Parameters.minPeptLen; peptLen <= Parameters.maxPeptLen; peptLen++) {
 			for(int i=1; i<pValueTable[peptLen].length; i++) {
-				if(pValueTable[peptLen][i] < Parameters.ngsPvalue) {
+				if(pValueTable[peptLen][i] < Parameters.pvalue) {
 					RunInfo.cutoffReads[peptLen] = i-1;
 					System.out.println("Cutoff for "+peptLen+" aa: "+(i-1));
 					break;
@@ -576,7 +576,7 @@ public class PxGAnnotation {
 					if(cTargetCount != 0) {
 						fdrRate = cDecoyCount/cTargetCount;
 					}
-					if(fdrRate < Parameters.fdrThreshold) {
+					if(fdrRate < Parameters.fdr) {
 						cFDRCutoffIndex = i;
 						RunInfo.cPSMScoreTreshold = pBlock.score;
 					}
@@ -585,7 +585,7 @@ public class PxGAnnotation {
 					if(ncTargetCount != 0) {
 						fdrRate = ncDecoyCount/ncTargetCount;
 					}
-					if(fdrRate < Parameters.fdrThreshold) {
+					if(fdrRate < Parameters.fdr) {
 						ncFDRCutoffIndex = i;
 						RunInfo.ncPSMScoreTreshold = pBlock.score;
 					}
