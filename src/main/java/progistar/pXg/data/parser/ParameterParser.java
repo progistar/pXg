@@ -151,6 +151,13 @@ public class ParameterParser {
 		}
 		
 		printSetting();
+		
+		// change one-based to zero-based
+		Parameters.peptideColumnIndex--;
+		Parameters.scoreColumnIndex--;
+		for(int i=0; i<Parameters.scanColumnIndices.length; i++) {
+			Parameters.scanColumnIndices[i]--;
+		}
 	}
 	
 	/**

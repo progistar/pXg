@@ -656,11 +656,11 @@ public class PxGAnnotation {
 			
 			if(pBlock.psmStatus == Constants.PSM_STATUS_TARGET) {
 				if(pBlock.isCannonical) {
-					if(i < cFDRCutoffIndex) {
+					if(i <= cFDRCutoffIndex) {
 						cutoffedPBlocks.add(pBlock);
 					}
 				} else {
-					if(i < ncFDRCutoffIndex) {
+					if(i <= ncFDRCutoffIndex) {
 						cutoffedPBlocks.add(pBlock);
 					}
 				}

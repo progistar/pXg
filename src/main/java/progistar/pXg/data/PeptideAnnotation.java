@@ -185,13 +185,13 @@ public class PeptideAnnotation {
 	}
 	
 	/**
-	 * Count scans with containing at least one pBlock matched to experiment reads.<br>
+	 * Count peptides with containing at least one matched experiment reads.<br>
 	 *  
 	 * 
 	 * @param xBlockMapper
 	 * @return
 	 */
-	public static int getScanSizeWithXBlocks (Hashtable<String, Hashtable<String, XBlock>> xBlockMapper) {
+	public static int getPeptideSizeWithXBlocks (Hashtable<String, Hashtable<String, XBlock>> xBlockMapper) {
 		Hashtable<String, String> peptides = new Hashtable<String, String>();
 		
 		for(int i=0; i<pBlocks.size(); i++) {
@@ -225,14 +225,15 @@ public class PeptideAnnotation {
 		return passedPeptideIL.size();
 	}
 	
+	
 	/**
-	 * Count peptides with containing at least one matched experiment reads.<br>
+	 * Count scans with containing at least one pBlock matched to experiment reads.<br>
 	 *  
 	 * 
 	 * @param xBlockMapper
 	 * @return
 	 */
-	public static int getPeptideSizeWithXBlocks (Hashtable<String, Hashtable<String, XBlock>> xBlockMapper) {
+	public static int getScanSizeWithXBlocks (Hashtable<String, Hashtable<String, XBlock>> xBlockMapper) {
 		Hashtable<String, ArrayList<PBlock>> pBlocksByScan = aggregatePBlocksByScan();
 		
 		// if there is at least one xBlock with exp. reads
