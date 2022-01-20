@@ -1,6 +1,14 @@
 package progistar.pXg.constants;
 
 public class Constants {
+	// [major].[minor].[patch].
+	// major: significant change. it strongly affects to performance.
+	//        plus, basically, this version number intends to upgrade behaviors of tool.
+	// minor: critical bug fix, change in results something like that.
+	// patch: tiny bug fix, typo, and change code styles something like that.
+	public static final String VERSION = "pXg v1.0.0 (release 2022-02-26)";
+	public static final String INTRODUCE = "Seunghyuk Choi and Eunok Paek in the Department of Computer Science at Hanyang University in Seoul, South Korea. ";
+	
 
 	//
 	public static final byte EXON = 30;

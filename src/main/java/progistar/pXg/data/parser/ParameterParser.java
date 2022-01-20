@@ -2,40 +2,44 @@ package progistar.pXg.data.parser;
 
 import java.io.File;
 
+import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
 
 public class ParameterParser {
 
 	public static void parseParams (String[] args) {
 		try {
+			System.out.println(Constants.VERSION);
+			System.out.println(Constants.INTRODUCE);
+			System.out.println();
+			
 			// print parameter description
 			if(args.length == 0) {
-				System.out.println("You look troubled to run pXg.");
-				System.out.println("Here, I give a useful manual for you.");
+				System.out.println("Usage");
 				System.out.println();
-				System.out.println("*Mandatory Fields");
-				System.out.println("** -gtf                 : gtf file path. We recommand to use the same gtf corresponding to alignment.");
-				System.out.println("** -sam                 : sam file path. The sam file must be sorted by coordinate.");
-				System.out.println("** -psm                 : psm file path. It is expected that the psm file is derived from proteomics search by de novo or database search engine.");
-				System.out.println("** -pept_col            : peptide column index in the psm file. One-based!");
-				System.out.println("** -scan_cols           : scan identifier indices in the psm file. Multiple columns are also possible because sometimes it is not enough to distinguish scan by only scan id.");
-				System.out.println("    You can write multiple indices such like that: 1,2,5");
-				System.out.println("** -pept_col            : peptide column index in the psm file. One-based!");
-				System.out.println("** -out                 : output path of pXg.");
+				System.out.println("Mandatory Fields");
+				System.out.println("  -gtf                 : gtf file path. We recommand to use the same gtf corresponding to alignment.");
+				System.out.println("  -sam                 : sam file path. The sam file must be sorted by coordinate.");
+				System.out.println("  -psm                 : psm file path. It is expected that the psm file is derived from proteomics search by de novo or database search engine.");
+				System.out.println("  -pept_col            : Peptide column index in the psm file. One-based!");
+				System.out.println("  -scan_cols           : Scan identifier indices in the psm file. Multiple columns are also possible because sometimes it is not enough to distinguish scan by only scan id.");
+				System.out.println("                         You can write multiple indices such like that: 1,2,5");
+				System.out.println("  -pept_col            : Peptide column index in the psm file. One-based!");
+				System.out.println("  -out                 : Output path of pXg.");
 				System.out.println();
-				System.out.println("*Optional Fields");
-				System.out.println("** -pval                : p-value cutoff of randomly matched peptide-read pairs. Default is 0.05");
-				System.out.println("** -fdr                 : fdr cutoff to discard low-quality peptide-spectrum matches. Default is 0.05");
-				System.out.println("** -length              : range of peptide length to consider. Default is 8-15");
-				System.out.println("** -rank                : how many candidates will be considered per a scan. Default is 10");
-				System.out.println("    You can write in this way (min-max, both inclusive) : 8-13");
-				System.out.println("** -gtf_partition_size  : the size of treating genomic region at once. Default is 5000000");
-				System.out.println("** -sam_partition_size  : the size of treating number of reads at once. Default is 1000000");
-				System.out.println("** -threads             : the number of threads. Default is 4");
+				System.out.println("Optional Fields");
+				System.out.println("  -pval                : p-value cutoff of randomly matched peptide-read pairs. Default is 0.05");
+				System.out.println("  -fdr                 : fdr cutoff to discard low-quality peptide-spectrum matches. Default is 0.05");
+				System.out.println("  -length              : Range of peptide length to consider. Default is 8-15");
+				System.out.println("  -rank                : How many candidates will be considered per a scan. Default is 10");
+				System.out.println("                         You can write in this way (min-max, both inclusive) : 8-13");
+				System.out.println("  -gtf_partition_size  : The size of treating genomic region at once. Default is 5000000");
+				System.out.println("  -sam_partition_size  : The size of treating number of reads at once. Default is 1000000");
+				System.out.println("  -threads             : The number of threads. Default is 4");
 				System.out.println();
-				System.out.println("*Example1 >");
+				System.out.println("Example1");
 				System.out.println("java -Xmx30G -jar pXg.jar -gtf gencode.gtf -sam aligned.sorted.sam -psm peaks.result -pept_col 4 -score_col 8 -scan_cols 1,2,5 -out peaks.pXg");
-				System.out.println("*Example2 >");
+				System.out.println("Example2");
 				System.out.println("java -Xmx30G -jar pXg.jar -gtf gencode.gtf -sam aligned.sorted.sam -psm peaks.result -pept_col 4 -score_col 8 -scan_cols 1,2,5 -out peaks.pXg -pval 0.05 -fdr 0.01 -length 8-13 -threads 2");
 				System.exit(1);
 			}
@@ -167,30 +171,30 @@ public class ParameterParser {
 	 * THREADS
 	 */
 	private static void printSetting () {
-		System.out.println("*Running info");
-		System.out.println("**GTF: "+Parameters.genomicAnnotationFilePath);
-		System.out.println("***GTF_PARTITION_SIZE: "+Parameters.partitionSize);
-		System.out.println("**SAM: "+Parameters.sequenceFilePath);
-		System.out.println("***SAM_PARTITION_SIZE: "+Parameters.readSize);
-		System.out.println("***READ_CUTOFF_P_VALUE: "+Parameters.pvalue);
-		System.out.println("**PSM: "+Parameters.peptideFilePath);
-		System.out.println("***PEPT_COL: "+Parameters.peptideColumnIndex);
-		System.out.println("***SCORE_COL: "+Parameters.scoreColumnIndex);
+		System.out.println("Running info");
+		System.out.println(" GTF: "+Parameters.genomicAnnotationFilePath);
+		System.out.println("  GTF_PARTITION_SIZE: "+Parameters.partitionSize);
+		System.out.println(" SAM: "+Parameters.sequenceFilePath);
+		System.out.println("  SAM_PARTITION_SIZE: "+Parameters.readSize);
+		System.out.println("  READ_CUTOFF_P_VALUE: "+Parameters.pvalue);
+		System.out.println(" PSM: "+Parameters.peptideFilePath);
+		System.out.println("  PEPT_COL: "+Parameters.peptideColumnIndex);
+		System.out.println("  SCORE_COL: "+Parameters.scoreColumnIndex);
 		
 		// to display array
 		String scanCols = "";
 		for(int i=0; i<Parameters.scanColumnIndices.length; i++) {
 			scanCols += "," + Parameters.scanColumnIndices[i];
 		}
-		System.out.println("***SCAN_COLS: "+scanCols.substring(1));
-		System.out.println("***RANK TO CONSIDER: "+Parameters.psmRank);
-		System.out.println("***PEPTIDE_LENGTH: "+Parameters.minPeptLen+"-"+Parameters.maxPeptLen);
-		System.out.println("***PSM_FDR: "+Parameters.fdr);
-		System.out.println("**OUT_RESULT: "+Parameters.outputFilePath);
-		System.out.println("**OUT_READ_DIST.: "+Parameters.ngsStatFilePath);
-		System.out.println("**OUT_PSM_DIST.: "+Parameters.psmStatFilePath);
-		System.out.println("**OUT_UNMAPPED: "+Parameters.unmappedFilePath);
-		System.out.println("**THREADS: "+Parameters.nThreads);
+		System.out.println("  SCAN_COLS: "+scanCols.substring(1));
+		System.out.println("  RANK TO CONSIDER: "+Parameters.psmRank);
+		System.out.println("  PEPTIDE_LENGTH: "+Parameters.minPeptLen+"-"+Parameters.maxPeptLen);
+		System.out.println("  PSM_FDR: "+Parameters.fdr);
+		System.out.println(" OUT_RESULT: "+Parameters.outputFilePath);
+		System.out.println(" OUT_READ_DIST.: "+Parameters.ngsStatFilePath);
+		System.out.println(" OUT_PSM_DIST.: "+Parameters.psmStatFilePath);
+		System.out.println(" OUT_UNMAPPED: "+Parameters.unmappedFilePath);
+		System.out.println(" THREADS: "+Parameters.nThreads);
 	}
 	
 	private static boolean isMandatoryOkay () {
