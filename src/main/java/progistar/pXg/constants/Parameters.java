@@ -80,5 +80,5 @@ public class Parameters {
 	
 	// System Parameters
 	public static final String CMD_THREADS			=	"-threads".toLowerCase();
-	public static int nThreads						=	1;
+	public static int nThreads						=	4;
 }
