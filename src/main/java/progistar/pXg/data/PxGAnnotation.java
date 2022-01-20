@@ -80,8 +80,8 @@ public class PxGAnnotation {
 		for(int peptLen = Parameters.minPeptLen; peptLen <= Parameters.maxPeptLen; peptLen++) {
 			for(int i=1; i<pValueTable[peptLen].length; i++) {
 				if(pValueTable[peptLen][i] < Parameters.pvalue) {
-					RunInfo.cutoffReads[peptLen] = i-1;
-					System.out.println("Cutoff for "+peptLen+" aa: "+(i-1));
+					RunInfo.cutoffReads[peptLen] = i;
+					System.out.println("Minimum reads threshold to accept at "+peptLen+" aa peptide: "+(i));
 					break;
 				}
 			}
@@ -110,7 +110,7 @@ public class PxGAnnotation {
 						continue;
 					}
 					
-					if(xBlock.targetReadCount <= cutoffs[pSeq.length()]) {
+					if(xBlock.targetReadCount < cutoffs[pSeq.length()]) {
 						// if debug mode turns on, do not filter out annotations by reads
 						if(!Parameters.debugMode) {
 							removeList.add(key);

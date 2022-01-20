@@ -53,8 +53,8 @@ public class RunInfo {
 	}
 	
 	public static void printPSMCutoff () {
-		System.out.println("PSM FDR cutoff for canonical: "+cPSMScoreTreshold);
-		System.out.println("PSM FDR cutoff for noncanonical: "+ncPSMScoreTreshold);
+		System.out.println("Minimum PSM score threshold to accept as canonical PSMs: "+cPSMScoreTreshold);
+		System.out.println("Minimum PSM score threshold to accept as noncanonical PSMs: "+ncPSMScoreTreshold);
 	}
 	
 	public static void printFilterStat () {
