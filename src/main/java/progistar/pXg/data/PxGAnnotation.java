@@ -23,6 +23,16 @@ public class PxGAnnotation {
 	private Hashtable<String, Hashtable<String, XBlock>> xBlockMapper = new Hashtable<String, Hashtable<String, XBlock>>();
 	private int maxNGSreadCount = 0;
 	
+	/**
+	 * Do not modify by this return object.<br>
+	 * Strongly prevent modifying object! Look-up is okay. <br>
+	 * 
+	 * @return
+	 */
+	public Hashtable<String, Hashtable<String, XBlock>> getXBlockMapper () {
+		return this.xBlockMapper;
+	}
+	
 	public void putXBlock (String pSeq, XBlock xBlock) {
 		Hashtable<String, XBlock> xBlocks = this.xBlockMapper.get(pSeq);
 		

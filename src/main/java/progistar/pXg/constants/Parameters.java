@@ -16,7 +16,7 @@ public class Parameters {
 	
 	// Output file path
 	public static final String CMD_OUTPUT_PATH				=	"-out".toLowerCase();
-	public static String outputFilePath				=	null;
+	public static String outputFilePath					=	null;
 	public static String ngsStatFilePath				=	null;
 	public static String psmStatFilePath				=	null;
 	public static String unmappedFilePath				=	null;
@@ -63,7 +63,7 @@ public class Parameters {
 	public static int scoreColumnIndex				=	-1;
 	
 	public static final String CMD_CANDIDATE_RANK	=	"-rank".toLowerCase();
-	public static int psmRank						=	10;
+	public static int psmRank						=	100;
 	
 	public static final String pParserRegExr		=	"aareg".toLowerCase();
 	public static String peptideParserRegExr		=	"[A-Z]"; // read sequence matched to the RegExr.

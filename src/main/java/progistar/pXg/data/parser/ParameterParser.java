@@ -31,8 +31,8 @@ public class ParameterParser {
 				System.out.println("  -pval                : p-value cutoff of randomly matched peptide-read pairs. Default is 0.05");
 				System.out.println("  -fdr                 : fdr cutoff to discard low-quality peptide-spectrum matches. Default is 0.05");
 				System.out.println("  -length              : Range of peptide length to consider. Default is 8-15");
-				System.out.println("  -rank                : How many candidates will be considered per a scan. Default is 10");
 				System.out.println("                         You can write in this way (min-max, both inclusive) : 8-13");
+				System.out.println("  -rank                : How many candidates will be considered per a scan. Default is 100 (in other words, use all ranked candidates)");
 				System.out.println("  -gtf_partition_size  : The size of treating genomic region at once. Default is 5000000");
 				System.out.println("  -sam_partition_size  : The size of treating number of reads at once. Default is 1000000");
 				System.out.println("  -threads             : The number of threads. Default is 4");

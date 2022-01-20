@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import progistar.pXg.constants.Parameters;
+import progistar.pXg.constants.RunInfo;
 import progistar.pXg.data.PBlock;
 import progistar.pXg.data.PeptideAnnotation;
 
@@ -42,8 +43,6 @@ public class PeptideParser {
 			String line = null;
 
 			int recordCount = -1;
-			// rank by scan ID
-			Hashtable<String, Integer> ranks = new Hashtable<String, Integer>();
 			while((line = BR.readLine()) != null) {
 				// skip header marker
 				// comment marker is not considered record.
@@ -87,10 +86,20 @@ public class PeptideParser {
 
 		long endTime = System.currentTimeMillis();
 		
+		RunInfo.initialPeptideNum = PeptideAnnotation.getPeptideSize();
+		RunInfo.initialScanNum = PeptideAnnotation.getScanSize();
+		
 		// filter PSMs by delta-rank
 		PeptideAnnotation.filter();
+		
+		RunInfo.rankFilterPeptideNum1 = PeptideAnnotation.getPeptideSize();
+		RunInfo.rankFilterScanNum1 = PeptideAnnotation.getScanSize();
+		
 		// length filter
 		PeptideAnnotation.peptideLengthFilter();
+		
+		RunInfo.lengthFilterPeptideNum2 = PeptideAnnotation.getPeptideSize();
+		RunInfo.lengthFilterScanNum2 = PeptideAnnotation.getScanSize();
 		
 		System.out.println("\tElapsed time: "+((endTime-startTime)/1000) + " sec");
 

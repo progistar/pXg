@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.Iterator;
 
 import org.ahocorasick.trie.Emit;
 import org.ahocorasick.trie.Trie;
@@ -120,19 +121,7 @@ public class PeptideAnnotation {
 	 * 
 	 */
 	public static void filter () {
-		Hashtable<String, ArrayList<PBlock>> pBlocksByScan = new Hashtable<String, ArrayList<PBlock>>();
-		
-		// aggregate pBlocks by scanID
-		pBlocks.forEach(pBlock -> {
-			String scanID = pBlock.getScanID();
-			ArrayList<PBlock> scanPBlocks = pBlocksByScan.get(scanID);
-			if(scanPBlocks == null) {
-				scanPBlocks = new ArrayList<PBlock>();
-				pBlocksByScan.put(scanID, scanPBlocks);
-			}
-			scanPBlocks.add(pBlock);
-		});
-		
+		Hashtable<String, ArrayList<PBlock>> pBlocksByScan = aggregatePBlocksByScan();
 		// remove original pBlocks
 		pBlocks.clear();
 		
@@ -162,5 +151,132 @@ public class PeptideAnnotation {
 				pBlocks.remove(i);
 			}
 		}
+	}
+	
+	/**
+	 * aggregate pblocks by scan. <br>
+	 * 
+	 * @return
+	 */
+	private static Hashtable<String, ArrayList<PBlock>> aggregatePBlocksByScan () {
+		Hashtable<String, ArrayList<PBlock>> pBlocksByScan = new Hashtable<String, ArrayList<PBlock>>();
+		
+		// aggregate pBlocks by scanID
+		pBlocks.forEach(pBlock -> {
+			String scanID = pBlock.getScanID();
+			ArrayList<PBlock> scanPBlocks = pBlocksByScan.get(scanID);
+			if(scanPBlocks == null) {
+				scanPBlocks = new ArrayList<PBlock>();
+				pBlocksByScan.put(scanID, scanPBlocks);
+			}
+			scanPBlocks.add(pBlock);
+		});
+		
+		return pBlocksByScan;
+	}
+	
+	/**
+	 * return size of scans <br>
+	 * 
+	 * @return
+	 */
+	public static int getScanSize () {
+		return aggregatePBlocksByScan().size();
+	}
+	
+	/**
+	 * Count scans with containing at least one pBlock matched to experiment reads.<br>
+	 *  
+	 * 
+	 * @param xBlockMapper
+	 * @return
+	 */
+	public static int getScanSizeWithXBlocks (Hashtable<String, Hashtable<String, XBlock>> xBlockMapper) {
+		Hashtable<String, String> peptides = new Hashtable<String, String>();
+		
+		for(int i=0; i<pBlocks.size(); i++) {
+			peptides.put(pBlocks.get(i).getPeptideSequence(), "");
+		}
+		
+		// if there is at least one xBlock with exp reads?
+		ArrayList<String> passedPeptideIL = new ArrayList<String>();
+		
+		peptides.forEach((peptideIL, NA) -> {
+			boolean is = false;
+			Hashtable<String, XBlock> xBlocks = xBlockMapper.get(peptideIL);
+			
+			if(xBlocks != null) {
+				Iterator<String> keys = (Iterator<String>) xBlocks.keys();
+				while(keys.hasNext()) {
+					String key = keys.next();
+					XBlock xBlock = xBlocks.get(key);
+					if(xBlock.targetReadCount > 0) {
+						is = true;
+					}
+				}
+			}
+			
+			// if at least one xBlock with exp read?
+			if(is) {
+				passedPeptideIL.add(peptideIL);
+			}
+		});
+		
+		return passedPeptideIL.size();
+	}
+	
+	/**
+	 * Count peptides with containing at least one matched experiment reads.<br>
+	 *  
+	 * 
+	 * @param xBlockMapper
+	 * @return
+	 */
+	public static int getPeptideSizeWithXBlocks (Hashtable<String, Hashtable<String, XBlock>> xBlockMapper) {
+		Hashtable<String, ArrayList<PBlock>> pBlocksByScan = aggregatePBlocksByScan();
+		
+		// if there is at least one xBlock with exp. reads
+		ArrayList<String> passedScans = new ArrayList<String>();
+		
+		pBlocksByScan.forEach((scanID, pBlocks) -> {
+			boolean is = false;
+			for(PBlock pBlock : pBlocks) {
+				String peptideIL = pBlock.getPeptideSequence(); 
+				Hashtable<String, XBlock> xBlocks = xBlockMapper.get(peptideIL);
+				
+				if(xBlocks != null) {
+					Iterator<String> keys = (Iterator<String>) xBlocks.keys();
+					while(keys.hasNext()) {
+						String key = keys.next();
+						XBlock xBlock = xBlocks.get(key);
+						if(xBlock.targetReadCount > 0) {
+							is = true;
+						}
+					}
+				}
+			}
+			
+			// if at least one pBlock in the scan has xBlock with exp read?
+			if(is) {
+				passedScans.add(scanID);
+			}
+		});
+		
+		return passedScans.size();
+	}
+	
+	/**
+	 * return size of peptides <br>
+	 * 
+	 * @return
+	 */
+	public static int getPeptideSize () {
+		Hashtable<String, String> peptides = new Hashtable<String, String>();
+		
+		for(int i=0; i<pBlocks.size(); i++) {
+			peptides.put(pBlocks.get(i).getPeptideSequence(), "");
+		}
+		
+		return peptides.size();
 	}
 }

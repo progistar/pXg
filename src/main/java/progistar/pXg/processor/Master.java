@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
+import progistar.pXg.constants.RunInfo;
 import progistar.pXg.data.GenomicAnnotation;
 import progistar.pXg.data.GenomicSequence;
 import progistar.pXg.data.PeptideAnnotation;
@@ -118,17 +119,41 @@ public class Master {
 			
 			// removing tmpOutputFiles
 			tmpOutputFiles.forEach(file -> {file.delete();});
-
+			
+			// count peptides and scans matching to exp.reads
+			RunInfo.mappingFilterPeptideNum3 = PeptideAnnotation.getPeptideSizeWithXBlocks(pXgA.getXBlockMapper());
+			RunInfo.mappingFilterScanNum3 = PeptideAnnotation.getScanSizeWithXBlocks(pXgA.getXBlockMapper());
+			
 			// filter by pvalue
 			pXgA.estimatePvalueThreshold();
+			
+			// count peptides and scans after p-value
+			RunInfo.pvalueFilterPeptideNum4 = PeptideAnnotation.getPeptideSizeWithXBlocks(pXgA.getXBlockMapper());
+			RunInfo.pvalueFilterScanNum4 = PeptideAnnotation.getScanSizeWithXBlocks(pXgA.getXBlockMapper());
+			
 			// filter regions
 			pXgA.regionScoreFilter();
+			
+			// count peptides and scans after region filter
+			RunInfo.regionFilterPeptideNum5 = PeptideAnnotation.getPeptideSizeWithXBlocks(pXgA.getXBlockMapper());
+			RunInfo.regionFilterScanNum5 = PeptideAnnotation.getScanSizeWithXBlocks(pXgA.getXBlockMapper());
+			
 			// marking target PSMs
 			pXgA.markTargetPSMs();
 			// among them, use highest-scored PSM
 			pXgA.topScoreFilter();
+			
+			// count peptides and scans after region filter
+			RunInfo.topscoreFilterPeptideNum6 = PeptideAnnotation.getPeptideSizeWithXBlocks(pXgA.getXBlockMapper());
+			RunInfo.topscoreFilterScanNum6 = PeptideAnnotation.getScanSizeWithXBlocks(pXgA.getXBlockMapper());
+			
 			// fdr estimation
 			pXgA.fdrEstimation();
+			
+			// count peptides and scans after fdr estimation
+			RunInfo.fdrFilterPeptideNum7 = PeptideAnnotation.getPeptideSizeWithXBlocks(pXgA.getXBlockMapper());
+			RunInfo.fdrFilterScanNum7 = PeptideAnnotation.getScanSizeWithXBlocks(pXgA.getXBlockMapper());
+			
 			// mark fasta result
 			pXgA.markFasta();
 			
