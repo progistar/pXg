@@ -60,13 +60,13 @@ public class RunInfo {
 	public static void printFilterStat () {
 		System.out.println("Step\tScans\tPeptides");
 		System.out.println("Initial\t"+initialScanNum+"\t"+initialPeptideNum);
-		System.out.println("Rank\t"+rankFilterScanNum1+"\t"+rankFilterPeptideNum1);
-		System.out.println("Length\t"+lengthFilterScanNum2+"\t"+lengthFilterPeptideNum2);
+		System.out.println("Rank Filter\t"+rankFilterScanNum1+"\t"+rankFilterPeptideNum1);
+		System.out.println("Length Filter\t"+lengthFilterScanNum2+"\t"+lengthFilterPeptideNum2);
 		
-		System.out.println("ExpReads\t"+mappingFilterScanNum3+"\t"+mappingFilterPeptideNum3);
-		System.out.println("p-value\t"+pvalueFilterScanNum4+"\t"+pvalueFilterPeptideNum4);
-		System.out.println("RegionPanelty\t"+regionFilterScanNum5+"\t"+regionFilterPeptideNum5);
-		System.out.println("top-score\t"+topscoreFilterScanNum6+"\t"+topscoreFilterPeptideNum6);
-		System.out.println("FDR\t"+fdrFilterScanNum7+"\t"+fdrFilterPeptideNum7);
+		System.out.println("Mapped Candidates\t"+mappingFilterScanNum3+"\t"+mappingFilterPeptideNum3);
+		System.out.println("Significantly Mapped\t"+pvalueFilterScanNum4+"\t"+pvalueFilterPeptideNum4);
+		System.out.println("Region Decision\t"+regionFilterScanNum5+"\t"+regionFilterPeptideNum5);
+		System.out.println("PSM Decision\t"+topscoreFilterScanNum6+"\t"+topscoreFilterPeptideNum6);
+		System.out.println("FDR Estimation\t"+fdrFilterScanNum7+"\t"+fdrFilterPeptideNum7);
 	}
 }

@@ -45,7 +45,7 @@ public class Parameters {
 	public static final String CMD_GENOMIC_ANNOTATION_PARTITION_SIZE		=	"-gtf_partition_size".toLowerCase();
 	public static int partitionSize					=	5000000; // 5 * 10^6 * 10 * 8 = 0.4 G
 	
-	public static final String CMD_GENOMIC_SEQUENCE_PARTITION_SIZE			=	"sam_partition_size".toLowerCase();
+	public static final String CMD_GENOMIC_SEQUENCE_PARTITION_SIZE			=	"-sam_partition_size".toLowerCase();
 	public static int readSize						=	1000000; // 1 * 10^6
 	
 	// READ sequencing 

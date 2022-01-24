@@ -20,7 +20,7 @@ public class XBlock {
 	public String genomicSequence	=	null;
 	public String peptideSequence	=	null;
 	public String tAnnotations		=	null; // transcript and additional annotations
-	public String[] fastaIDs		=	null;
+	public String[] fastaIDs		=	new String[0];
 	public String fullReadSequence	=	null; // for unmapped read
 	public double bestRegionPriority 	= 	Double.MAX_VALUE;
 	
@@ -31,10 +31,15 @@ public class XBlock {
 	public boolean isCannonical () {
 		String events = toEvents();
 		boolean isCannonical = false;
+		
+		// if there is matched known sequences.
+		if(fastaIDs.length != 0) {
+			isCannonical = true;
+		}
 		// wildtype
 		if(mutations.equalsIgnoreCase("-")) {
 			// proteincoding;sense
-			if(events.contains(Constants.EVENT_PROTEINCODING) && events.contains(Constants.EVENT_SENSE) && !events.contains(Constants.EVENT_AS)) {
+			if(events.equalsIgnoreCase("proteincoding;sense")) {
 				isCannonical = true;
 			}
 		}
@@ -82,15 +87,51 @@ public class XBlock {
 				+"\t"+mockReadCount;
 	}
 	
-	public static String toNullString () {
+	/**
+	 * {@link Deprecated}
+	 * Do not print PSM without read mapping.<br>
+	 * -- The original usage is to print out PSMs with no reads.<br>
+	 * @param fastaIDs_
+	 * @return
+	 */
+	public static String toNullString (String[] fastaIDs_) {
+		
+		String fastaIDs = XBlock.toFastaIDs(fastaIDs_);
+		int fastaIDCount = fastaIDs.equalsIgnoreCase("-") ? 0 : fastaIDs.split("\\|").length;
+		
 		return "-\t-\t"
 				+ "-\t-\t"
 				+ "-\t-\t0\t"
 				+ "-\t0\t"
 				+ "-\t0\t"
 				+ "-\t0\t"
-				+ "-\t0\t"
+				+ ""+fastaIDs+"\t"+fastaIDCount+"\t"
 				+ "0\t0";
+	}
+	
+	/**
+	 * {@link Deprecated}
+	 * Do not print PSM without read mapping.<br>
+	 * -- The original usage is to print out PSMs with no reads.<br>
+	 * @param fastaIDs
+	 * @return
+	 */
+	private static String toFastaIDs (String[] fastaIDs) {
+		if(fastaIDs == null || fastaIDs.length == 0) {
+			return "-";
+		}
+		
+		StringBuilder fasta= new StringBuilder();
+		Hashtable<String, Boolean> isDuplicated = new Hashtable<String, Boolean>();
+		
+		for(String fastaID : fastaIDs) {
+			if(isDuplicated.get(fastaID) == null) {
+				fasta.append("|").append(fastaID);
+				isDuplicated.put(fastaID, true);
+			}
+		}
+		
+		return fasta.substring(1).toString();
 	}
 	
 	public String toFastaIDs () {

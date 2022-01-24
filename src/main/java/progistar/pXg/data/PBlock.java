@@ -67,7 +67,7 @@ public class PBlock implements Comparable<PBlock> {
 
 	@Override
 	/**
-	 * Higher scores and decoy first.<br>
+	 * Higher scores and decoy last.<br>
 	 * 
 	 */
 	public int compareTo(PBlock o) {
@@ -82,4 +82,5 @@ public class PBlock implements Comparable<PBlock> {
 		}
 		return 0;
 	}
+	
 }

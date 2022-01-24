@@ -30,6 +30,7 @@ public class Mock  {
 		
 		Cigar revCigar = new Cigar(revNucleotides.length(), 'M');
 		revCigar.relativePositions = new int[revNucleotides.length()];
+		
 		revCigar.nucleotides = revNucleotides.toString();
 		
 		int index = 0;

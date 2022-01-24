@@ -1,11 +1,13 @@
 package progistar.pXg.data;
 
+import java.awt.Point;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
 
@@ -315,6 +317,9 @@ public class PxGAnnotation {
 				for(int i=0; i<pBlock.fastaIDs.length; i++) {
 					pBlock.fastaIDs[i] = ids.get(i);
 				}
+				// 22.01.24
+				// if the pBlock has fasta!
+				pBlock.isCannonical = true;
 			}
 		}
 		
@@ -349,8 +354,8 @@ public class PxGAnnotation {
 			BW.append("FastaIDs").append("\t");
 			BW.append("FastaIDCount").append("\t");
 			BW.append("Reads").append("\t");
-			BW.append("mockReads").append("\t");
-			BW.append("FDR");
+			BW.append("MockReads").append("\t");
+			BW.append("IsCanonical");
 			BW.newLine();
 			
 			File outFile = new File(Parameters.unmappedFilePath);
@@ -369,7 +374,7 @@ public class PxGAnnotation {
 							// assign fastaIDs.
 							xBlock.fastaIDs = pBlock.fastaIDs;
 							
-							BW.append(pBlock.toString()).append("\t").append(pBlock.rank+"\t").append(xBlocks.size()+"\t").append(xBlock.toString()).append("\t"+pBlock.fdrRate);
+							BW.append(pBlock.toString()).append("\t").append(pBlock.rank+"\t").append(xBlocks.size()+"\t").append(xBlock.toString()).append("\t"+pBlock.isCannonical);
 							BW.newLine();
 							
 							// if this is unmapped, then store.
@@ -391,7 +396,7 @@ public class PxGAnnotation {
 							
 						}
 					});
-				}
+				} 
 			}
 			
 			BW.close();
@@ -433,7 +438,9 @@ public class PxGAnnotation {
 			Collections.sort(scanPBlocks);
 			
 			// topScore is determined by target or decoy status
-			int bestIndex = 0;
+			int bestTargetIndex = -1;
+			int bestDecoyIndex = -1;
+			
 			for(int i=0; i<scanPBlocks.size(); i++) {
 				
 				byte psmStatus = scanPBlocks.get(i).psmStatus;
@@ -442,15 +449,20 @@ public class PxGAnnotation {
 				
 				if(psmStatus == Constants.PSM_STATUS_TARGET) {
 					//select top score from targets
-					bestIndex = i;
+					bestTargetIndex = i;
 					break;
 				} else if(psmStatus == Constants.PSM_STATUS_DECOY) {
-					// to select completely decoyed PSMs as possible
-					bestIndex = i;
+					if(bestDecoyIndex == -1) {
+						bestDecoyIndex = i;
+					}
 				}
 			}
 			
-			pBlocks.add(scanPBlocks.get(bestIndex));
+			if(bestTargetIndex != -1) {
+				pBlocks.add(scanPBlocks.get(bestTargetIndex));
+			} else if(bestDecoyIndex != -1){
+				pBlocks.add(scanPBlocks.get(bestDecoyIndex));
+			}
 		});
 	}
 	/**
@@ -480,7 +492,7 @@ public class PxGAnnotation {
 						expAndMocks[0] = true;
 					} 
 					// decoy PSMs
-					else if(xBlock.mockReadCount > 0) {
+					else if(xBlock.mockReadCount > 0 && pBlock.fastaIDs.length == 0) {
 						pBlock.psmStatus = Constants.PSM_STATUS_DECOY > pBlock.psmStatus ? Constants.PSM_STATUS_DECOY : pBlock.psmStatus;
 						pBlock.isCannonical |= xBlock.isCannonical();
 						expAndMocks[1] = true;
@@ -516,7 +528,23 @@ public class PxGAnnotation {
 		ArrayList<PBlock> pBlocks = PeptideAnnotation.pBlocks;
 		
 		// sort pBlocks by descending order.
-		Collections.sort(pBlocks);
+		class decoyFirstOrder implements Comparator<PBlock> {
+			  @Override
+			  public int compare(PBlock p1, PBlock p2) {
+				  if(p1.score > p2.score) {
+						return -1;
+					} else if(p1.score < p2.score) {
+						return 1;
+					} else if (p1.psmStatus > p2.psmStatus){
+						return 1;
+					} else if (p1.psmStatus < p2.psmStatus) {
+						return -1;
+					}
+					return 0;
+			  }
+		}
+		Collections.sort(pBlocks, new decoyFirstOrder());
+		
 		int size = pBlocks.size();
 		
 		try {
@@ -656,11 +684,11 @@ public class PxGAnnotation {
 			
 			if(pBlock.psmStatus == Constants.PSM_STATUS_TARGET) {
 				if(pBlock.isCannonical) {
-					if(i <= cFDRCutoffIndex) {
+					if(pBlock.score >= RunInfo.cPSMScoreTreshold) {
 						cutoffedPBlocks.add(pBlock);
 					}
 				} else {
-					if(i <= ncFDRCutoffIndex) {
+					if(pBlock.score >= RunInfo.ncPSMScoreTreshold) {
 						cutoffedPBlocks.add(pBlock);
 					}
 				}
@@ -683,7 +711,7 @@ public class PxGAnnotation {
 		if(this.xBlockMapper.size() == 0) return;
 		// filter regions in the same locus and nucleotides.
 		Iterator<String> pSeqs = (Iterator<String>) this.xBlockMapper.keys();
-		
+
 		while(pSeqs.hasNext()) {
 			String pSeq = pSeqs.next();
 			Hashtable<String, XBlock> xBlocks = this.xBlockMapper.get(pSeq);

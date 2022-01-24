@@ -138,6 +138,9 @@ public class Master {
 			RunInfo.regionFilterPeptideNum5 = PeptideAnnotation.getPeptideSizeWithXBlocks(pXgA.getXBlockMapper());
 			RunInfo.regionFilterScanNum5 = PeptideAnnotation.getScanSizeWithXBlocks(pXgA.getXBlockMapper());
 			
+			// mark fasta result
+			// to distinguish ambiguous interpretation 
+			pXgA.markFasta();
 			// marking target PSMs
 			pXgA.markTargetPSMs();
 			// among them, use highest-scored PSM
@@ -154,8 +157,6 @@ public class Master {
 			RunInfo.fdrFilterPeptideNum7 = PeptideAnnotation.getPeptideSizeWithXBlocks(pXgA.getXBlockMapper());
 			RunInfo.fdrFilterScanNum7 = PeptideAnnotation.getScanSizeWithXBlocks(pXgA.getXBlockMapper());
 			
-			// mark fasta result
-			pXgA.markFasta();
 			
 			pXgA.write(Parameters.outputFilePath);
 			
