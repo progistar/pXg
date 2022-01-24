@@ -581,6 +581,7 @@ public class PxGAnnotation {
 						count = 0.0;
 					}
 					count++;
+					
 					if(pBlock.isCannonical) {
 						cTargetCounts.put(score, count);
 					} else {
@@ -601,6 +602,7 @@ public class PxGAnnotation {
 						count = 0.0;
 					}
 					count++;
+					
 					if(pBlock.isCannonical) {
 						cDecoyCounts.put(score, count);
 					} else {
@@ -608,32 +610,35 @@ public class PxGAnnotation {
 					}
 				}
 				
-				
-				if(pBlock.isCannonical) {
-					// for canonical cutoff
-					if(cTargetCount != 0) {
-						fdrRate = cDecoyCount/cTargetCount;
+				if(case_ == Constants.PSM_STATUS_TARGET) {
+					if(pBlock.isCannonical) {
+						// for canonical cutoff
+						if(cTargetCount != 0) {
+							fdrRate = cDecoyCount/cTargetCount;
+						}
+						if(fdrRate < Parameters.fdr) {
+							cFDRCutoffIndex = i;
+							RunInfo.cPSMScoreTreshold = pBlock.score;
+						}
+					} else {
+						// for noncanonical cutoff
+						if(ncTargetCount != 0) {
+							fdrRate = ncDecoyCount/ncTargetCount;
+						}
+						if(fdrRate < Parameters.fdr) {
+							ncFDRCutoffIndex = i;
+							RunInfo.ncPSMScoreTreshold = pBlock.score;
+						}
 					}
-					if(fdrRate < Parameters.fdr) {
-						cFDRCutoffIndex = i;
-						RunInfo.cPSMScoreTreshold = pBlock.score;
-					}
-				} else {
-					// for noncanonical cutoff
-					if(ncTargetCount != 0) {
-						fdrRate = ncDecoyCount/ncTargetCount;
-					}
-					if(fdrRate < Parameters.fdr) {
-						ncFDRCutoffIndex = i;
-						RunInfo.ncPSMScoreTreshold = pBlock.score;
-					}
+					
+					pBlock.fdrRate = fdrRate;
 				}
+				
 				
 				if(isScored.get(score) == null) {
 					scores.add(score);
 					isScored.put(score, true);
 				}
-				pBlock.fdrRate = fdrRate;
 			}
 			
 			BufferedWriter BW = new BufferedWriter(new FileWriter(Parameters.psmStatFilePath));
