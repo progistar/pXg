@@ -9,10 +9,10 @@ import java.io.IOException;
 public class App {
 
 	public static void main(String[] args) {
-		int tPeptideIndex = 19;
+		int tPeptideIndex = 20;
 		
-		String pXgOutputFileName = "C:\\Users\\progi\\Desktop\\Projects\\pXg\\Qi_MCP2021\\Results\\h1975wc.pxg";
-		NetMHCpanResult netMHCpanResult = NetMHCpanParser.parseNetMHCpan("C:\\Users\\progi\\Desktop\\Projects\\pXg\\Qi_MCP2021\\NetMHCpan\\H1975_WC.txt");
+		String pXgOutputFileName = "C:\\Users\\progi\\Desktop\\Projects\\pXg\\Laumont_NatCommun2016\\Results\\1.M_pXg\\PeptideAnnotationM_5ppm_002.rep1.rank10.pXg";
+		NetMHCpanResult netMHCpanResult = NetMHCpanParser.parseNetMHCpan("C:\\Users\\progi\\Desktop\\Projects\\pXg\\Laumont_NatCommun2016\\Results\\1.M_pXg\\PeptideAnnotationM_5ppm_002.rep1.rank10.netMHCpan");
 		
 		try {
 			BufferedReader BR = new BufferedReader(new FileReader(pXgOutputFileName));

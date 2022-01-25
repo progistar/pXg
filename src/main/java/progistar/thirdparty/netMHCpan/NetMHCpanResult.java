@@ -60,13 +60,13 @@ public class NetMHCpanResult {
 				HLA hla = record.hlas.get(i);
 				
 				if(hla.elRank < 0.5) {
-					str.append("SB");
+					str.append(hla.elRank+"");
 					maxBinding = Math.max(2, maxBinding);
 				} else if(hla.elRank < 2) {
-					str.append("WB");
+					str.append(hla.elRank+"");
 					maxBinding = Math.max(1, maxBinding);
 				} else {
-					str.append("NB");
+					str.append(hla.elRank+"");
 				}
 				str.append("\t");
 			}

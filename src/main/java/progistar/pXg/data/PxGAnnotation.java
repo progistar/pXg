@@ -354,7 +354,6 @@ public class PxGAnnotation {
 			BW.append("FastaIDs").append("\t");
 			BW.append("FastaIDCount").append("\t");
 			BW.append("Reads").append("\t");
-			BW.append("MockReads").append("\t");
 			BW.append("IsCanonical");
 			BW.newLine();
 			

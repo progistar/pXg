@@ -83,8 +83,7 @@ public class XBlock {
 				+"\t"+geneNames+"\t"+geneNameCount
 				+"\t"+events+"\t"+eventCount
 				+"\t"+fastaIDs+"\t"+fastaIDCount
-				+"\t"+targetReadCount
-				+"\t"+mockReadCount;
+				+"\t"+targetReadCount;
 	}
 	
 	/**
@@ -106,7 +105,7 @@ public class XBlock {
 				+ "-\t0\t"
 				+ "-\t0\t"
 				+ ""+fastaIDs+"\t"+fastaIDCount+"\t"
-				+ "0\t0";
+				+ "0";
 	}
 	
 	/**
