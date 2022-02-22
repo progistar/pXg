@@ -1,8 +1,8 @@
 library(ggplot2)
 library(RColorBrewer)
 
-setwd("C:\\Users\\progi\\Desktop\\Projects\\pXg\\MockTest")
-data <- read.csv(file = "subjectM.5ppm.002.rep2.pXg.ngs.max.stat", header = T, sep="\t", as.is = as.double())
+setwd("C:\\Users\\progi\\Desktop\\Projects\\pXg\\Laumont_NatCommun2016\\Results\\1.M_pXg")
+data <- read.csv(file = "PeptideAnnotationM_5ppm_002.rep1.rank10.pXg.pval.dist", header = T, sep="\t", as.is = as.double())
 data$PeptideLength <- as.character(data$PeptideLength)
 data$Mock <- log2(data$Mock+1)
 data$Experiment <- log2(data$Experiment+1)

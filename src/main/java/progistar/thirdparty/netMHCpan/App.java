@@ -11,8 +11,8 @@ public class App {
 	public static void main(String[] args) {
 		int tPeptideIndex = 20;
 		
-		String pXgOutputFileName = "C:\\Users\\progi\\Desktop\\Projects\\pXg\\Laumont_NatCommun2016\\Results\\1.M_pXg\\PeptideAnnotationM_5ppm_002.rep1.rank10.pXg";
-		NetMHCpanResult netMHCpanResult = NetMHCpanParser.parseNetMHCpan("C:\\Users\\progi\\Desktop\\Projects\\pXg\\Laumont_NatCommun2016\\Results\\1.M_pXg\\PeptideAnnotationM_5ppm_002.rep1.rank10.netMHCpan");
+		String pXgOutputFileName = "C:\\Users\\progi\\Desktop\\Projects\\pXg\\Laumont_NatCommun2016\\Results\\2.withCalibration\\2.R_pXg\\PeptideAnnotationS2_5ppm_002_recal.rep1.rank10.pXg";
+		NetMHCpanResult netMHCpanResult = NetMHCpanParser.parseNetMHCpan("C:\\Users\\progi\\Desktop\\Projects\\pXg\\Laumont_NatCommun2016\\Results\\2.withCalibration\\2.R_pXg\\PeptideAnnotationS2_5ppm_002_recal.rep1.rank10.netMHCpan_4.1");
 		
 		try {
 			BufferedReader BR = new BufferedReader(new FileReader(pXgOutputFileName));

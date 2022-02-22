@@ -9,7 +9,7 @@ import java.io.IOException;
 public class CSVtoTSV {
 
 	public static void main(String[] args) throws IOException {
-		String fileName = "C:\\Users\\progi\\Desktop\\Projects\\pXg\\Chen_JASMS2021\\PEAKS_HCT116_Chen_JASMS2021.csv";
+		String fileName = "C:\\Users\\progi\\Desktop\\Projects\\pXg\\Laumont_NatCommun2016\\Results\\2.withCalibration\\2.R_pXg\\PeptideAnnotationS2_5ppm_002_MSFrecal.csv";
 		
 		BufferedReader BR = new BufferedReader(new FileReader(fileName));
 		BufferedWriter BW = new BufferedWriter(new FileWriter(fileName.replace(".csv", ".tsv")));

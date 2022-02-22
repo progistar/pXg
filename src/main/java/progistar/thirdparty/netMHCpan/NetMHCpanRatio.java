@@ -10,7 +10,7 @@ import java.util.Hashtable;
 public class NetMHCpanRatio {
 
 	public static void main(String[] args) throws IOException {
-		File file = new File("C:\\Users\\progi\\Desktop\\Projects\\pXg\\Laumont_NatCommun2016\\Results\\1.M_pXg\\PeptideAnnotationM_5ppm_002.rep1.rank10.pXg.netMHCpan");
+		File file = new File("C:\\Users\\progi\\Desktop\\Projects\\pXg\\Laumont_NatCommun2016\\Results\\3.S3_pXg\\PeptideAnnotationS3_5ppm_002.rep1.rank10.pXg.netMHCpan_4.1");
 		
 		BufferedReader BR = new BufferedReader(new FileReader(file));
 		String line = null;
@@ -31,7 +31,6 @@ public class NetMHCpanRatio {
 		
 		BR.close();
 		
-		ArrayList<String> scores = new ArrayList<String>();
 		Hashtable<String, Integer> countIDs = new Hashtable<String, Integer>();
 		Hashtable<String, Integer> countMAPs = new Hashtable<String, Integer>();
 		for(int i=0; i<records.size(); i++) {
@@ -43,7 +42,6 @@ public class NetMHCpanRatio {
 				Integer count = countIDs.get(score);
 				if(count == null) {
 					count = 0;
-					scores.add(score);
 				}
 				
 				count++;
@@ -62,8 +60,8 @@ public class NetMHCpanRatio {
 			}
 		}
 		
-		for(int i=0; i<scores.size(); i++) {
-			String score = scores.get(i);
+		for(int i=99; i>0; i--) {
+			String score = (i+"");
 			Integer countID = countIDs.get(score);
 			Integer countMAP = countMAPs.get(score);
 			

@@ -51,8 +51,8 @@ public class Priority {
 			// I = in-frame (!= I means frameshift or non-coding)
 			if(regions[0].contains(Constants.MARK_5UTR+"") || 
 					regions[0].contains(Constants.MARK_3UTR+"") || 
-					regions[0].contains(Constants.MARK_NCDS+"") 
-					|| regions[2].charAt(0) != Constants.IN_FRAME) {
+					regions[0].contains(Constants.MARK_NCDS+"") || 
+					regions[2].charAt(0) != Constants.IN_FRAME) {
 				rPenalty += 20;
 			}
 			
