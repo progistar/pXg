@@ -10,6 +10,7 @@ class PXGResult {
 	public String record;
 	public String peptide;
 	public String topPeptide;
+	public String isCanonical;
 	public int rank;
 	
 	public String toString () {
@@ -25,7 +26,7 @@ class PXGResult {
 			category = "others";
 		}
 		
-		return rank+"\t"+category;
+		return rank+"\t"+category+"\t"+isCanonical;
 	}
 	
 	public int getCategory () {
@@ -89,7 +90,9 @@ class PXGResult {
 		}
 		
 		if(isDeamidated) {
-			return 2; // deamidation
+			if(topPeptide.contains("+.98") || peptide.contains("+.98")) {
+				return 2; // deamidation
+			}
 		}
 		
 		
@@ -105,11 +108,12 @@ public class RerankedCategory {
 	public static final int scanIdx = 4;
 	public static final int peptideIdx = 3;
 	public static final int rankIdx = 18;
+	public static final int isNoncanonicalIdx = 36;
 	
 	
 	public static void main(String[] args) throws IOException {
-		File peaksResult = new File("C:\\Users\\progi\\Desktop\\Projects\\pXg\\Laumont_NatCommun2016\\Results\\2.withCalibration\\1.M_pXg\\PeptideAnnotationS1_5ppm_002_MSFrecal.tsv");
-		File pxgResult = new File("C:\\Users\\progi\\Desktop\\Projects\\pXg\\Laumont_NatCommun2016\\Results\\2.withCalibration\\1.M_pXg\\PeptideAnnotationS1_5ppm_002_recal.rep1.rank10.pXg.netMHCpan.fdr");
+		File peaksResult = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/3.withCalibrationAddScanNum/pXg/PeptideAnnotationS4_5ppm_002_MSFrecal_addScanNum.tsv");
+		File pxgResult = new File  ("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/3.withCalibrationAddScanNum/pXg/PeptideAnnotationS4_5ppm_002_recal.scanNum.rep1.rank10.pXg.BA.fdr");
 		
 		Hashtable<String, String> a = spectrumToPeptide(peaksResult);
 		Hashtable<String, PXGResult> b = spectrumToPeptidePXG(pxgResult);
@@ -120,15 +124,30 @@ public class RerankedCategory {
 			}
 		});
 		
+		int[] cCategory = new int[4];
+		int[] ncCategory = new int[4];
+		String[] categories = {"Top-ranked", "Scrambled", "Deamidated", "Others"};
+		
 		b.forEach((spec , pxgRes) -> {
 			int idx = pxgRes.getCategory();
 			
-			if(idx == 3) {
-				//System.out.println(pxgRes.rank+"\t"+pxgRes.peptide+"\t"+pxgRes.topPeptide);
+			if(idx == 2) {
+//				System.out.println(pxgRes.rank+"\t"+pxgRes.peptide+"\t"+pxgRes.topPeptide);
 			}
 			
-			System.out.println(pxgRes.toString());
+			if(pxgRes.isCanonical.equalsIgnoreCase("TRUE")) {
+				cCategory[idx]++;
+			} else {
+				ncCategory[idx]++;
+			}
+			
+//			System.out.println(pxgRes.toString());
 		});
+
+		System.out.println("Category,Canonical PSMs,Noncanonical PSMs");
+		for(int i=0; i<=3; i++) {
+			System.out.println(categories[i]+","+cCategory[i]+","+ncCategory[i]);
+		}
 		
 	}
 
@@ -146,6 +165,7 @@ public class RerankedCategory {
 			
 			res.peptide = fields[peptideIdx];
 			res.record = line;
+			res.isCanonical = fields[isNoncanonicalIdx];
 			res.rank = Integer.parseInt(fields[rankIdx]);
 			
 			psmTable.put(scanID, res);
