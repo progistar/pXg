@@ -57,9 +57,9 @@ public class IDCompare {
 	}
 	
 	public static void main(String[] args) throws IOException {
-		File msgfRes = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/MSGF/S1.fdr");
-		File pxgRes = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/5.withCalibrationAddScanNumWithoutDeami/PeptideAnnotationS1_5ppm_002_recal.scanNum.rep1.rank10.pXg.fdr");
-		File pxgMetOnlyRes = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/4.witCalibrationAddScanNumMetOnly/pXg/PeptideAnnotationS1_5ppm_002_recal.scanNum.metOnly.rep1.rank10.pXg.fdr");
+		File msgfRes = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/MSGF/fdr_at5/S3.fdr");
+		File pxgRes = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/3.withCalibrationAddScanNum/pXg/PeptideAnnotationS3_5ppm_002_recal.scanNum.rep1.rank10.pXg.BA.fdr");
+		File pxgMetOnlyRes = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/5.withCalibrationAddScanNumWithoutDeami/pXg/PeptideAnnotationS3_5ppm_002_recal.scanNum.rep1.rank10.pXg.fdr");
 		
 		Hashtable<String, String> msgfPSMs = readMSGF(msgfRes);
 		Hashtable<String, String> pxgPSMs = readPXG(pxgRes);
@@ -70,6 +70,8 @@ public class IDCompare {
 		// 2: pxgMet same
 		// 3: not same but pxg and pxgMet are same
 		// 4: totally different among them
+		System.out.println("Scan,MSGFPept,PEAKSwDeami,PEAKSwoDeami,ClassCode");
+		
 		msgfPSMs.forEach((scan, pept)->{
 			String fullPept = pept.split("_")[0];
 			String stripPept = pept.split("_")[1];

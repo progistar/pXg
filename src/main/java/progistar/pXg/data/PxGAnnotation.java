@@ -484,14 +484,16 @@ public class PxGAnnotation {
 				
 				// check error!
 				boolean[] expAndMocks = new boolean[2];
+				// only select significantly mapped PSMs
+				// this is because we are interested in P( decoy (score > X) | significantly mapped PSMs)
 				xBlocks.forEach((key_, xBlock) -> {
-					if(xBlock.targetReadCount > 0) {
+					if(xBlock.targetReadCount >= RunInfo.cutoffReads[key.length()]) {
 						pBlock.psmStatus = Constants.PSM_STATUS_TARGET > pBlock.psmStatus ? Constants.PSM_STATUS_TARGET : pBlock.psmStatus;
 						pBlock.isCannonical |= xBlock.isCannonical();
 						expAndMocks[0] = true;
 					} 
 					// decoy PSMs
-					else if(xBlock.mockReadCount > 0 && pBlock.fastaIDs.length == 0) {
+					else if(xBlock.mockReadCount >= RunInfo.cutoffReads[key.length()] && pBlock.fastaIDs.length == 0) {
 						pBlock.psmStatus = Constants.PSM_STATUS_DECOY > pBlock.psmStatus ? Constants.PSM_STATUS_DECOY : pBlock.psmStatus;
 						pBlock.isCannonical |= xBlock.isCannonical();
 						expAndMocks[1] = true;
