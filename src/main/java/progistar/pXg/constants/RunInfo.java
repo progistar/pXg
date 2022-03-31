@@ -2,6 +2,8 @@ package progistar.pXg.constants;
 
 import java.util.Hashtable;
 
+import progistar.pXg.utils.Logger;
+
 public class RunInfo {
 
 	public static long totalProcessedReads = 0;
@@ -50,11 +52,21 @@ public class RunInfo {
 		});
 		
 		System.out.println(chrList.substring(1));
+		
+		// append to logger
+		Logger.append(chrList.substring(1));
+		Logger.newLine();
 	}
 	
 	public static void printPSMCutoff () {
 		System.out.println("Minimum PSM score threshold to accept as canonical PSMs: "+cPSMScoreTreshold);
 		System.out.println("Minimum PSM score threshold to accept as noncanonical PSMs: "+ncPSMScoreTreshold);
+		
+		// append to logger
+		Logger.append("Minimum PSM score threshold to accept as canonical PSMs: "+cPSMScoreTreshold);
+		Logger.newLine();
+		Logger.append("Minimum PSM score threshold to accept as noncanonical PSMs: "+ncPSMScoreTreshold);
+		Logger.newLine();
 	}
 	
 	public static void printFilterStat () {
@@ -68,5 +80,25 @@ public class RunInfo {
 		System.out.println("Region Decision\t"+regionFilterScanNum5+"\t"+regionFilterPeptideNum5);
 		System.out.println("PSM Decision\t"+topscoreFilterScanNum6+"\t"+topscoreFilterPeptideNum6);
 		System.out.println("FDR Estimation\t"+fdrFilterScanNum7+"\t"+fdrFilterPeptideNum7);
+		
+		// append to logger
+		Logger.append("Step\tScans\tPeptides");
+		Logger.newLine();
+		Logger.append("Initial\t"+initialScanNum+"\t"+initialPeptideNum);
+		Logger.newLine();
+		Logger.append("Rank Filter\t"+rankFilterScanNum1+"\t"+rankFilterPeptideNum1);
+		Logger.newLine();
+		Logger.append("Length Filter\t"+lengthFilterScanNum2+"\t"+lengthFilterPeptideNum2);
+		Logger.newLine();
+		Logger.append("Mapped Candidates\t"+mappingFilterScanNum3+"\t"+mappingFilterPeptideNum3);
+		Logger.newLine();
+		Logger.append("Significantly Mapped\t"+pvalueFilterScanNum4+"\t"+pvalueFilterPeptideNum4);
+		Logger.newLine();
+		Logger.append("Region Decision\t"+regionFilterScanNum5+"\t"+regionFilterPeptideNum5);
+		Logger.newLine();
+		Logger.append("PSM Decision\t"+topscoreFilterScanNum6+"\t"+topscoreFilterPeptideNum6);
+		Logger.newLine();
+		Logger.append("FDR Estimation\t"+fdrFilterScanNum7+"\t"+fdrFilterPeptideNum7);
+		Logger.newLine();
 	}
 }

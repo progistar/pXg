@@ -16,11 +16,14 @@ public class Starter
     {
     	
     	long startTime = System.currentTimeMillis();
-    	
-    	ParameterParser.parseParams(args);
-    	
     	// open logger
     	Logger.create(Parameters.outputFilePath+".log");
+    	
+    	// fail to parse params
+    	if(ParameterParser.parseParams(args) == -1) {
+    		Logger.close();
+    		System.exit(1);
+    	}
     	
     	Master.ready(Parameters.genomicAnnotationFilePath, Parameters.sequenceFilePath, Parameters.peptideFilePath);
     	Master.run();
@@ -32,6 +35,8 @@ public class Starter
     	RunInfo.printFilterStat();
     	System.out.println("\tTotal Elapsed time: "+((endTime-startTime)/1000) + " sec with "+RunInfo.totalProcessedPeptides +" peptides and " +RunInfo.totalProcessedReads+" reads");
     	
+    	Logger.append("\tTotal Elapsed time: "+((endTime-startTime)/1000) + " sec with "+RunInfo.totalProcessedPeptides +" peptides and " +RunInfo.totalProcessedReads+" reads");
+    	Logger.newLine();
     	Logger.close();
     }
 }

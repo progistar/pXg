@@ -4,10 +4,17 @@ import java.io.File;
 
 import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
+import progistar.pXg.utils.Logger;
 
 public class ParameterParser {
 
-	public static void parseParams (String[] args) {
+	/**
+	 * If parsing successfully, return 0. else -1.
+	 * 
+	 * @param args
+	 * @return
+	 */
+	public static int parseParams (String[] args) {
 		try {
 			System.out.println(Constants.VERSION);
 			System.out.println(Constants.INTRODUCE);
@@ -41,7 +48,7 @@ public class ParameterParser {
 				System.out.println("java -Xmx30G -jar pXg.jar -gtf gencode.gtf -sam aligned.sorted.sam -psm peaks.result -pept_col 4 -score_col 8 -scan_cols 1,2,5 -out peaks.pXg");
 				System.out.println("Example2");
 				System.out.println("java -Xmx30G -jar pXg.jar -gtf gencode.gtf -sam aligned.sorted.sam -psm peaks.result -pept_col 4 -score_col 8 -scan_cols 1,2,5 -out peaks.pXg -pval 0.05 -fdr 0.01 -length 8-13 -threads 2");
-				System.exit(1);
+				return -1;
 			}
 			
 			for(int i=0; i<args.length; i+=2) {
@@ -52,7 +59,7 @@ public class ParameterParser {
 					Parameters.genomicAnnotationFilePath = args[i+1];
 					if(!isExist(Parameters.genomicAnnotationFilePath)) {
 						printNoSuchFileOrDirectory(Parameters.genomicAnnotationFilePath);
-						System.exit(1);
+						return -1;
 					}
 				} 
 				// -sam (mandatory)
@@ -60,7 +67,7 @@ public class ParameterParser {
 					Parameters.sequenceFilePath = args[i+1];
 					if(!isExist(Parameters.sequenceFilePath)) {
 						printNoSuchFileOrDirectory(Parameters.sequenceFilePath);
-						System.exit(1);
+						return -1;
 					}
 				}
 				// -psm (mandatory)
@@ -68,7 +75,7 @@ public class ParameterParser {
 					Parameters.peptideFilePath = args[i+1];
 					if(!isExist(Parameters.peptideFilePath)) {
 						printNoSuchFileOrDirectory(Parameters.peptideFilePath);
-						System.exit(1);
+						return -1;
 					}
 				}
 				// -fasta (optional)
@@ -76,7 +83,7 @@ public class ParameterParser {
 					Parameters.proteinFastaPath = args[i+1];
 					if(!isExist(Parameters.proteinFastaPath)) {
 						printNoSuchFileOrDirectory(Parameters.proteinFastaPath);
-						System.exit(1);
+						return -1;
 					}
 				}
 				// -out (mandatory)
@@ -88,7 +95,7 @@ public class ParameterParser {
 					
 					if(isExist(Parameters.outputFilePath)) {
 						printAlreadyExistFileOrDirectory(Parameters.outputFilePath);
-						System.exit(1);
+						return -1;
 					}
 				}
 				// -pval (optional)
@@ -142,12 +149,12 @@ public class ParameterParser {
 			}
 		}catch(Exception e) {
 			System.out.println("Wrong parameter was detected. Please check the parameters.");
-			System.exit(1);
+			return -1;
 		}
 		
 		
 		if(!isMandatoryOkay()) {
-			System.exit(1);
+			return -1;
 		}
 		
 		printSetting();
@@ -158,6 +165,8 @@ public class ParameterParser {
 		for(int i=0; i<Parameters.scanColumnIndices.length; i++) {
 			Parameters.scanColumnIndices[i]--;
 		}
+		
+		return 0;
 	}
 	
 	/**
@@ -202,6 +211,44 @@ public class ParameterParser {
 		System.out.println(" OUT_PSM_DIST.: "+Parameters.psmStatFilePath);
 		System.out.println(" OUT_UNMAPPED: "+Parameters.unmappedFilePath);
 		System.out.println(" THREADS: "+Parameters.nThreads);
+		
+		// append to logger
+		Logger.append("Running info");
+		Logger.newLine();
+		Logger.append(" GTF: "+Parameters.genomicAnnotationFilePath);
+		Logger.newLine();
+		Logger.append("  GTF_PARTITION_SIZE: "+Parameters.partitionSize);
+		Logger.newLine();
+		Logger.append(" SAM: "+Parameters.sequenceFilePath);
+		Logger.newLine();
+		Logger.append("  SAM_PARTITION_SIZE: "+Parameters.readSize);
+		Logger.newLine();
+		Logger.append("  READ_CUTOFF_P_VALUE: "+Parameters.pvalue);
+		Logger.newLine();
+		Logger.append(" PSM: "+Parameters.peptideFilePath);
+		Logger.newLine();
+		Logger.append("  PEPT_COL: "+Parameters.peptideColumnIndex);
+		Logger.newLine();
+		Logger.append("  SCORE_COL: "+Parameters.scoreColumnIndex);
+		Logger.newLine();
+		Logger.append("  SCAN_COLS: "+scanCols.substring(1));
+		Logger.newLine();
+		Logger.append("  RANK TO CONSIDER: "+Parameters.psmRank);
+		Logger.newLine();
+		Logger.append("  PEPTIDE_LENGTH: "+Parameters.minPeptLen+"-"+Parameters.maxPeptLen);
+		Logger.newLine();
+		Logger.append("  PSM_FDR: "+Parameters.fdr);
+		Logger.newLine();
+		Logger.append(" OUT_RESULT: "+Parameters.outputFilePath);
+		Logger.newLine();
+		Logger.append(" OUT_READ_DIST.: "+Parameters.ngsStatFilePath);
+		Logger.newLine();
+		Logger.append(" OUT_PSM_DIST.: "+Parameters.psmStatFilePath);
+		Logger.newLine();
+		Logger.append(" OUT_UNMAPPED: "+Parameters.unmappedFilePath);
+		Logger.newLine();
+		Logger.append(" THREADS: "+Parameters.nThreads);
+		Logger.newLine();
 	}
 	
 	private static boolean isMandatoryOkay () {
