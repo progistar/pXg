@@ -16,9 +16,6 @@ public class Starter
     {
     	
     	long startTime = System.currentTimeMillis();
-    	// open logger
-    	Logger.create(Parameters.outputFilePath+".log");
-    	
     	// fail to parse params
     	if(ParameterParser.parseParams(args) == -1) {
     		Logger.close();

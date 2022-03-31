@@ -457,7 +457,15 @@ public class PxGAnnotation {
 				}
 			}
 			
-			if(bestTargetIndex != -1) {
+			// top-scored PSMs have priority
+			if(bestTargetIndex != -1 && bestDecoyIndex != -1) {
+				if(scanPBlocks.get(bestTargetIndex).score >= scanPBlocks.get(bestDecoyIndex).score) {
+					pBlocks.add(scanPBlocks.get(bestTargetIndex));
+				} else {
+					pBlocks.add(scanPBlocks.get(bestDecoyIndex));
+				}
+				
+			} else if(bestTargetIndex != -1) {
 				pBlocks.add(scanPBlocks.get(bestTargetIndex));
 			} else if(bestDecoyIndex != -1){
 				pBlocks.add(scanPBlocks.get(bestDecoyIndex));

@@ -48,14 +48,12 @@ public class Priority {
 			// F = 5'-UTR
 			// T = 3'-UTR
 			// N = non-coding such as lncRNA/pseudogenes
-			// I = in-frame (!= I means frameshift or non-coding)
 			if(regions[0].contains(Constants.MARK_5UTR+"") || 
 					regions[0].contains(Constants.MARK_3UTR+"") || 
-					regions[0].contains(Constants.MARK_NCDS+"") || 
-					regions[2].charAt(0) != Constants.IN_FRAME) {
+					regions[0].contains(Constants.MARK_NCDS+"")) {
 				rPenalty += 20;
 			}
-			
+			else
 			// strvar
 			// I = intron
 			// - = intergenic
@@ -65,6 +63,10 @@ public class Priority {
 				if(regions[0].contains(Constants.MARK_CDS+"")) {
 					rPenalty -= 5; // if containing CDS, up-vote.
 				}
+			} 
+			// Outofframe
+			else if(regions[2].charAt(0) != Constants.IN_FRAME) {
+				rPenalty += 20;
 			}
 			
 			// antisense = antisense

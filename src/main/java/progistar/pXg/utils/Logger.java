@@ -4,6 +4,8 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import progistar.pXg.constants.Constants;
+
 public class Logger {
 
 	private static BufferedWriter BW = null;
@@ -35,6 +37,8 @@ public class Logger {
 	public static void create (String fileName) {
 		try {
 			BW = new BufferedWriter(new FileWriter(fileName));
+			BW.append(Constants.VERSION);
+			BW.newLine();
 		}catch (IOException ioe) {
 			
 		}

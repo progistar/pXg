@@ -20,9 +20,6 @@ public class ParameterParser {
 			System.out.println(Constants.INTRODUCE);
 			System.out.println();
 			
-			Logger.append(Constants.VERSION);
-			Logger.newLine();
-			
 			// print parameter description
 			if(args.length == 0) {
 				System.out.println("Usage");
@@ -160,6 +157,9 @@ public class ParameterParser {
 			return -1;
 		}
 		
+		// open logger
+    	Logger.create(Parameters.outputFilePath+".log");
+
 		printSetting();
 		
 		// change one-based to zero-based
