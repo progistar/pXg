@@ -14,9 +14,9 @@ pinkC <- "#F781BF"
 grayC <- "#999999"
 
 
-setwd("C:/Users/progi/Desktop/Projects/pXg/Laumont_NatCommun2016/Results")
+setwd("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/5.withCalibrationAddScanNumWithoutDeami/pXg")
 
-scores <- read.csv(file = "ScoreDist.txt", header = T, sep = "\t", as.is = as.double())
+scores <- read.csv(file = "PeptideAnnotationS1_5ppm_002_recal.scanNum.rep1.rank10.pXg.fdr.dist", header = T, sep = "\t", as.is = as.double())
 
 tdPlot <- ggplot(data=scores, aes(x=Score, fill=Class)) +
   scale_fill_manual(values=c(blueC, redC)) +

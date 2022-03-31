@@ -27,9 +27,11 @@ public class IDCompare {
 			String[] fields = line.split("\t");
 			String key = fields[PXG_SPEC_FILE_IDX] +"_"+fields[PXG_SCAN_IDX].split("\\:")[1];
 			String peptide = fields[PXG_PEPTIDE_IDX];
-			peptide = peptide.replaceAll("[+-.\\(\\)0123456789*]", "");
-			
-			pxgPSMs.put(key, fields[3]+"_"+peptide);
+			String isCanonical = fields[PXG_IS_CANONICAL];
+			if(isCanonical.equalsIgnoreCase("TRUE") && pxgPSMs.get(key) == null) {
+				peptide = peptide.replaceAll("[+-.\\(\\)0123456789*]", "");
+				pxgPSMs.put(key, fields[3]+"_"+peptide);
+			}
 		}
 		
 		BR.close();
@@ -57,9 +59,9 @@ public class IDCompare {
 	}
 	
 	public static void main(String[] args) throws IOException {
-		File msgfRes = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/MSGF/fdr_at5/S3.fdr");
-		File pxgRes = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/3.withCalibrationAddScanNum/pXg/PeptideAnnotationS3_5ppm_002_recal.scanNum.rep1.rank10.pXg.BA.fdr");
-		File pxgMetOnlyRes = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/5.withCalibrationAddScanNumWithoutDeami/pXg/PeptideAnnotationS3_5ppm_002_recal.scanNum.rep1.rank10.pXg.fdr");
+		File msgfRes = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/MSGF/fdr_at5/S1.fdr");
+		File pxgRes = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/3.withCalibrationAddScanNum/pXg/PeptideAnnotationS1_5ppm_002_recal.scanNum.rep1.rank10.pXg.BA.fdr");
+		File pxgMetOnlyRes = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/5.withCalibrationAddScanNumWithoutDeami/pXg/PeptideAnnotationS1_5ppm_002_recal.scanNum.rep1.rank10.pXg");
 		
 		Hashtable<String, String> msgfPSMs = readMSGF(msgfRes);
 		Hashtable<String, String> pxgPSMs = readPXG(pxgRes);
@@ -83,6 +85,9 @@ public class IDCompare {
 			String pxgMetPept = pxgMetOnlyPSMs.get(scan);
 			String fullPXGMetPept = "NA";
 			String stripPXGMetPept = "NA";
+			
+			pxgPSMs.remove(scan);
+			pxgMetOnlyPSMs.remove(scan);
 			
 			boolean isPXGSame = false;
 			boolean isPXGMetSame = false;
@@ -127,7 +132,98 @@ public class IDCompare {
 			}
 			
 			System.out.println(scan+","+fullPept+","+fullPXGPept+","+fullPXGMetPept+","+idx);
+		});
+		
+		pxgPSMs.forEach((scan, pept) -> {
+			String pxgPept = pxgPSMs.get(scan);
+			String fullPXGPept = "NA";
+			String stripPXGPept = "NA";
+			fullPXGPept = pept.split("_")[0];
+			stripPXGPept = pept.split("_")[1];
 			
+			String pxgMetPept = pxgMetOnlyPSMs.get(scan);
+			String fullPXGMetPept = "NA";
+			String stripPXGMetPept = "NA";
+			
+			pxgMetOnlyPSMs.remove(scan);
+			
+			boolean isPXGSame = false;
+			boolean isPXGMetSame = false;
+			boolean isPXGMetPXGSame = false;
+		
+			
+			if(pxgMetPept != null) {
+				fullPXGMetPept = pxgMetPept.split("_")[0];
+				stripPXGMetPept = pxgMetPept.split("_")[1];
+			}
+			
+			if(pxgPept != null && pxgMetPept != null) {
+				if(stripPXGPept.equalsIgnoreCase(stripPXGMetPept)) {
+					isPXGMetPXGSame = true;
+				}
+			}
+			
+			int idx = 0;
+			// all same
+			if(isPXGSame && isPXGMetSame) {
+				idx = 0;
+			} else if(isPXGSame && !isPXGMetSame) {
+				idx = 1;
+			} else if(!isPXGSame && isPXGMetSame) {
+				idx = 2;
+			} else if(!isPXGSame && !isPXGMetSame && isPXGMetPXGSame) {
+				idx = 3;
+			} else {
+				idx = 4;
+			}
+			
+			System.out.println(scan+",NA,"+fullPXGPept+","+fullPXGMetPept+","+idx);
+		});
+		
+		pxgMetOnlyPSMs.forEach((scan, pept) -> {
+			String pxgPept = pxgPSMs.get(scan);
+			String fullPXGPept = "NA";
+			String stripPXGPept = "NA";
+			
+			String pxgMetPept = pxgMetOnlyPSMs.get(scan);
+			String fullPXGMetPept = "NA";
+			String stripPXGMetPept = "NA";
+			fullPXGMetPept = pept.split("_")[0];
+			stripPXGMetPept = pept.split("_")[1];
+			
+			
+			boolean isPXGSame = false;
+			boolean isPXGMetSame = false;
+			boolean isPXGMetPXGSame = false;
+		
+			
+			if(pxgPept != null) {
+				fullPXGPept = pxgPept.split("_")[0];
+				stripPXGPept = pxgPept.split("_")[1];
+			}
+			
+			
+			if(pxgPept != null && pxgMetPept != null) {
+				if(stripPXGPept.equalsIgnoreCase(stripPXGMetPept)) {
+					isPXGMetPXGSame = true;
+				}
+			}
+			
+			int idx = 0;
+			// all same
+			if(isPXGSame && isPXGMetSame) {
+				idx = 0;
+			} else if(isPXGSame && !isPXGMetSame) {
+				idx = 1;
+			} else if(!isPXGSame && isPXGMetSame) {
+				idx = 2;
+			} else if(!isPXGSame && !isPXGMetSame && isPXGMetPXGSame) {
+				idx = 3;
+			} else {
+				idx = 4;
+			}
+			
+			System.out.println(scan+",NA,"+fullPXGPept+","+fullPXGMetPept+","+idx);
 		});
 	}
 }
