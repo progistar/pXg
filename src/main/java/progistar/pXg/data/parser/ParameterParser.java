@@ -20,6 +20,9 @@ public class ParameterParser {
 			System.out.println(Constants.INTRODUCE);
 			System.out.println();
 			
+			Logger.append(Constants.VERSION);
+			Logger.newLine();
+			
 			// print parameter description
 			if(args.length == 0) {
 				System.out.println("Usage");
