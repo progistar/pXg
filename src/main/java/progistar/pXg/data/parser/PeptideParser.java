@@ -95,6 +95,9 @@ public class PeptideParser {
 
 		long endTime = System.currentTimeMillis();
 		
+		// determine rank
+		PeptideAnnotation.assignRank();
+		
 		RunInfo.initialPeptideNum = PeptideAnnotation.getPeptideSize();
 		RunInfo.initialScanNum = PeptideAnnotation.getScanSize();
 		

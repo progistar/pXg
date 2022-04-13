@@ -115,6 +115,32 @@ public class PeptideAnnotation {
 		
 		return sequences;
 	}
+	/**
+	 * assign rank of candidates. <br>
+	 * If the scores are tied, than they are assigned the same rank.<br>
+	 * 
+	 */
+	public static void assignRank () {
+		Hashtable<String, ArrayList<PBlock>> pBlocksByScan = aggregatePBlocksByScan();
+		
+		pBlocksByScan.forEach((scanID, scanPBlocks) -> {
+			// sort pBlocks by scores, decreasing order.
+			Collections.sort(scanPBlocks);
+			
+			// cutoff
+			int size = scanPBlocks.size();
+			double prevScore = -1;
+			int rank = 0;
+			for(int i=0; i<size; i++) {
+				PBlock pBlock = scanPBlocks.get(i);
+				if(pBlock.score != prevScore) {
+					rank++;
+					prevScore = pBlock.score;
+				}
+				pBlock.rank = rank;
+			}
+		});
+	}
 	
 	/**
 	 * filter by rank <br>
