@@ -379,12 +379,12 @@ public class PxGAnnotation {
 							// assign fastaIDs.
 							xBlock.fastaIDs = pBlock.fastaIDs;
 							
-							String lociCount = "-";
+							String gLociCount = "-";
 							if(xBlock.isMapped()) {
-								lociCount = xBlocks.size()+"";
+								gLociCount = xBlocks.size()+"";
 							}
 							
-							BW.append(pBlock.toString()).append("\t").append(pBlock.rank+"\t").append(lociCount+"\t").append(xBlock.toString()).append("\t"+pBlock.isCannonical);
+							BW.append(pBlock.toString()).append("\t").append(pBlock.rank+"\t").append(gLociCount+"\t").append(xBlock.toString()).append("\t"+pBlock.isCannonical);
 							BW.newLine();
 							
 							// if this is unmapped, then store.

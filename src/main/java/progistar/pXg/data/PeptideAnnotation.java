@@ -161,7 +161,7 @@ public class PeptideAnnotation {
 				// add pBlocks which delta-score is equal or less than "score-threshold"
 				
 				// delta-rank!
-				if(i < Parameters.psmRank) {
+				if(scanPBlocks.get(i).rank <= Parameters.psmRank) {
 					pBlocks.add(scanPBlocks.get(i));
 				}
 			}
