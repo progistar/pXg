@@ -14,6 +14,8 @@ public class Parameters {
 	public static final String CMD_PROTEIN_SEQUENCE_PATH		=	"-fasta".toLowerCase();
 	public static String proteinFastaPath			=	null;
 	
+	public static final String SEP_TYPE							=	"-sep".toLowerCase();
+	public static String sepType					=	"csv".toLowerCase();	
 	// Output file path
 	public static final String CMD_OUTPUT_PATH				=	"-out".toLowerCase();
 	public static String outputFilePath					=	null;

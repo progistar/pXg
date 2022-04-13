@@ -35,6 +35,7 @@ public class ParameterParser {
 				System.out.println("  -out                 : Output path of pXg.");
 				System.out.println();
 				System.out.println("Optional Fields");
+				System.out.println("  -sep                 : Specify the column separator. Possible values are csv or tsv. Default is csv");
 				System.out.println("  -pval                : p-value cutoff of randomly matched peptide-read pairs. Default is 0.05");
 				System.out.println("  -fdr                 : fdr cutoff to discard low-quality peptide-spectrum matches. Default is 0.05");
 				System.out.println("  -length              : Range of peptide length to consider. Default is 8-15");
@@ -77,6 +78,10 @@ public class ParameterParser {
 						printNoSuchFileOrDirectory(Parameters.peptideFilePath);
 						return -1;
 					}
+				}
+				// -fasta (optional)
+				else if(option.equalsIgnoreCase(Parameters.SEP_TYPE)) {
+					Parameters.sepType = args[i+1];
 				}
 				// -fasta (optional)
 				else if(option.equalsIgnoreCase(Parameters.CMD_PROTEIN_SEQUENCE_PATH)) {

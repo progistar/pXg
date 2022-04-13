@@ -6,13 +6,13 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class App {
+public class App_pXg {
 
 	public static void main(String[] args) {
 		int tPeptideIndex = 20;
 		
-		String pXgOutputFileName = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/5.withCalibrationAddScanNumWithoutDeami/pXg/PeptideAnnotationS4_5ppm_002_recal.scanNum.rep1.rank10.pXg";
-		NetMHCpanResult netMHCpanResult = NetMHCpanParser.parseNetMHCpan("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/5.withCalibrationAddScanNumWithoutDeami/pXg/S4.NetMHCpan");
+		String pXgOutputFileName = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/7.Unmodified/pXg/S4.PEAKS.UNMOD.pXg";
+		NetMHCpanResult netMHCpanResult = NetMHCpanParser.parseNetMHCpan("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/7.Unmodified/NetMHCpan/S4.NetMHCpan.xls");
 		
 		try {
 			BufferedReader BR = new BufferedReader(new FileReader(pXgOutputFileName));

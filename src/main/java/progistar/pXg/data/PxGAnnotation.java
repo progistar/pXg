@@ -14,6 +14,7 @@ import java.util.Iterator;
 import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
 import progistar.pXg.constants.RunInfo;
+import progistar.pXg.utils.Logger;
 
 public class PxGAnnotation {
 
@@ -74,6 +75,8 @@ public class PxGAnnotation {
 	 */
 	public void estimatePvalueThreshold () {
 		System.out.println("Calculating p-values...");
+		Logger.append("Calculating p-values...");
+		Logger.newLine();
 		long startTime = System.currentTimeMillis();
 		
 		double[][] pValueTable = getPvalueTable();
@@ -84,6 +87,9 @@ public class PxGAnnotation {
 				if(pValueTable[peptLen][i] < Parameters.pvalue) {
 					RunInfo.cutoffReads[peptLen] = i;
 					System.out.println("Minimum reads threshold to accept at "+peptLen+" aa peptide: "+(i));
+					// append to logger
+					Logger.append("Minimum reads threshold to accept at "+peptLen+" aa peptide: "+(i));
+					Logger.newLine();
 					break;
 				}
 			}
@@ -501,7 +507,7 @@ public class PxGAnnotation {
 						expAndMocks[0] = true;
 					} 
 					// decoy PSMs
-					else if(xBlock.mockReadCount >= RunInfo.cutoffReads[key.length()] && pBlock.fastaIDs.length == 0) {
+					else if(xBlock.mockReadCount >= RunInfo.cutoffReads[key.length()]) {
 						pBlock.psmStatus = Constants.PSM_STATUS_DECOY > pBlock.psmStatus ? Constants.PSM_STATUS_DECOY : pBlock.psmStatus;
 						pBlock.isCannonical |= xBlock.isCannonical();
 						expAndMocks[1] = true;

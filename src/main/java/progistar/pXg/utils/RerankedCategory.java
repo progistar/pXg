@@ -112,8 +112,8 @@ public class RerankedCategory {
 	
 	
 	public static void main(String[] args) throws IOException {
-		File peaksResult = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/3.withCalibrationAddScanNum/pXg/PeptideAnnotationS4_5ppm_002_MSFrecal_addScanNum.tsv");
-		File pxgResult = new File  ("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/3.withCalibrationAddScanNum/pXg/PeptideAnnotationS4_5ppm_002_recal.scanNum.rep1.rank10.pXg.BA.fdr");
+		File peaksResult = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/6.CaliScanwoDeamiFix/PEAKS/PeptideAnnotationS4_5ppm_002_MSFrecal_addScanNum.tsv");
+		File pxgResult = new File  ("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/6.CaliScanwoDeamiFix/pXg/PeptideAnnotationS4_5ppm_002_recal.scanNum.rep1.rank10.pXg.BA.fdr");
 		
 		Hashtable<String, String> a = spectrumToPeptide(peaksResult);
 		Hashtable<String, PXGResult> b = spectrumToPeptidePXG(pxgResult);

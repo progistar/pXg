@@ -52,11 +52,20 @@ public class PeptideParser {
 				
 				// the first line after headers must be field line.
 				if(recordCount == -1) {
-					PeptideAnnotation.setFields(line.split("\t"));
+					if(Parameters.sepType.equalsIgnoreCase("tsv")) {
+						PeptideAnnotation.setFields(line.split("\t"));
+					} else if(Parameters.sepType.equalsIgnoreCase("csv")) {
+						PeptideAnnotation.setFields(line.split(","));
+					}
 				} 
 				// record
 				else {
-					String[] record = line.split("\t");
+					String[] record = null;
+					if(Parameters.sepType.equalsIgnoreCase("tsv")) {
+						record = line.split("\t");
+					} else if(Parameters.sepType.equalsIgnoreCase("csv")) {
+						record = line.split(",");
+					}
 					String peptide = record[Parameters.peptideColumnIndex];
 					
 					// find peptide strip sequence

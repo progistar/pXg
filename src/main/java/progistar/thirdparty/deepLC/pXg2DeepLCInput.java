@@ -32,9 +32,9 @@ public class pXg2DeepLCInput {
 		int rtIndex = 11;
 		int fractionIndex = 1;
 		int scanIndex = 4;
-		int peptideIndex = 19;
+		int peptideIndex = 20;
 		
-		String fileName = "C:\\Users\\progi\\Desktop\\Projects\\pXg\\Laumont_NatCommun2016\\Results\\subjectM.5ppm.002.rep1.pXg";
+		String fileName = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/6.CaliScanwoDeamiFix/pXg/PeptideAnnotationS3_5ppm_002_recal.scanNum.rep1.rank10.pXg.BA.fdr";
 		
 		BufferedReader BR = new BufferedReader(new FileReader(fileName));
 		
@@ -81,12 +81,18 @@ public class pXg2DeepLCInput {
 				BW.append("seq,modifications,tr");
 				BW.newLine();
 				
-				for(String id : fraction) {
-					BW.append(id);
-					BW.newLine();
+				int cnt = 0;
+				while(cnt < 25) {
+					for(String id : fraction) {
+						BW.append(id);
+						BW.newLine();
+						cnt++;
+					}
 				}
 				
 				BW.close();
+				
+				System.out.println(fName+":\t"+fraction.size()+"=> "+cnt);
 			}catch(IOException ioe) {
 				
 			}
