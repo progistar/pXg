@@ -160,7 +160,7 @@ public class PeptideAnnotation {
 			for(int i=0; i<size; i++) {
 				// add pBlocks which delta-score is equal or less than "score-threshold"
 				
-				// delta-rank!
+				// include the candidates satisfying the rank creterion
 				if(scanPBlocks.get(i).rank <= Parameters.psmRank) {
 					pBlocks.add(scanPBlocks.get(i));
 				}

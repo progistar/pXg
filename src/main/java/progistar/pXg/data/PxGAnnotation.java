@@ -379,7 +379,8 @@ public class PxGAnnotation {
 							// assign fastaIDs.
 							xBlock.fastaIDs = pBlock.fastaIDs;
 							
-							String gLociCount = "-";
+							// we treated unmapped reads as '0' genomic loci count.
+							String gLociCount = "0";
 							if(xBlock.isMapped()) {
 								gLociCount = xBlocks.size()+"";
 							}
@@ -473,7 +474,6 @@ public class PxGAnnotation {
 				} else {
 					pBlocks.add(scanPBlocks.get(bestDecoyIndex));
 				}
-				
 			} else if(bestTargetIndex != -1) {
 				pBlocks.add(scanPBlocks.get(bestTargetIndex));
 			} else if(bestDecoyIndex != -1){
