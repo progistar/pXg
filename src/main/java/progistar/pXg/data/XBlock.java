@@ -109,6 +109,19 @@ public class XBlock {
 	}
 	
 	/**
+	 * Check whether there is matched fasta entries.<br>
+	 * 
+	 * 
+	 * @return
+	 */
+	public boolean isFastaAssigned () {
+		if(this.fastaIDs.length == 0) {
+			return false;
+		}
+		return true;
+	}
+	
+	/**
 	 * {@link Deprecated}
 	 * Do not print PSM without read mapping.<br>
 	 * -- The original usage is to print out PSMs with no reads.<br>

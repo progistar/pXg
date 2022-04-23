@@ -510,7 +510,9 @@ public class PxGAnnotation {
 						expAndMocks[0] = true;
 					} 
 					// decoy PSMs
-					else if(xBlock.mockReadCount >= RunInfo.cutoffReads[key.length()]) {
+					// if the decoy appears in the fasta entries, there are chances that the sequence actually is derived from protein coding.
+					// we prevent assigning as decoy in this case.
+					else if(xBlock.mockReadCount >= RunInfo.cutoffReads[key.length()] && !xBlock.isFastaAssigned()) {
 						pBlock.psmStatus = Constants.PSM_STATUS_DECOY > pBlock.psmStatus ? Constants.PSM_STATUS_DECOY : pBlock.psmStatus;
 						pBlock.isCannonical |= xBlock.isCannonical();
 						expAndMocks[1] = true;

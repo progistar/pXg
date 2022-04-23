@@ -17,7 +17,7 @@ public class IDCompare {
 	public static final int PXG_PEPTIDE_IDX = 20;
 	public static final int PXG_IS_CANONICAL = 36;
 	
-	public static Hashtable<String, String> readPXG (File file) throws IOException {
+	public static Hashtable<String, String> readPXG (File file, boolean isCanonical) throws IOException {
 		BufferedReader BR = new BufferedReader(new FileReader(file));
 		String line = null;
 		BR.readLine(); // skip header
@@ -27,11 +27,15 @@ public class IDCompare {
 			String[] fields = line.split("\t");
 			String key = fields[PXG_SPEC_FILE_IDX] +"_"+fields[PXG_SCAN_IDX].split("\\:")[1];
 			String peptide = fields[PXG_PEPTIDE_IDX];
-			String isCanonical = fields[PXG_IS_CANONICAL];
-			if(isCanonical.equalsIgnoreCase("TRUE") && pxgPSMs.get(key) == null) {
-				peptide = peptide.replaceAll("[+-.\\(\\)0123456789*]", "");
-				pxgPSMs.put(key, fields[3]+"_"+peptide);
+			String type = fields[PXG_IS_CANONICAL];
+			
+			if(isCanonical == type.equalsIgnoreCase("TRUE")) {
+				if(pxgPSMs.get(key) == null) {
+					peptide = peptide.replaceAll("[+-.\\(\\)0123456789*]", "");
+					pxgPSMs.put(key, peptide);
+				}
 			}
+			
 		}
 		
 		BR.close();
@@ -50,7 +54,7 @@ public class IDCompare {
 			String key = fields[MSGF_SPEC_FILE_IDX] +"_"+fields[MSGF_SCAN_IDX];
 			String peptide = fields[MSGF_PEPTIDE_IDX];
 			peptide = peptide.replaceAll("[+-.0123456789*]", "");
-			msgfPSMs.put(key, fields[MSGF_PEPTIDE_IDX]+"_"+peptide);
+			msgfPSMs.put(key, peptide);
 		}
 		
 		BR.close();
@@ -59,171 +63,42 @@ public class IDCompare {
 	}
 	
 	public static void main(String[] args) throws IOException {
-		File msgfRes = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/MSGF/fdr_at5/S1.fdr");
-		File pxgRes = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/3.withCalibrationAddScanNum/pXg/PeptideAnnotationS1_5ppm_002_recal.scanNum.rep1.rank10.pXg.BA.fdr");
-		File pxgMetOnlyRes = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/5.withCalibrationAddScanNumWithoutDeami/pXg/PeptideAnnotationS1_5ppm_002_recal.scanNum.rep1.rank10.pXg");
+		File[] msgfResSet = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/MSGF/unmodified/fdr_q5").listFiles();
+		File[] pxgResSet = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/7.Unmodified/pXg").listFiles();
 		
-		Hashtable<String, String> msgfPSMs = readMSGF(msgfRes);
-		Hashtable<String, String> pxgPSMs = readPXG(pxgRes);
-		Hashtable<String, String> pxgMetOnlyPSMs = readPXG(pxgMetOnlyRes);
+		Hashtable<String, String> msgfResHash = new Hashtable<String, String>();
+		Hashtable<String, String> pXgResHash = new Hashtable<String, String>();
 		
-		// 0: all same
-		// 1: pxg same
-		// 2: pxgMet same
-		// 3: not same but pxg and pxgMet are same
-		// 4: totally different among them
-		System.out.println("Scan,MSGFPept,PEAKSwDeami,PEAKSwoDeami,ClassCode");
+		for(File file : msgfResSet) {
+			if(file.getName().startsWith(".")) {
+				continue;
+			}
+			if(file.getName().endsWith("BA.xCorr")) {
+				msgfResHash.putAll(readMSGF(file));
+			}
+		}
+		for(File file : pxgResSet) {
+			if(file.getName().startsWith(".")) {
+				continue;
+			}
+			if(file.getName().endsWith(".BA.xCorr")) {
+				pXgResHash.putAll(readPXG(file, true));
+			}
+		}
 		
-		msgfPSMs.forEach((scan, pept)->{
-			String fullPept = pept.split("_")[0];
-			String stripPept = pept.split("_")[1];
-			
-			String pxgPept = pxgPSMs.get(scan);
-			String fullPXGPept = "NA";
-			String stripPXGPept = "NA";
-			
-			String pxgMetPept = pxgMetOnlyPSMs.get(scan);
-			String fullPXGMetPept = "NA";
-			String stripPXGMetPept = "NA";
-			
-			pxgPSMs.remove(scan);
-			pxgMetOnlyPSMs.remove(scan);
-			
-			boolean isPXGSame = false;
-			boolean isPXGMetSame = false;
-			boolean isPXGMetPXGSame = false;
-			
-			if(pxgPept != null) {
-				fullPXGPept = pxgPept.split("_")[0];
-				stripPXGPept = pxgPept.split("_")[1];
-				
-				if(stripPXGPept.equalsIgnoreCase(stripPept)) {
-					isPXGSame = true;
-				}
+		System.out.println("A total of MSGF IDs: "+msgfResHash.size());
+		System.out.println("A total of pXg IDs : "+pXgResHash.size());
+		
+		int[] intersection = new int[1];
+		pXgResHash.forEach((key, peptide) -> {
+			String peptideMSGF = msgfResHash.get(key);
+			if(peptideMSGF != null && peptideMSGF.equalsIgnoreCase(peptide)) {
+				intersection[0]++;
 			}
-			
-			if(pxgMetPept != null) {
-				fullPXGMetPept = pxgMetPept.split("_")[0];
-				stripPXGMetPept = pxgMetPept.split("_")[1];
-				
-				if(stripPXGMetPept.equalsIgnoreCase(stripPept)) {
-					isPXGMetSame = true;
-				}
-			}
-			
-			if(pxgPept != null && pxgMetPept != null) {
-				if(stripPXGPept.equalsIgnoreCase(stripPXGMetPept)) {
-					isPXGMetPXGSame = true;
-				}
-			}
-			
-			int idx = 0;
-			// all same
-			if(isPXGSame && isPXGMetSame) {
-				idx = 0;
-			} else if(isPXGSame && !isPXGMetSame) {
-				idx = 1;
-			} else if(!isPXGSame && isPXGMetSame) {
-				idx = 2;
-			} else if(!isPXGSame && !isPXGMetSame && isPXGMetPXGSame) {
-				idx = 3;
-			} else {
-				idx = 4;
-			}
-			
-			System.out.println(scan+","+fullPept+","+fullPXGPept+","+fullPXGMetPept+","+idx);
 		});
 		
-		pxgPSMs.forEach((scan, pept) -> {
-			String pxgPept = pxgPSMs.get(scan);
-			String fullPXGPept = "NA";
-			String stripPXGPept = "NA";
-			fullPXGPept = pept.split("_")[0];
-			stripPXGPept = pept.split("_")[1];
-			
-			String pxgMetPept = pxgMetOnlyPSMs.get(scan);
-			String fullPXGMetPept = "NA";
-			String stripPXGMetPept = "NA";
-			
-			pxgMetOnlyPSMs.remove(scan);
-			
-			boolean isPXGSame = false;
-			boolean isPXGMetSame = false;
-			boolean isPXGMetPXGSame = false;
+		System.out.println("Intersected IDs: "+intersection[0]);
 		
-			
-			if(pxgMetPept != null) {
-				fullPXGMetPept = pxgMetPept.split("_")[0];
-				stripPXGMetPept = pxgMetPept.split("_")[1];
-			}
-			
-			if(pxgPept != null && pxgMetPept != null) {
-				if(stripPXGPept.equalsIgnoreCase(stripPXGMetPept)) {
-					isPXGMetPXGSame = true;
-				}
-			}
-			
-			int idx = 0;
-			// all same
-			if(isPXGSame && isPXGMetSame) {
-				idx = 0;
-			} else if(isPXGSame && !isPXGMetSame) {
-				idx = 1;
-			} else if(!isPXGSame && isPXGMetSame) {
-				idx = 2;
-			} else if(!isPXGSame && !isPXGMetSame && isPXGMetPXGSame) {
-				idx = 3;
-			} else {
-				idx = 4;
-			}
-			
-			System.out.println(scan+",NA,"+fullPXGPept+","+fullPXGMetPept+","+idx);
-		});
 		
-		pxgMetOnlyPSMs.forEach((scan, pept) -> {
-			String pxgPept = pxgPSMs.get(scan);
-			String fullPXGPept = "NA";
-			String stripPXGPept = "NA";
-			
-			String pxgMetPept = pxgMetOnlyPSMs.get(scan);
-			String fullPXGMetPept = "NA";
-			String stripPXGMetPept = "NA";
-			fullPXGMetPept = pept.split("_")[0];
-			stripPXGMetPept = pept.split("_")[1];
-			
-			
-			boolean isPXGSame = false;
-			boolean isPXGMetSame = false;
-			boolean isPXGMetPXGSame = false;
-		
-			
-			if(pxgPept != null) {
-				fullPXGPept = pxgPept.split("_")[0];
-				stripPXGPept = pxgPept.split("_")[1];
-			}
-			
-			
-			if(pxgPept != null && pxgMetPept != null) {
-				if(stripPXGPept.equalsIgnoreCase(stripPXGMetPept)) {
-					isPXGMetPXGSame = true;
-				}
-			}
-			
-			int idx = 0;
-			// all same
-			if(isPXGSame && isPXGMetSame) {
-				idx = 0;
-			} else if(isPXGSame && !isPXGMetSame) {
-				idx = 1;
-			} else if(!isPXGSame && isPXGMetSame) {
-				idx = 2;
-			} else if(!isPXGSame && !isPXGMetSame && isPXGMetPXGSame) {
-				idx = 3;
-			} else {
-				idx = 4;
-			}
-			
-			System.out.println(scan+",NA,"+fullPXGPept+","+fullPXGMetPept+","+idx);
-		});
 	}
 }

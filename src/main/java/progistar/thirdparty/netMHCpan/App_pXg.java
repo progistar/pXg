@@ -11,8 +11,8 @@ public class App_pXg {
 	public static void main(String[] args) {
 		int tPeptideIndex = 20;
 		
-		String pXgOutputFileName = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/7.Unmodified/pXg/S1.PEAKS.UNMOD.rank10.pXg";
-		NetMHCpanResult netMHCpanResult = NetMHCpanParser.parseNetMHCpan("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/7.Unmodified/NetMHCpan/S1.NetMHCpan.xls");
+		String pXgOutputFileName = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/7.Unmodified/pXg/S3.PEAKS.UNMOD.rank10.pXg.BA.xCorr";
+		NetMHCpanResult netMHCpanResult = NetMHCpanParser.parseNetMHCpan("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/7.Unmodified/NetMHCpan/S3.NetMHCpan.xls");
 		
 		try {
 			BufferedReader BR = new BufferedReader(new FileReader(pXgOutputFileName));
