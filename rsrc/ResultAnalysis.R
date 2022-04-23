@@ -14,7 +14,7 @@ pinkC <- "#F781BF"
 grayC <- "#999999"
 
 
-setwd("C:/Users/progi/Desktop/Projects/pXg/Laumont_NatCommun2016/Results")
+setwd("/Users/gistar/projects/pXg/Laumont_NatCommun2016")
 
 pResult <- read.csv(file = "subjectM.5ppm.002.peaks", header = T, sep = "\t", as.is = as.double())
 result <- read.csv(file = "subjectM.5ppm.002.rep1.netMHCpan.laumont.rt.pXg", header = T, sep = "\t", as.is = as.double())
