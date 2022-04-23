@@ -29,7 +29,7 @@ public class XBlock {
 	public ArrayList<XBlock> siblingXBlocks	=	new ArrayList<XBlock>();
 	
 	public boolean isCannonical () {
-		String events = toEvents();
+		String events = toEvents().get("key");
 		boolean isCannonical = false;
 		
 		// if there is matched known sequences.
@@ -63,26 +63,29 @@ public class XBlock {
 	 * 
 	 */
 	public String toString () {
-		String geneIDs = toGeneIDs();
-		String geneNames = toGeneNames();
-		String events = toEvents();
-		String fastaIDs = toFastaIDs();
+		Hashtable<String, String> geneIDs = toGeneIDs();
+		Hashtable<String, String> geneNames = toGeneNames();
+		Hashtable<String, String> events = toEvents();
+		Hashtable<String, String> fastaIDs = toFastaIDs();
 		
-		int transCount = tAnnotations.equalsIgnoreCase("-") ? 0 : tAnnotations.split("\\|").length;
-		int geneIDCount = geneIDs.equalsIgnoreCase("-") ? 0 : geneIDs.split("\\|").length;
-		int geneNameCount = geneNames.equalsIgnoreCase("-") ? 0 : geneNames.split("\\|").length;
-		int eventCount = events.equalsIgnoreCase("-") ? 0 : events.split("\\|").length;
-		int fastaIDCount = fastaIDs.equalsIgnoreCase("-") ? 0 : fastaIDs.split("\\|").length;
+		int transCount = 0;
+		String[] transcripts = tAnnotations.split("\\|");
+		for(String transcript : transcripts) {
+			if(!transcript.startsWith(Constants.EVENT_INTERGENIC) && 
+					!transcript.startsWith(Constants.EVENT_UNKNOWN)) {
+				transCount++;
+			}
+		}
 		
 		
 		return peptideSequence +"\t"+genomicLocus+"\t"
 				+strand+"\t"+genomicSequence
 				+"\t"+mutations
 				+"\t"+tAnnotations+"\t"+transCount
-				+"\t"+geneIDs+"\t"+geneIDCount
-				+"\t"+geneNames+"\t"+geneNameCount
-				+"\t"+events+"\t"+eventCount
-				+"\t"+fastaIDs+"\t"+fastaIDCount
+				+"\t"+geneIDs.get("key")+"\t"+geneIDs.get("count")
+				+"\t"+geneNames.get("key")+"\t"+geneNames.get("count")
+				+"\t"+events.get("key")+"\t"+events.get("count")
+				+"\t"+fastaIDs.get("key")+"\t"+fastaIDs.get("count")
 				+"\t"+targetReadCount;
 	}
 	
@@ -115,7 +118,7 @@ public class XBlock {
 	 * @return
 	 */
 	public boolean isFastaAssigned () {
-		if(this.fastaIDs.length == 0) {
+		if(fastaIDs == null || this.fastaIDs.length == 0) {
 			return false;
 		}
 		return true;
@@ -130,7 +133,7 @@ public class XBlock {
 	 */
 	private static String toFastaIDs (String[] fastaIDs) {
 		if(fastaIDs == null || fastaIDs.length == 0) {
-			return "-";
+			return Constants.ID_NULL;
 		}
 		
 		StringBuilder fasta= new StringBuilder();
@@ -146,31 +149,49 @@ public class XBlock {
 		return fasta.substring(1).toString();
 	}
 	
-	public String toFastaIDs () {
-		if(this.fastaIDs == null || this.fastaIDs.length == 0) {
-			return "-";
-		}
+	/**
+	 * The return value is hashtable consisting of "key" and "count"<br>
+	 * "key" represents the annotation of mapped IDs. <br>
+	 * "count" represents the number of IDs. <br>
+	 * 
+	 * @return
+	 */
+	public Hashtable<String, String> toFastaIDs () {
+		Hashtable<String, String> mapper = new Hashtable<String, String>();
 		
-		StringBuilder fasta= new StringBuilder();
-		Hashtable<String, Boolean> isDuplicated = new Hashtable<String, Boolean>();
-		
-		for(String fastaID : this.fastaIDs) {
-			if(isDuplicated.get(fastaID) == null) {
-				fasta.append("|").append(fastaID);
-				isDuplicated.put(fastaID, true);
+		if(isFastaAssigned()) {
+			StringBuilder fasta= new StringBuilder();
+			Hashtable<String, Boolean> isDuplicated = new Hashtable<String, Boolean>();
+			
+			for(String fastaID : this.fastaIDs) {
+				if(isDuplicated.get(fastaID) == null) {
+					fasta.append("|").append(fastaID);
+					isDuplicated.put(fastaID, true);
+				}
 			}
+			String annotation = fasta.substring(1).toString();
+			mapper.put("key", annotation);
+			mapper.put("count", annotation.split("\\|").length+"");
+		} else {
+			// default behavior when there is no IDs.
+			mapper.put("key", Constants.ID_NULL);
+			mapper.put("count", "0");
 		}
 		
-		return fasta.substring(1).toString();
+		
+		return mapper;
 	}
 	
 	/**
-	 * get gene events from geneIDs. <br>
+	 * The return value is hashtable consisting of "key" and "count"<br>
+	 * "key" represents the annotation of matched events. <br>
+	 * "count" represents the number of events. <br>
 	 * 
 	 * @param transcriptIDs
 	 * @return
 	 */
-	public String toEvents () {
+	public Hashtable<String, String> toEvents () {
+		Hashtable<String, String> mapper = new Hashtable<String, String>();
 		StringBuilder events= new StringBuilder();
 		String[] genes = tAnnotations.split("\\|");
 		
@@ -183,16 +204,25 @@ public class XBlock {
 			}
 		}
 		
-		return events.substring(1).toString();
+		// there is no matched events? it is impossible.
+		// if then, it must be treated as an error.
+		assert events.length() != 0;
+		String annotation = events.substring(1).toString();
+		mapper.put("key", annotation);
+		mapper.put("count", annotation.split("\\|").length+"");
+			
+		return mapper;
 	}
 	
 	/**
-	 * Retrieve gene names corresponding to the transcript ID. <br> 
-	 * Duplicated gene names are reported once. <br>
+	 * The return value is hashtable consisting of "key" and "count"<br>
+	 * "key" represents the annotation of matched gene names. <br>
+	 * "count" represents the number of gene names. <br>
 	 * 
 	 * @return
 	 */
-	private String toGeneNames () {
+	private Hashtable<String, String> toGeneNames () {
+		Hashtable<String, String> mapper = new Hashtable<String, String>();
 		StringBuilder gRegions = new StringBuilder();
 		String[] tRegions = tAnnotations.split("\\|");
 		
@@ -201,23 +231,35 @@ public class XBlock {
 			String transcriptID = tRegion.split("\\(")[0];
 			String geneName = ENSTMapper.getGeneNamebyENST(transcriptID);
 			
-			if(isDuplicated.get(geneName) == null) {
+			if(isDuplicated.get(geneName) == null && !geneName.equalsIgnoreCase(Constants.ID_NULL)) {
 				isDuplicated.put(geneName, true);
 				gRegions.append("|").append(geneName);
 			}
-			
 		}
 		
-		return gRegions.substring(1).toString();
+		// if either unknown or intergenic, then there is no matched geneNames.
+		// 
+		if(gRegions.length() == 0) {
+			mapper.put("key", Constants.ID_NULL);
+			mapper.put("count", "0");
+		} else {
+			String annotation = gRegions.substring(1).toString();
+			mapper.put("key", annotation);
+			mapper.put("count", annotation.split("\\|").length+"");
+		}
+		
+		return mapper;
 	}
 	
 	/**
-	 * Retrieve gene ID corresponding to the transcript ID. <br>
-	 * Duplicated gene IDs are reported once. <br>
+	 * The return value is hashtable consisting of "key" and "count"<br>
+	 * "key" represents the annotation of matched gene IDs. <br>
+	 * "count" represents the number of gene IDs. <br>
 	 * 
 	 * @return
 	 */
-	private String toGeneIDs () {
+	private Hashtable<String, String> toGeneIDs () {
+		Hashtable<String, String> mapper = new Hashtable<String, String>();
 		StringBuilder gRegions = new StringBuilder();
 		String[] tRegions = tAnnotations.split("\\|");
 		
@@ -226,13 +268,24 @@ public class XBlock {
 			String transcriptID = tRegion.split("\\(")[0];
 			String geneID = ENSTMapper.getENSGbyENST(transcriptID);
 			
-			if(isDuplicated.get(geneID) == null) {
+			if(isDuplicated.get(geneID) == null && !geneID.equalsIgnoreCase(Constants.ID_NULL)) {
 				isDuplicated.put(geneID, true);
 				gRegions.append("|").append(geneID);
 			}
 		}
 		
-		return gRegions.substring(1).toString();
+		// if either unknown or intergenic, then there is no matched gene IDs.
+		// 
+		if(gRegions.length() == 0) {
+			mapper.put("key", Constants.ID_NULL);
+			mapper.put("count", "0");
+		} else {
+			String annotation = gRegions.substring(1).toString();
+			mapper.put("key", annotation);
+			mapper.put("count", annotation.split("\\|").length+"");
+		}
+		
+		return mapper;
 	}
 	
 	/**

@@ -2,6 +2,8 @@ package progistar.pXg.utils;
 
 import java.util.Hashtable;
 
+import progistar.pXg.constants.Constants;
+
 public class ENSTMapper {
 
 	private static Hashtable<String, String> ENSTtoENSG = new Hashtable<String, String>();
@@ -22,7 +24,9 @@ public class ENSTMapper {
 	public static String getENSGbyENST (String enstID) {
 		String ensg = ENSTtoENSG.get(enstID);
 		
-		if(ensg == null) ensg = "NA";
+		if(ensg == null) {
+			ensg = Constants.ID_NULL;
+		}
 		
 		return ensg;
 	}
@@ -37,7 +41,9 @@ public class ENSTMapper {
 	public static String getGeneNamebyENST (String enstID) {
 		String geneName = ENSTtoGENENAME.get(enstID);
 		
-		if(geneName == null) geneName = "NA";
+		if(geneName == null) {
+			geneName = Constants.ID_NULL;
+		}
 		
 		return geneName;
 	}

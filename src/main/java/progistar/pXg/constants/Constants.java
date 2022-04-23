@@ -80,11 +80,11 @@ public class Constants {
 	// Events
 	public static final String EVENT_ANTISENSE		=	"antisense";
 	public static final String EVENT_SENSE			=	"sense";
-	public static final String EVENT_5UTR			=	"5UTR";
-	public static final String EVENT_3UTR			=	"3UTR";
+	public static final String EVENT_5UTR			=	"5'-UTR";
+	public static final String EVENT_3UTR			=	"3'-UTR";
 	public static final String EVENT_NONCODING		=	"noncoding";
 	public static final String EVENT_INTERGENIC		=	"intergenic";
-	public static final String EVENT_INTRON			=	"intron";
+	public static final String EVENT_INTRON			=	"intronic";
 	public static final String EVENT_FRAMESHIFT		=	"frameshift";
 	public static final String EVENT_PROTEINCODING	=	"proteincoding";
 	public static final String EVENT_AS				=	"alternativesplicing";
@@ -94,5 +94,8 @@ public class Constants {
 	public static final byte PSM_STATUS_UNDEF		=	0;
 	public static final byte PSM_STATUS_DECOY		=	1;
 	public static final byte PSM_STATUS_TARGET		=	2;
+	
+	// ID status
+	public static final String ID_NULL				=	"-";
 
 }
