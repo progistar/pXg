@@ -78,7 +78,7 @@ mapPlot <- ggplot(data=subData, aes(x=Length, y=BestScore, fill=Length)) +
 mapPlot
 ggsave("MSGF.BA.Canonical.png", plot = mapPlot, width = 10, height = 8, units = "in", dpi = 300)
 
-nrow(subData[subData$BestScore < 1.5+2.0, ])
+nrow(subData[subData$BestScore < 3.5, ])
 nrow(subData)
 
 ## MS-GF+ vs pXg length distribution
@@ -119,15 +119,15 @@ subDataPXG$Class <- "cMAP (pXg)"
 subDataPXG[subDataPXG$IsCanonical == "FALSE", ]$Class <- "ncMAP (pXg)"
 
 
-subData <- rbind(subData[, c('Length', 'Class')], subDataPXG[,c('Length', 'Class')])
-subData$Length <- as.numeric(subData$Length)
+mergedData <- rbind(subData[, c('Length', 'Class')], subDataPXG[,c('Length', 'Class')])
+#mergedData$Length <- as.numeric(mergedData$Length)
 
-topRankedPlot <- ggplot(data=subData, aes(x=Length, fill=Class)) +
+topRankedPlot <- ggplot(data=mergedData, aes(x=Length, fill=Class)) +
   scale_fill_manual(values=c(greenC, blueC, redC)) +
   theme_bw() +
-  #geom_bar(aes(y= (..prop..), x=Length), position=position_dodge(), width = 0.5) +
+  geom_bar(aes(y= (..prop..), x=Length), position=position_dodge(), width = 0.5) +
   geom_bar(aes(y= (..count..), x=Length), position=position_dodge(), width = 0.5) +
-  scale_x_continuous(breaks = seq(from=8, to=15, by=1)) +
+  #scale_x_continuous(breaks = seq(from=8, to=15, by=1)) +
   #scale_y_continuous(breaks=seq(from=0, to=1, by = 0.1), 
   #                   labels=function(x) format(x, big.mark = ",", decimal.mark = ".", scientific = FALSE),
   #                    limits=c(0,0.8)) +
@@ -145,26 +145,26 @@ topRankedPlot <- ggplot(data=subData, aes(x=Length, fill=Class)) +
   #geom_segment(aes(x = 10.75, xend =11.25, y = 0.12, yend = 0.12), color = "Black", size = 1) +
   #geom_segment(aes(x = 11.75, xend =12.25, y = 0.04, yend = 0.04), color = "Black", size = 1) +
   #geom_segment(aes(x = 12.75, xend =13.25, y = 0.02, yend = 0.02), color = "Black", size = 1) +
-  ggtitle("Length distributions of MAPs")
+  ggtitle("Length distribution of MAPs")
 
 topRankedPlot
-ggsave("MSGF_pXg.Length.png", plot = topRankedPlot, width = 10, height = 8, units = "in", dpi = 300)
+ggsave("MSGF_pXg.Length.png", plot = topRankedPlot, width = 10, height = 8, units = "in", dpi = 600)
 
-len = 15
-nrow(subData[subData$Class == "cMAP (MS-GF+)" & subData$Length == len, ])
-nrow(subData[subData$Class == "cMAP (pXg)" & subData$Length == len, ])
-nrow(subData[subData$Class == "ncMAP (pXg)" & subData$Length == len, ])
+len = 9
+nrow(mergedData[mergedData$Class == "cMAP (MS-GF+)" & mergedData$Length == len, ])
+nrow(mergedData[mergedData$Class == "cMAP (pXg)" & mergedData$Length == len, ])
+nrow(mergedData[mergedData$Class == "ncMAP (pXg)" & mergedData$Length == len, ])
 
 len = 8
-matrix <- matrix(c(nrow(subData[subData$Class == "MS-GF+", ]) - nrow(subData[subData$Length == len & subData$Class == "MS-GF+", ]), 
-                   nrow(subData[subData$Length == len & subData$Class == "MS-GF+", ]),
-                   nrow(subData[subData$Class == "pXg", ]) - nrow(subData[subData$Length == len & subData$Class == "pXg", ]), 
-                   nrow(subData[subData$Length == len & subData$Class == "pXg", ])), 
+matrix <- matrix(c(nrow(mergedData[mergedData$Class == "MS-GF+", ]) - nrow(mergedData[mergedData$Length == len & mergedData$Class == "MS-GF+", ]), 
+                   nrow(mergedData[mergedData$Length == len & mergedData$Class == "MS-GF+", ]),
+                   nrow(mergedData[mergedData$Class == "pXg", ]) - nrow(mergedData[mergedData$Length == len & mergedData$Class == "pXg", ]), 
+                   nrow(mergedData[mergedData$Length == len & mergedData$Class == "pXg", ])), 
                  nrow = 2, ncol = 2)
 matrix <- t(matrix)
 fisher.test(matrix, alternative = "two.sided")
 
-nrow(subData[subData$Length == 15 & subData$Class == "MS-GF+", ])
+nrow(subData[mergedData$Length == 15 & mergedData$Class == "MS-GF+", ])
 
 2^3.5-1.5
 log2(11.5)

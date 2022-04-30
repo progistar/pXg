@@ -1,5 +1,6 @@
 install.packages("latex2exp")
 install.packages("stringr")                        # Install stringr package
+install.packages("svglite")
 ## Histogram for score distribution
 library(ggplot2)
 library(RColorBrewer)
@@ -364,6 +365,33 @@ topRankedPlot
 ggsave("BA.HLA.uncMAPs.png", plot = topRankedPlot, width = 10, height = 8, units = "in", dpi = 300)
 
 ## Event enumerate
+setwd("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/7.Unmodified/")
+dataS1 <- read_excel(path = "pXg_Summary.xlsx", sheet = "B-LCL1_FDR5")
+dataS2 <- read_excel(path = "pXg_Summary.xlsx", sheet = "B-LCL2_FDR5")
+dataS3 <- read_excel(path = "pXg_Summary.xlsx", sheet = "B-LCL3_FDR5")
+dataS4 <- read_excel(path = "pXg_Summary.xlsx", sheet = "B-LCL4_FDR5")
+
+dataS1 <- dataS1[, -c(38:43)]
+dataS2 <- dataS2[, -c(38:43)]
+dataS3 <- dataS3[, -c(38:43)]
+dataS4 <- dataS4[, -c(38:43)]
+
+dataS1$Sample <- "B-LCL subject 1"
+dataS2$Sample <- "B-LCL subject 2"
+dataS3$Sample <- "B-LCL subject 3"
+dataS4$Sample <- "B-LCL subject 4"
+
+dataS1 <- dataS1[str_detect(dataS1$Peptide, "\\+", negate = T), ]
+dataS1 <- dataS1[!duplicated(dataS1[,c('InferredPeptide')]), ]
+dataS2 <- dataS2[str_detect(dataS2$Peptide, "\\+", negate = T), ]
+dataS2 <- dataS2[!duplicated(dataS2[,c('InferredPeptide')]), ]
+dataS3 <- dataS3[str_detect(dataS3$Peptide, "\\+", negate = T), ]
+dataS3 <- dataS3[!duplicated(dataS3[,c('InferredPeptide')]), ]
+dataS4 <- dataS4[str_detect(dataS4$Peptide, "\\+", negate = T), ]
+dataS4 <- dataS4[!duplicated(dataS4[,c('InferredPeptide')]), ]
+
+allData <- rbind(dataS1, dataS2, dataS3, dataS4)
+
 subData <- allData[allData$BestScore < 2, ]
 subData$Class <- "Canonical"
 subData[subData$IsCanonical == "FALSE", ]$Class <- "Noncanonical"
@@ -371,20 +399,30 @@ subData[subData$IsCanonical == "FALSE", ]$Class <- "Noncanonical"
 nrow(subData[subData$Class == "Noncanonical", ])
 nrow(subData[subData$Class == "Canonical", ])
 
-subData <- subData[subData$Class == "Noncanonical", ]
-nrow(subData[subData$Sample == "B-LCL subject 1", ])
-nrow(subData[subData$Sample == "B-LCL subject 2", ])
-nrow(subData[subData$Sample == "B-LCL subject 3", ])
-nrow(subData[subData$Sample == "B-LCL subject 4", ])
+nrow(subData[subData$Sample == "B-LCL subject 1" & subData$Class == "Canonical", ])
+nrow(subData[subData$Sample == "B-LCL subject 2" & subData$Class == "Canonical", ])
+nrow(subData[subData$Sample == "B-LCL subject 3" & subData$Class == "Canonical", ])
+nrow(subData[subData$Sample == "B-LCL subject 4" & subData$Class == "Canonical", ])
 
+nrow(subData[subData$Sample == "B-LCL subject 1" & subData$Class == "Noncanonical", ])
+nrow(subData[subData$Sample == "B-LCL subject 2" & subData$Class == "Noncanonical", ])
+nrow(subData[subData$Sample == "B-LCL subject 3" & subData$Class == "Noncanonical", ])
+nrow(subData[subData$Sample == "B-LCL subject 4" & subData$Class == "Noncanonical", ])
+
+
+subData <- subData[subData$Class == "Noncanonical", ]
 subData$Sample <- factor(subData$Sample, levels = c("B-LCL subject 1", "B-LCL subject 2", "B-LCL subject 3", "B-LCL subject 4"))
 ### Unique selection
 subDataUnique <- subData[subData$EventCount == 1, ]
 subDataUnique <- subDataUnique[subDataUnique$GeneIDCount <= 1, ]
 subDataUnique <- subDataUnique[subDataUnique$GenomicLociCount <= 1, ]
-
+subDataUnique <- subDataUnique[!duplicated(subDataUnique[,c('InferredPeptide')]), ]
+nrow(subDataUnique)
 ### shared
 subDataShared <- subData[subData$EventCount > 1 | subData$GeneIDCount > 1 | subData$GenomicLociCount > 1, ]
+subDataShared <- subDataShared[!duplicated(subDataShared[,c('InferredPeptide')]), ]
+nrow(subDataShared)
+
 byEventCount <- subDataShared[subDataShared$EventCount > 1, ]
 byGeneIDCount <- subDataShared[subDataShared$GeneIDCount > 1, ]
 byGenomicLociCount <- subDataShared[subDataShared$GenomicLociCount > 1, ]
@@ -392,6 +430,7 @@ byGenomicLociCount <- subDataShared[subDataShared$GenomicLociCount > 1, ]
 nrow(subData)
 nrow(subDataUnique)
 nrow(subDataShared)
+
 nrow(byEventCount)
 nrow(byGeneIDCount)
 nrow(byGenomicLociCount)
@@ -410,14 +449,13 @@ nrow(interEventGene)
 nrow(interLociGene)
 
 subDataUnique[subDataUnique$Mutations != "-", ]$Events <- paste(subDataUnique[subDataUnique$Mutations != "-", ]$Events, "mutations", sep=";")
-
 subDataUnique$Events <- factor(subDataUnique$Events, 
-                               levels = c("5UTR;sense", "proteincoding;sense;mutations","noncoding;sense", "frameshift;sense",
-                                          "intron;sense", "3UTR;sense","intergenic;sense", "5UTR;sense;mutations",
-                                          "proteincoding;sense;alternativesplicing", "3UTR;antisense", "intron;antisense",
-                                          "proteincoding;antisense;mutations", "noncoding;sense;mutations", "5UTR;antisense",
+                               levels = c("5'-UTR;sense", "proteincoding;sense;mutations","noncoding;sense", "frameshift;sense",
+                                          "intronic;sense", "3'-UTR;sense","intergenic;sense", "5'-UTR;sense;mutations",
+                                          "proteincoding;sense;alternativesplicing", "3'-UTR;antisense", "intronic;antisense",
+                                          "proteincoding;antisense;mutations", "noncoding;sense;mutations", "5'-UTR;antisense",
                                           "intergenic;sense;mutations","noncoding;antisense","unknown"))
-
+nrow(subDataUnique[subDataUnique$Events == "proteincoding;sense;mutations" ,])
 nrow(subDataUnique[subDataUnique$Events == "5UTR;sense" ,])
 nrow(subDataUnique[subDataUnique$Events == "5UTR;sense;mutations" ,])
 nrow(subDataUnique[subDataUnique$Events == "noncoding;sense" ,])
@@ -435,13 +473,13 @@ topRankedPlot <- ggplot(data=subDataUnique, aes(x=Events, fill=Sample)) +
   theme_bw() +
   geom_bar(aes(x= (..count..), y=reorder(Events, desc(Events))), position=position_dodge2(preserve = "single", padding = 0, reverse = T), width = 1) +
   theme(text = element_text(size=20), 
-        axis.text.y = element_text(size = 15)) +
+        axis.text.y = element_text(size = 20, colour = "black")) +
   ggtitle("Category of unique ncMAPs") +
-  labs(y="Event", x = "ncMAPs") 
+  labs(y="Event", x = "Unique ncMAPs") 
 
 topRankedPlot
-ggsave("BA.ncMAPs.Events.jpg", plot = topRankedPlot, width = 10, height = 8, units = "in", dpi = 300)
-
+ggsave("BA.ncMAPs.Events.png", plot = topRankedPlot, width = 10, height = 16, units = "in", dpi = 600)
+dev.off()
 
 topRankedPlot <- ggplot(data=subDataUnique, aes(x=BestType, fill=Events)) +
   scale_fill_brewer(palette="Set1") +
@@ -469,3 +507,134 @@ nrow(subDataUnique[subDataUnique$BestType == "HLA-C16:01", ])
 nrow(subDataUnique[subDataUnique$BestType == "HLA-C16:01" & subDataUnique$Events == "5UTR;sense", ])
 nrow(subDataUnique[subDataUnique$BestType == "HLA-C16:01" & subDataUnique$Events == "frameshift;sense", ])
 nrow(subDataUnique[subDataUnique$BestType == "HLA-C16:01" & subDataUnique$Events == "proteincoding;sense;mutations", ])
+
+
+## Rank
+setwd("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/7.Unmodified/")
+dataS1 <- read_excel(path = "pXg_Summary.xlsx", sheet = "B-LCL1_FDR5")
+dataS2 <- read_excel(path = "pXg_Summary.xlsx", sheet = "B-LCL2_FDR5")
+dataS3 <- read_excel(path = "pXg_Summary.xlsx", sheet = "B-LCL3_FDR5")
+dataS4 <- read_excel(path = "pXg_Summary.xlsx", sheet = "B-LCL4_FDR5")
+
+dataS1 <- dataS1[, -c(38:43)]
+dataS2 <- dataS2[, -c(38:43)]
+dataS3 <- dataS3[, -c(38:43)]
+dataS4 <- dataS4[, -c(38:43)]
+
+dataS1$Sample <- "B-LCL subject 1"
+dataS2$Sample <- "B-LCL subject 2"
+dataS3$Sample <- "B-LCL subject 3"
+dataS4$Sample <- "B-LCL subject 4"
+
+allData <- rbind(dataS1, dataS2, dataS3, dataS4)
+
+for(rank in c(3:10)) {
+  allData[allData$Rank == rank, ]$Rank <- 3
+}
+
+for(rank in c(1:3)) {
+  rankRatio <- nrow(allData[allData$Rank == rank & allData$`MHC-I` != "NB", ]) / nrow(allData[allData$Rank == rank, ])  
+  print(paste(rank, rankRatio, sep="_"))
+}
+
+allData$Rank <- as.character(allData$Rank)
+allData[allData$Rank == 3, ]$Rank <- "Others"
+allData$`MHC-I` <- factor(allData$`MHC-I`, levels = c("SB", "WB", "NB"))
+
+nrow(allData[allData$Rank == 1, ])
+nrow(allData[allData$Rank == 2, ])
+nrow(allData[allData$Rank == "Others", ])
+nrow(allData[allData$Rank == 1, ]) / nrow(allData)  
+nrow(allData[allData$Rank == 2, ]) / nrow(allData)  
+nrow(allData[allData$Rank == "Others", ]) / nrow(allData)  
+
+topRankedPlot <- ggplot(data=allData, aes(x=Rank, fill=`MHC-I`)) +
+  scale_fill_manual("Class",values = c("SB" = blueC, "WB" = greenC, "NB" = redC))+
+  theme_bw() +
+  geom_bar(aes(y= (..count..), x=Rank)) +
+  theme(text = element_text(size=20), 
+        axis.text.x = element_text(size = 15)) +
+  labs(y="PSMs", x = "Candidate rank") + 
+  ggtitle("Binding prediction according to candidate rank")
+
+topRankedPlot
+ggsave("BA.Ranks.png", plot = topRankedPlot, width = 10, height = 8, units = "in", dpi = 300)
+
+## IEDB
+IEDB <- read.csv(file = "/Users/gistar/projects/pXg/IEDB/HLA-A0101.csv", header = T, sep = ",", as.is = as.double())
+IEDB$Epitope.2
+IEDB$Epitope.10
+
+
+## chromosomes
+setwd("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/7.Unmodified/")
+dataS1 <- read_excel(path = "pXg_Summary.xlsx", sheet = "B-LCL1_FDR5")
+dataS2 <- read_excel(path = "pXg_Summary.xlsx", sheet = "B-LCL2_FDR5")
+dataS3 <- read_excel(path = "pXg_Summary.xlsx", sheet = "B-LCL3_FDR5")
+dataS4 <- read_excel(path = "pXg_Summary.xlsx", sheet = "B-LCL4_FDR5")
+
+dataS1 <- dataS1[, -c(38:43)]
+dataS2 <- dataS2[, -c(38:43)]
+dataS3 <- dataS3[, -c(38:43)]
+dataS4 <- dataS4[, -c(38:43)]
+
+dataS1$Sample <- "B-LCL subject 1"
+dataS2$Sample <- "B-LCL subject 2"
+dataS3$Sample <- "B-LCL subject 3"
+dataS4$Sample <- "B-LCL subject 4"
+
+allData <- rbind(dataS1, dataS2, dataS3, dataS4)
+
+subData <- allData[allData$BestScore < 2, ]
+subData$Class <- "Canonical"
+subData[subData$IsCanonical == "FALSE", ]$Class <- "Noncanonical"
+#subData$Length <- as.character(subData$Length)
+nrow(subData[subData$Class == "Noncanonical", ])
+nrow(subData[subData$Class == "Canonical", ])
+
+subData <- subData[subData$Class == "Noncanonical", ]
+nrow(subData[subData$Sample == "B-LCL subject 1", ])
+nrow(subData[subData$Sample == "B-LCL subject 2", ])
+nrow(subData[subData$Sample == "B-LCL subject 3", ])
+nrow(subData[subData$Sample == "B-LCL subject 4", ])
+
+nrow(subData)
+
+subDataUnique <- subData[subData$EventCount == 1, ]
+subDataUnique <- subDataUnique[subDataUnique$GeneIDCount <= 1, ]
+subDataUnique <- subDataUnique[subDataUnique$GenomicLociCount <= 1, ]
+subDataUnique <- subDataUnique[!duplicated(subDataUnique[,c('InferredPeptide')]), ]
+nrow(subDataUnique)
+subDataUnique$Chromosome <- str_split(subDataUnique$GenomicLoci, pattern = ":", simplify = T)[,1]
+subDataUnique$Region <- "unknown"
+subDataUnique[subDataUnique$Events == "3UTR;antisense" |subDataUnique$Events == "3UTR;sense", ]$Region <- "3'-UTR"
+subDataUnique[subDataUnique$Events == "5UTR;antisense" |subDataUnique$Events == "5UTR;sense", ]$Region <- "5'-UTR"
+subDataUnique[subDataUnique$Events == "frameshift;antisense" |subDataUnique$Events == "frameshift;sense", ]$Region <- "frameshift"
+subDataUnique[subDataUnique$Events == "intron;antisense" |subDataUnique$Events == "intron;sense", ]$Region <- "intron"
+subDataUnique[subDataUnique$Events == "intergenic;antisense" |subDataUnique$Events == "intergenic;sense", ]$Region <- "intergenic"
+subDataUnique[subDataUnique$Events == "proteincoding;antisense" |subDataUnique$Events == "proteincoding;sense"|subDataUnique$Events == "proteincoding;sense;alternativesplicing", ]$Region <- "proteincoding"
+subDataUnique[subDataUnique$Events == "noncoding;antisense" |subDataUnique$Events == "noncoding;sense", ]$Region <- "noncoding"
+
+subDataUnique$Region <- factor(subDataUnique$Region, levels=c("5'-UTR", "proteincoding", "noncoding", "frameshift",
+                                                              "intron", "3'-UTR", "intergenic", "unknown"))
+
+subDataUnique$Chromosome <- factor(subDataUnique$Chromosome, levels = c("chr2", "chr1", "chr6", "chr8",
+                                                                        "chr3", "chr11", "chr5", "chr19",
+                                                                        "chr7", "chr12", "chr13", "chr14",
+                                                                        "chr4", "chr16", "chr17", "chr18", "chr20", "chr22",
+                                                                        "chrx", "chr10", "chr9", "chr15",
+                                                                        "chr21", "-"))
+
+topRankedPlot <- ggplot(data=subDataUnique, aes(x=Chromosome, fill = Region)) +
+  scale_fill_brewer(palette = "Set1")+
+  theme_bw() +
+  geom_bar(aes(y= (..count..), x=Chromosome)) +
+  theme(text = element_text(size=20), 
+        axis.text.x = element_text(size = 15)) +
+  labs(y="ncMAPs", x = "Chromosome") + 
+  ggtitle("")
+
+topRankedPlot
+ggsave("unique.ncMAP.chromosome.svg", plot = topRankedPlot, width = 16, height = 8, units = "in", dpi = 300)
+
+theme_get()

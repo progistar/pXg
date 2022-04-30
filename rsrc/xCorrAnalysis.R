@@ -78,7 +78,7 @@ g <- ggplot(data=xCorr, aes(x=`xCorr`, colour = Class)) +
   annotate("text", label = 1.88, x = medCanonicalpXg+0.4, y = 9000, size = 7, family="serif", colour = blueC) +
   annotate("text", label = 1.96, x = medCanonicalMSGF+0.4, y = 8500, size = 7, family="serif", colour = greenC) +
   annotate("text", label = 2.01, x = medNoncanonicalpXg+0.4, y = 8000, size = 7, family="serif", colour = redC) +
-  ggtitle("xCorr score distributions")
+  ggtitle("xCorr score distribution")
 g
 
 
@@ -96,7 +96,7 @@ g <- ggplot(data=xCorr, aes(x=`xCorr`, colour = Class)) +
   annotate("text", label = 1.88, x = medCanonicalpXg+0.4, y = 1, size = 7, family="serif", colour = blueC) +
   annotate("text", label = 1.96, x = medCanonicalMSGF+0.4, y = 0.95, size = 7, family="serif", colour = greenC) +
   annotate("text", label = 2.01, x = medNoncanonicalpXg+0.4, y = 0.9, size = 7, family="serif", colour = redC) +
-  ggtitle("xCorr score distributions")
+  ggtitle("xCorr score distribution")
 g
 
 
