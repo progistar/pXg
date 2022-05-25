@@ -21,8 +21,26 @@ public class Mock  {
 		
 		ArrayList<Cigar> cigars = new ArrayList<Cigar>();
 		
-		StringBuilder revNucleotides = new StringBuilder(gSeq.getNucleotideString());
-		revNucleotides = revNucleotides.reverse();
+		StringBuilder revNucleotides = null;
+		String originSequence = gSeq.getNucleotideString();
+		
+		if(mockMethod == Constants.MOCK_REVERSE) {
+			revNucleotides = new StringBuilder(originSequence);
+			revNucleotides = revNucleotides.reverse();
+		} else if(mockMethod == Constants.MOCK_PSD_REVERSE) {
+			// "Pseudo Reverse"
+			// Reverse original sequence codon by codon.
+			// ex> GAA TGA GGA CAG GGG => GGG CAG GGA TGA GAA
+			int len = originSequence.length();
+			revNucleotides = new StringBuilder();
+			for(int i=len; i>0; i-=3) {
+				if(i-3 >= 0) {
+					revNucleotides.append(originSequence.substring(i-3, i));
+				} else {
+					revNucleotides.append(originSequence.substring(0, i));
+				}
+			}
+		}
 		
 		// revCigar
 		// containing reverse nucleotides/relativePositions.

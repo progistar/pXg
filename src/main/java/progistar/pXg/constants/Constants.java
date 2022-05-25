@@ -6,7 +6,7 @@ public class Constants {
 	//        plus, basically, this version number intends to upgrade behaviors of tool.
 	// minor: critical bug fix, change in results something like that.
 	// patch: tiny bug fix, typo, and change code styles something like that.
-	public static final String VERSION = "pXg v1.2.0 (release 2022-04-23)";
+	public static final String VERSION = "pXg v1.3.0 (release 2022-05-26)";
 	public static final String INTRODUCE = "Seunghyuk Choi and Eunok Paek in the Department of Computer Science at Hanyang University in Seoul, South Korea. ";
 	
 
@@ -63,6 +63,7 @@ public class Constants {
 	// RNA-Seq Mock
 	public static final byte MOCK_NONE			=	0;
 	public static final byte MOCK_REVERSE		=	1;
+	public static final byte MOCK_PSD_REVERSE		=	2;
 	
 	public static final byte MOCK_ALL			=	0; // use all multiply-assigned read count
 	public static final byte MOCK_MAX_ONE		=	1; // use maximum one as a representative

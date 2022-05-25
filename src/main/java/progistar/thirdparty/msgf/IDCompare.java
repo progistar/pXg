@@ -1,8 +1,10 @@
 package progistar.thirdparty.msgf;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Hashtable;
 
@@ -16,6 +18,7 @@ public class IDCompare {
 	public static final int PXG_SCAN_IDX = 4;
 	public static final int PXG_PEPTIDE_IDX = 20;
 	public static final int PXG_IS_CANONICAL = 36;
+	public static final int PXG_RANK_IDX = 18;
 	
 	public static Hashtable<String, String> readPXG (File file, boolean isCanonical) throws IOException {
 		BufferedReader BR = new BufferedReader(new FileReader(file));
@@ -28,11 +31,13 @@ public class IDCompare {
 			String key = fields[PXG_SPEC_FILE_IDX] +"_"+fields[PXG_SCAN_IDX].split("\\:")[1];
 			String peptide = fields[PXG_PEPTIDE_IDX];
 			String type = fields[PXG_IS_CANONICAL];
+			String rank = fields[PXG_RANK_IDX];
 			
-			if(isCanonical == type.equalsIgnoreCase("TRUE")) {
+			
+			if(isCanonical == type.equalsIgnoreCase("FALSE")) {
 				if(pxgPSMs.get(key) == null) {
 					peptide = peptide.replaceAll("[+-.\\(\\)0123456789*]", "");
-					pxgPSMs.put(key, peptide);
+					pxgPSMs.put(key, peptide+"_"+rank);
 				}
 			}
 			
@@ -69,6 +74,9 @@ public class IDCompare {
 		Hashtable<String, String> msgfResHash = new Hashtable<String, String>();
 		Hashtable<String, String> pXgResHash = new Hashtable<String, String>();
 		
+		BufferedWriter BW = new BufferedWriter(new FileWriter("rank.log"));
+		BW.append("Scan\tPeptide\tRank\tClass");
+		BW.newLine();
 		for(File file : msgfResSet) {
 			if(file.getName().startsWith(".")) {
 				continue;
@@ -90,15 +98,27 @@ public class IDCompare {
 		System.out.println("A total of pXg IDs : "+pXgResHash.size());
 		
 		int[] intersection = new int[1];
-		pXgResHash.forEach((key, peptide) -> {
+		pXgResHash.forEach((key, peptide_rank) -> {
+			String peptide = peptide_rank.split("\\_")[0];
+			String rank = peptide_rank.split("\\_")[1];
 			String peptideMSGF = msgfResHash.get(key);
-			if(peptideMSGF != null && peptideMSGF.equalsIgnoreCase(peptide)) {
-				intersection[0]++;
+			try {
+				BW.append(key+"\t"+peptide+"\t"+rank);
+				if(peptideMSGF != null && peptideMSGF.equalsIgnoreCase(peptide)) {
+					intersection[0]++;
+					BW.append("\tSame");
+				} else {
+					BW.append("\tDiff");
+				}
+				
+				BW.newLine();
+			}catch(IOException ioe) {
+				
 			}
 		});
 		
 		System.out.println("Intersected IDs: "+intersection[0]);
 		
-		
+		BW.close();
 	}
 }

@@ -40,7 +40,7 @@ public class Parameters {
 	
 	// Those options cannot be accessed by users.
 	// It is only used for test which method is more adaptable.
-	public static byte	mocks						=	Constants.MOCK_REVERSE;
+	public static byte	mocks						=	Constants.MOCK_PSD_REVERSE;
 	public static byte	mockPolicy				=	Constants.MOCK_MAX_ONE;
 	
 	// GTF partition size
