@@ -119,10 +119,7 @@ public class PxGAnnotation {
 					}
 					
 					if(xBlock.targetReadCount < cutoffs[pSeq.length()]) {
-						// if debug mode turns on, do not filter out annotations by reads
-						if(!Parameters.debugMode) {
-							removeList.add(key);
-						}
+						removeList.add(key);
 					} else {
 						xBlock.mockReadCount = 0;
 					}
@@ -423,9 +420,6 @@ public class PxGAnnotation {
 	 * 
 	 */
 	public void topScoreFilter () {
-		// if debug-mode turns on, print all of PSMs regardless of filtering
-		if(Parameters.debugMode) return;
-		
 		Hashtable<String, ArrayList<PBlock>> pBlocksByScan = new Hashtable<String, ArrayList<PBlock>>();
 		ArrayList<PBlock> pBlocks = PeptideAnnotation.pBlocks;
 		
@@ -536,6 +530,9 @@ public class PxGAnnotation {
 	 * 
 	 */
 	public void fdrEstimation () {
+		// if decoy mode is on, report all PSMs regardless of target and decoy status.
+		if(Parameters.debugMode) return;
+		
 		double cTargetCount = 0;
 		double ncTargetCount = 0;
 		double cDecoyCount = 0;

@@ -8,6 +8,8 @@ import progistar.pXg.data.GenomicSequence;
 
 public class Mock  {
 
+	private static final int PSD_REV_SIZE = 3;
+	
 	/**
 	 * Make gSeq with mock property.<br>
 	 * 
@@ -33,9 +35,9 @@ public class Mock  {
 			// ex> GAA TGA GGA CAG GGG => GGG CAG GGA TGA GAA
 			int len = originSequence.length();
 			revNucleotides = new StringBuilder();
-			for(int i=len; i>0; i-=3) {
-				if(i-3 >= 0) {
-					revNucleotides.append(originSequence.substring(i-3, i));
+			for(int i=len; i>0; i-=PSD_REV_SIZE) {
+				if(i-PSD_REV_SIZE >= 0) {
+					revNucleotides.append(originSequence.substring(i-PSD_REV_SIZE, i));
 				} else {
 					revNucleotides.append(originSequence.substring(0, i));
 				}
