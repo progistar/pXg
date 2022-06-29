@@ -26,12 +26,15 @@ public class Output {
 
 	public GenomicSequence gSeq;
 	
-	public Output (GenomicSequence gSeq, int peptideIndex, int startPos, int endPos, boolean strand) {
+	public boolean isTarget = true;
+	
+	public Output (GenomicSequence gSeq, int peptideIndex, int startPos, int endPos, boolean strand, boolean isDecoy) {
 		this.gSeq = gSeq;
 		this.peptideIndex = peptideIndex;
 		this.startPosInNGS = startPos;
 		this.endPosInNGS = endPos;
 		this.strand = strand;
+		this.isTarget = isDecoy;
 	}
 	
 	public String getPeptide () {

@@ -53,8 +53,7 @@ public class PeptideAnnotation {
 	
 	
 	public static ArrayList<Output> find (GenomicSequence gSeq) {
-		ArrayList<Output> targetOutputs = new ArrayList<Output>();
-		ArrayList<Output> decoyOutputs = new ArrayList<Output>();
+		ArrayList<Output> outputs = new ArrayList<Output>();
 		int ntLen = gSeq.getNucleotideString().length();
 		
 		StringBuilder decoySequence = new StringBuilder();
@@ -71,8 +70,8 @@ public class PeptideAnnotation {
 				// convert peptide index to nucleotide index
 				int start = emit.getStart() * 3 + i;
 				int end = (emit.getEnd()+1) * 3 + i - 1;
-				Output output = new Output(gSeq, peptideIndexer.get(emit.getKeyword()), start, end, true);
-				targetOutputs.add(output);
+				Output output = new Output(gSeq, peptideIndexer.get(emit.getKeyword()), start, end, true, true);
+				outputs.add(output);
 			}
 			
 			// for decoy
@@ -85,8 +84,8 @@ public class PeptideAnnotation {
 				int start = tmpStart * 3 + i;
 				int end = (tmpEnd+1) * 3 + i - 1;
 				
-				Output output = new Output(gSeq, peptideIndexer.get(emit.getKeyword()), start, end, true);
-				decoyOutputs.add(output);
+				Output output = new Output(gSeq, peptideIndexer.get(emit.getKeyword()), start, end, true, false);
+				outputs.add(output);
 			}
 		}
 		
@@ -109,8 +108,8 @@ public class PeptideAnnotation {
 				start = ntLen - end - 1;
 				end = ntLen - tmp - 1;
 				
-				Output output = new Output(gSeq, peptideIndexer.get(emit.getKeyword()), start, end, false);
-				targetOutputs.add(output);
+				Output output = new Output(gSeq, peptideIndexer.get(emit.getKeyword()), start, end, false, true);
+				outputs.add(output);
 			}
 			
 			// for decoy
@@ -128,12 +127,12 @@ public class PeptideAnnotation {
 				start = ntLen - end - 1;
 				end = ntLen - tmp - 1;
 				
-				Output output = new Output(gSeq, peptideIndexer.get(emit.getKeyword()), start, end, false);
-				decoyOutputs.add(output);
+				Output output = new Output(gSeq, peptideIndexer.get(emit.getKeyword()), start, end, false, false);
+				outputs.add(output);
 			}
 		}
 		
-		return decoyOutputs;
+		return outputs;
 	}
 	
 	/**

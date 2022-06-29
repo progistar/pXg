@@ -55,8 +55,6 @@ public class Worker extends Thread {
 				for(GenomicSequence genomicSequence : this.task.genomicSequences) {
 					ArrayList<Output> matches = PeptideAnnotation.find(genomicSequence);
 					
-					// TODO: make decoy matches!
-					
 					/**
 					 * Only consider matched NGS-reads.
 					 * Because we are not interested in unmatched NGS-reads.
@@ -70,11 +68,26 @@ public class Worker extends Thread {
 						 * Mapping output result to genomic annotation.
 						 * 
 						 */
+						ArrayList<Output> targetMatches = new ArrayList<Output>();
+						ArrayList<Output> decoyMatches = new ArrayList<Output>();
+						
 						for(Output output : matches) {
 							output.mapGenomicAnnotation();
+							
+							if(output.isTarget) {
+								targetMatches.add(output);
+							} else {
+								decoyMatches.add(output);
+							}
 						}
 						
-						writeTmpOutput(BW, matches, genomicSequence);
+						if(targetMatches.size() != 0) {
+							writeTmpOutput(BW, targetMatches, genomicSequence, "");
+						}
+						
+						if(decoyMatches.size() != 0) {
+							writeTmpOutput(BW, decoyMatches, genomicSequence, "XXX_");
+						}
 					}
 				}
 				
@@ -96,10 +109,9 @@ public class Worker extends Thread {
 	 * @param outputs
 	 * @param gSeq
 	 */
-	public void writeTmpOutput (BufferedWriter BW, ArrayList<Output> outputs, GenomicSequence gSeq) {
+	public void writeTmpOutput (BufferedWriter BW, ArrayList<Output> outputs, GenomicSequence gSeq, String prefixID) {
 		try {
-
-			BW.append(Constants.OUTPUT_G_UNIQUE_ID+"\t"+gSeq.uniqueID+"_"+gSeq.getLocus());
+			BW.append(Constants.OUTPUT_G_UNIQUE_ID+"\t"+prefixID+gSeq.uniqueID+"_"+gSeq.getLocus());
 			BW.newLine();
 			
 

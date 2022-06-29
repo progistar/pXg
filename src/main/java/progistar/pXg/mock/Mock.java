@@ -6,6 +6,12 @@ import progistar.pXg.constants.Constants;
 import progistar.pXg.data.Cigar;
 import progistar.pXg.data.GenomicSequence;
 
+/**
+ * @deprecated: it is no longer used to estimate target/decoy match
+ * 
+ * @author gistar
+ *
+ */
 public class Mock  {
 
 	private static final int PSD_REV_SIZE = 3;
