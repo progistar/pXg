@@ -18,6 +18,25 @@ brownC <- "#A65628"
 pinkC <- "#F781BF"
 grayC <- "#999999"
 
+
+staticThemeLeftTop <- theme(text = element_text(size=25, color = "black")
+                            , axis.text.x = element_text(size=20, color="black"), axis.text.y = element_text(size=20, color="black"),
+                            legend.justification = c("right", "top"),
+                            legend.position= c(.22, .98),
+                            legend.text = element_text(size=20, color = "black"),
+                            legend.box.background = element_rect(linetype = 1, size = 1))
+
+staticThemeRightTop <- theme(text = element_text(size=25, color = "black")
+                             , axis.text.x = element_text(size=20, color="black"), axis.text.y = element_text(size=20, color="black"),
+                             legend.justification = c("right", "top"),
+                             legend.position= c(.98, .98),
+                             legend.text = element_text(size=20, color = "black"),
+                             legend.box.background = element_rect(linetype = 1, size = 1))
+
+staticThemeNone <- theme(text = element_text(size=25, color = "black")
+                         , axis.text.x = element_text(size=20, color="black"), axis.text.y = element_text(size=20, color="black"),
+                         legend.position = "none")
+
 setwd("/Users/gistar/projects/pXg/Laumont_NatCommun2016/MSGF/unmodified")
 dataS1 <- read_excel(path = "MSGF_Summary.xlsx", sheet = "B-LCL1_FDR5")
 dataS2 <- read_excel(path = "MSGF_Summary.xlsx", sheet = "B-LCL2_FDR5")
@@ -71,35 +90,36 @@ g <- ggplot(data=xCorr, aes(x=`xCorr`, colour = Class)) +
   theme(text = element_text(size=25)) +
   geom_histogram(alpha=0, position="identity", bins = 50, fill="transparent", lwd = 1) +
   scale_colour_manual(values = c(greenC, blueC, redC)) +
+  staticThemeRightTop +
   labs(y="PSMs", x = "xCorr score") +
   geom_segment(aes(x=medCanonicalpXg, xend=medCanonicalpXg, y=0, yend=9000), color = blueC, size = 1, linetype = "dotted") +
   geom_segment(aes(x=medCanonicalMSGF, xend=medCanonicalMSGF, y=0, yend=8500), color = greenC, size = 1, linetype = "dotted") +
   geom_segment(aes(x=medNoncanonicalpXg, xend=medNoncanonicalpXg, y=0, yend=8000), color = redC, size = 1, linetype = "dotted") +
-  annotate("text", label = 1.88, x = medCanonicalpXg+0.4, y = 9000, size = 7, family="serif", colour = blueC) +
-  annotate("text", label = 1.96, x = medCanonicalMSGF+0.4, y = 8500, size = 7, family="serif", colour = greenC) +
-  annotate("text", label = 2.01, x = medNoncanonicalpXg+0.4, y = 8000, size = 7, family="serif", colour = redC) +
+  annotate("text", label = 1.88, x = medCanonicalpXg+0.4, y = 9000, size = 10, family="serif", colour = blueC) +
+  annotate("text", label = 1.96, x = medCanonicalMSGF+0.4, y = 8500, size = 10, family="serif", colour = greenC) +
+  annotate("text", label = 2.01, x = medNoncanonicalpXg+0.4, y = 8000, size = 10, family="serif", colour = redC) +
   ggtitle("xCorr score distribution")
 g
 
 
-ggsave("pXg.MSGF.xCorr.density.png", plot = g, width = 10, height = 8, units = "in", dpi = 300)
+
 
 g <- ggplot(data=xCorr, aes(x=`xCorr`, colour = Class)) +
   theme_bw() +
   theme(text = element_text(size=25)) +
   geom_density(alpha=0.3, position="identity", lwd = 1) +
   scale_colour_manual(values = c(greenC, blueC, redC)) +
-  labs(y="Density", x = "xCorr score") +
+  labs(y="Density", x = "XCorr score") +
+  staticThemeRightTop +
   geom_segment(aes(x=medCanonicalpXg, xend=medCanonicalpXg, y=0, yend=1), color = blueC, size = 1, linetype = "dotted") +
   geom_segment(aes(x=medCanonicalMSGF, xend=medCanonicalMSGF, y=0, yend=0.95), color = greenC, size = 1, linetype = "dotted") +
   geom_segment(aes(x=medNoncanonicalpXg, xend=medNoncanonicalpXg, y=0, yend=0.9), color = redC, size = 1, linetype = "dotted") +
-  annotate("text", label = 1.88, x = medCanonicalpXg+0.4, y = 1, size = 7, family="serif", colour = blueC) +
-  annotate("text", label = 1.96, x = medCanonicalMSGF+0.4, y = 0.95, size = 7, family="serif", colour = greenC) +
-  annotate("text", label = 2.01, x = medNoncanonicalpXg+0.4, y = 0.9, size = 7, family="serif", colour = redC) +
-  ggtitle("xCorr score distribution")
+  annotate("text", label = 1.88, x = medCanonicalpXg+0.4, y = 1, size = 10, family="serif", colour = blueC) +
+  annotate("text", label = 1.96, x = medCanonicalMSGF+0.4, y = 0.95, size = 10, family="serif", colour = greenC) +
+  annotate("text", label = 2.01, x = medNoncanonicalpXg+0.4, y = 0.90, size = 10, family="serif", colour = redC) +
+  ggtitle("XCorr score distribution")
 g
 
-
-
+ggsave("pXg.MSGF.xCorr.density.png", plot = g, width = 10, height = 8, units = "in", dpi = 300)
 
 t.test(xCorr[xCorr$Class == "Canonical (MS-GF+)", ]$xCorr, xCorr[xCorr$Class == "Noncanonical (pXg)", ]$xCorr)

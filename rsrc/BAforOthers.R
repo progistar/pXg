@@ -98,3 +98,4 @@ mapPlot <- ggplot(data=subData, aes(x=Length, y=BestScore, fill=Length)) +
 mapPlot
 
 ggsave("BA.DeNovo.Qi.PC9.png", plot = mapPlot, width = 10, height = 8, units = "in", dpi = 600)
+.

@@ -18,6 +18,25 @@ brownC <- "#A65628"
 pinkC <- "#F781BF"
 grayC <- "#999999"
 
+staticThemeLeftTop <- theme(text = element_text(size=25, color = "black")
+                            , axis.text.x = element_text(size=20, color="black"), axis.text.y = element_text(size=20, color="black"),
+                            legend.justification = c("right", "top"),
+                            legend.position= c(.22, .98),
+                            legend.text = element_text(size=20, color = "black"),
+                            legend.box.background = element_rect(linetype = 1, size = 1))
+
+staticThemeRightTop <- theme(text = element_text(size=25, color = "black")
+                             , axis.text.x = element_text(size=20, color="black"), axis.text.y = element_text(size=20, color="black"),
+                             legend.justification = c("right", "top"),
+                             legend.position= c(.98, .98),
+                             legend.text = element_text(size=20, color = "black"),
+                             legend.box.background = element_rect(linetype = 1, size = 1))
+
+staticThemeNone <- theme(text = element_text(size=25, color = "black")
+                         , axis.text.x = element_text(size=20, color="black"), axis.text.y = element_text(size=20, color="black"),
+                         legend.position = "none")
+
+
 setwd("/Users/gistar/projects/pXg/Laumont_NatCommun2016/MSGF/unmodified")
 ## BA distribution
 dataS1 <- read_excel(path = "MSGF_Summary.xlsx", sheet = "B-LCL1_FDR5")
@@ -64,19 +83,20 @@ mapPlot <- ggplot(data=subData, aes(x=Length, y=BestScore, fill=Length)) +
   ggtitle("HLA binding affinity for canonical peptides (MS-GF+)") +
   scale_y_continuous(breaks=seq(from=0, to=7, by= 1)) +
   labs(y= TeX("$Log_{2}$(1.5+%Rank)"), x = "Peptide length") +
-  annotate("text", label = nrow(subData[subData$Length == 8,]), x =1, y = 7, size = 8, family="serif", colour = "black") +
-  annotate("text", label = nrow(subData[subData$Length == 9,]), x =2, y = 7, size = 8, family="serif", colour = "black") +
-  annotate("text", label = nrow(subData[subData$Length == 10,]), x =3, y = 7, size = 8, family="serif", colour = "black") +
-  annotate("text", label = nrow(subData[subData$Length == 11,]), x =4, y = 7, size = 8, family="serif", colour = "black") +
-  annotate("text", label = nrow(subData[subData$Length == 12,]), x =5, y = 7, size = 8, family="serif", colour = "black") +
-  annotate("text", label = nrow(subData[subData$Length == 13,]), x =6, y = 7, size = 8, family="serif", colour = "black") +
+  staticThemeNone +
+  annotate("text", label = nrow(subData[subData$Length == 8,]), x =1, y = 7, size = 10, family="serif", colour = "black") +
+  annotate("text", label = nrow(subData[subData$Length == 9,]), x =2, y = 7, size = 10, family="serif", colour = "black") +
+  annotate("text", label = nrow(subData[subData$Length == 10,]), x =3, y = 7, size = 10, family="serif", colour = "black") +
+  annotate("text", label = nrow(subData[subData$Length == 11,]), x =4, y = 7, size = 10, family="serif", colour = "black") +
+  annotate("text", label = nrow(subData[subData$Length == 12,]), x =5, y = 7, size = 10, family="serif", colour = "black") +
+  annotate("text", label = nrow(subData[subData$Length == 13,]), x =6, y = 7, size = 10, family="serif", colour = "black") +
   geom_hline(yintercept=log2(1.5+2.0), linetype="dashed", color = "black", size=1) +
   geom_hline(yintercept=log2(1.5+0.5), linetype="dashed", color = "black", size=1) +
-  annotate("text", label = nrow(subData[subData$Length == 14,]), x =7, y = 7, size = 8, family="serif", colour = "black") +
-  annotate("text", label = nrow(subData[subData$Length == 15,]), x =8, y = 7, size = 8, family="serif", colour = "black")
+  annotate("text", label = nrow(subData[subData$Length == 14,]), x =7, y = 7, size = 10, family="serif", colour = "black") +
+  annotate("text", label = nrow(subData[subData$Length == 15,]), x =8, y = 7, size = 10, family="serif", colour = "black")
 
 mapPlot
-ggsave("MSGF.BA.Canonical.png", plot = mapPlot, width = 10, height = 8, units = "in", dpi = 300)
+ggsave("MSGF.BA.Canonical.png", plot = mapPlot, width = 11, height = 8, units = "in", dpi = 300)
 
 nrow(subData[subData$BestScore < 3.5, ])
 nrow(subData)

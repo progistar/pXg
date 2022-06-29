@@ -21,11 +21,34 @@ brownC <- "#A65628"
 pinkC <- "#F781BF"
 grayC <- "#999999"
 
+staticThemeLeftTop <- theme(text = element_text(size=25, color = "black")
+                     , axis.text.x = element_text(size=20, color="black"), axis.text.y = element_text(size=20, color="black"),
+                     legend.justification = c("right", "top"),
+                     legend.position= c(.22, .98),
+                     legend.text = element_text(size=20, color = "black"),
+                     legend.box.background = element_rect(linetype = 1, size = 1))
+
+staticThemeRightTop <- theme(text = element_text(size=25, color = "black")
+                            , axis.text.x = element_text(size=20, color="black"), axis.text.y = element_text(size=20, color="black"),
+                            legend.justification = c("right", "top"),
+                            legend.position= c(.98, .98),
+                            legend.text = element_text(size=20, color = "black"),
+                            legend.box.background = element_rect(linetype = 1, size = 1))
+
+staticThemeNone <- theme(text = element_text(size=25, color = "black")
+                             , axis.text.x = element_text(size=20, color="black"), axis.text.y = element_text(size=20, color="black"),
+                             legend.position = "none")
+
 
 setwd("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/7.Unmodified/")
+#setwd("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/8.UnmodifiedPrecursorSwap/")
 
-scores <- read.csv(file = "pXg/S4.PEAKS.UNMOD.rank10.pXg.fdr.dist", header = T, sep = "\t", as.is = as.double())
-allResult <- read.csv(file = "PEAKS/S4.UNMOD.PEAKS.csv", header = T, sep = ",", as.is = as.double())
+scores <- read.csv(file = "pXg/S1.PEAKS.UNMOD.rank10.pXg.fdr.dist", header = T, sep = "\t", as.is = as.double())
+allResult <- read.csv(file = "PEAKS/S1.UNMOD.PEAKS.csv", header = T, sep = ",", as.is = as.double())
+
+#scores <- read.csv(file = "S1.PEAKS.UNMOD.Swap.rank10.pXg.fdr.dist", header = T, sep = "\t", as.is = as.double())
+#allResult <- read.csv(file = "S1.UNMOD.Swap.PEAKS.csv", header = T, sep = ",", as.is = as.double())
+
 
 uniqueAllScores <- allResult[!duplicated(paste(allResult$Fraction, allResult$Source.File, allResult$Scan, sep = "_")), ]
 
@@ -63,25 +86,27 @@ g <- ggplot(data = allScores, aes(x=Score, y=Count)) +
   scale_fill_manual(values=c(grayC)) +
   theme_bw() +
   geom_bar(stat="identity") +
-  theme(text = element_text(size=25)) +
+  staticThemeLeftTop +
   ggtitle("All PSMs") +
   labs(y="PSMs", x = "ALC score")
+g
 
-ggsave("score.all.S4.png", plot = g, width = 10, height = 8, units = "in", dpi = 300)
+ggsave("score.swap.all.S1.png", plot = g, width = 8, height = 6, units = "in", dpi = 300)
 
 g <- ggplot(data = c_scoreTable, aes(x=Score, y=Count, fill=Class)) +
   scale_fill_manual(values=c(blueC, redC)) +
   theme_bw() +
   geom_bar(stat="identity", position=position_dodge()) + 
-  theme(text = element_text(size=25)) +
+  staticThemeLeftTop +
   ggtitle("Canonical PSMs") +
   labs(y="PSMs", x = "ALC score")
 
-ggsave("score.canonical.S4.png", plot = g, width = 10, height = 8, units = "in", dpi = 300)
+g
+ggsave("score.swap.canonical.S1.png", plot = g, width = 8, height = 6, units = "in", dpi = 300)
 
 ## Noncanonical
 ## FDR threshold
-fdr <- 0.05
+fdr <- 0.09
 fdrScore <- 0
 targetCount <- 0
 decoyCount <- 0
@@ -99,7 +124,7 @@ for(alc in c(100:1)) {
   
   if(targetCount > 0) {
     cutFDR <- decoyCount/targetCount
-    if(cutFDR < 0.05) {
+    if(cutFDR < fdr) {
       fdrScore <- alc
       fdrCutoff <- cutFDR
     }
@@ -110,16 +135,19 @@ g <- ggplot(data = nc_scoreTable, aes(x=Score, y=Count, fill=Class)) +
   scale_fill_manual(values=c(blueC,redC)) +
   theme_bw() +
   geom_bar(stat="identity", position=position_dodge()) +
-  theme(text = element_text(size=25)) +
+  staticThemeLeftTop +
   ggtitle("Noncanonical PSMs") +
   labs(y="PSMs", x = "ALC score")
-ggsave("score.noncanonical.S4.png", plot = g, width = 10, height = 8, units = "in", dpi = 300)
+
+g
+ggsave("score.swap.noncanonical.S1.png", plot = g, width = 8, height = 6, units = "in", dpi = 300)
 
 print(fdrScore)
 print(fdrCutoff)
 
 ## RNA-read distrubition
-data <- read.csv(file = "pXg/S1.PEAKS.UNMOD.rank10.pXg.pval.dist", header = T, sep="\t", as.is = as.double())
+#data <- read.csv(file = "pXg/S4.PEAKS.UNMOD.rank10.pXg.pval.dist", header = T, sep="\t", as.is = as.double())
+data <- read.csv(file = "S1.PEAKS.UNMOD.Swap.rank10.pXg.pval.dist", header = T, sep="\t", as.is = as.double())
 
 data$"Peptide length" <- as.character(data$PeptideLength)
 data$Mock <- log2(data$Mock+1)
@@ -135,15 +163,16 @@ g <- ggplot(data = data, aes(x=ReadCount, y=Mock, fill=`Peptide length`)) +
   xlab("Mock read") +
   ylab(TeX("$Log_{2}$(number of peptides + 1)")) +
   scale_x_continuous(breaks=seq(from=0, to=10, by = 1)) +
-  theme(text = element_text(size=25)) +
+  staticThemeRightTop +
+  theme(legend.key.size = unit(0.2, "in"), legend.key.width = unit(0.6, "in")) +
   ggtitle("Null distribution of peptide-reads matches") +
   geom_point()
-
-ggsave("read.S4.png", plot = g, width = 10, height = 8, units = "in", dpi = 300)
+g
+ggsave("read.S4.png", plot = g, width = 9, height = 6, units = "in", dpi = 300)
 
 ## PPM-tolerance
-ppmData <-  read_excel(path = "pXg_Summary.xlsx", sheet = "B-LCL1")
-unIdedData <- read.csv(file = "PEAKS/S1.UNMOD.PEAKS.csv.unided", header = T, sep = ",", as.is = as.double())
+ppmData <-  read_excel(path = "pXg_Summary.xlsx", sheet = "B-LCL4")
+unIdedData <- read.csv(file = "PEAKS/S4.UNMOD.PEAKS.csv.unided", header = T, sep = ",", as.is = as.double())
 
 uniqueUnIdedData <- unIdedData[!duplicated(paste(unIdedData$Fraction, unIdedData$Source.File, unIdedData$Scan, sep = "_")), ]
 
@@ -157,7 +186,7 @@ unIdedData <- data.frame(unIdedData)
 cPPM <- ppmData[ppmData$IsCanonical == T, ]
 cPPM <- cPPM$ppm
 ncPPM <- ppmData[ppmData$IsCanonical == F, ]
-ncFDRPPM <- ncPPM[ncPPM$`Denovo score` >= 88, ]$ppm
+ncFDRPPM <- ncPPM[ncPPM$`Denovo score` >= 93, ]$ppm
 
 cPPM <- data.frame(cPPM)
 ncFDRPPM <- data.frame(ncFDRPPM)
@@ -167,13 +196,13 @@ colnames(cPPM) <- "PPM tolerance"
 colnames(ncFDRPPM) <- "PPM tolerance"
 
 unIdedData$Class <- "Unidentified PSM"
-cPPM$Class <- "cPSM (FDR < 0.05)"
-ncFDRPPM$Class <- "ncPSM (FDR < 0.05)"
+cPPM$Class <- "cPSM"
+ncFDRPPM$Class <- "ncPSM"
 
 data <- rbind(unIdedData, cPPM)
 data <- rbind(data, ncFDRPPM)
 
-data$Class <- factor(data$Class, c("Unidentified PSM", "cPSM (FDR < 0.05)", "ncPSM (FDR < 0.05)"))
+data$Class <- factor(data$Class, c("Unidentified PSM", "cPSM", "ncPSM"))
 
 g <- ggplot(data=data) +
   geom_density(aes(x=`PPM tolerance`, colour = Class), size = 1) +
@@ -181,17 +210,17 @@ g <- ggplot(data=data) +
   theme_bw() +
   scale_y_continuous(breaks=seq(from=0, to=1, by = 0.1), 
                      labels=function(x) format(x, big.mark = ",", decimal.mark = ".", scientific = FALSE),
-                     limits=c(0,0.3)) +
-  theme(text = element_text(size=25)) +
+                     limits=c(0,0.5)) +
+  staticThemeRightTop +
   ggtitle("PPM error distribution") +
   labs(y="Density", x = "PPM error")
 
 g
-ggsave("ppm.S1.png", plot = g, width = 10, height = 8, units = "in", dpi = 300)
+ggsave("ppm.S4.png", plot = g, width = 8, height = 6, units = "in", dpi = 300)
 
-ks.test(data[data$Class == "Unidentified PSMs", ]$`PPM tolerance`, data[data$Class == "cPSMs (FDR < 0.05)", ]$`PPM tolerance`)
-ks.test(data[data$Class == "Unidentified PSMs", ]$`PPM tolerance`, data[data$Class == "ncPSMs (FDR < 0.05)", ]$`PPM tolerance`)
-ks.test(data[data$Class == "cPSMs (FDR < 0.05)", ]$`PPM tolerance`, data[data$Class == "ncPSMs (FDR < 0.05)", ]$`PPM tolerance`)
+ks.test(data[data$Class == "Unidentified PSM", ]$`PPM tolerance`, data[data$Class == "cPSM", ]$`PPM tolerance`)
+ks.test(data[data$Class == "Unidentified PSM", ]$`PPM tolerance`, data[data$Class == "ncPSM", ]$`PPM tolerance`)
+ks.test(data[data$Class == "cPSM", ]$`PPM tolerance`, data[data$Class == "ncPSM", ]$`PPM tolerance`)
 
 ## NetMHCpan BA distribution
 setwd("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/7.Unmodified/")
@@ -221,7 +250,7 @@ dataS4 <- dataS4[!duplicated(dataS4[,c('InferredPeptide')]), ]
 
 allData <- rbind(dataS1, dataS2, dataS3, dataS4)
 
-subData <- allData[allData$IsCanonical == "FALSE", ]
+subData <- allData[allData$IsCanonical == "TRUE", ]
 
 ## select unmodi
 subData$Length <- as.character(subData$Length)
@@ -236,20 +265,21 @@ mapPlot <- ggplot(data=subData, aes(x=Length, y=BestScore, fill=Length)) +
   theme(text = element_text(size=20)) +
   ggtitle("HLA binding affinity for canonical peptides (pXg)") +
   scale_y_continuous(breaks=seq(from=0, to=7, by= 1)) +
+  staticThemeNone +
   labs(y= TeX("$Log_{2}$(1.5+%Rank)"), x = "Peptide length") +
-  annotate("text", label = nrow(subData[subData$Length == 8,]), x =1, y = 7, size = 8, family="serif", colour = "black") +
-  annotate("text", label = nrow(subData[subData$Length == 9,]), x =2, y = 7, size = 8, family="serif", colour = "black") +
-  annotate("text", label = nrow(subData[subData$Length == 10,]), x =3, y = 7, size = 8, family="serif", colour = "black") +
-  annotate("text", label = nrow(subData[subData$Length == 11,]), x =4, y = 7, size = 8, family="serif", colour = "black") +
-  annotate("text", label = nrow(subData[subData$Length == 12,]), x =5, y = 7, size = 8, family="serif", colour = "black") +
-  annotate("text", label = nrow(subData[subData$Length == 13,]), x =6, y = 7, size = 8, family="serif", colour = "black") +
+  annotate("text", label = nrow(subData[subData$Length == 8,]), x =1, y = 7, size = 10, family="serif", colour = "black") +
+  annotate("text", label = nrow(subData[subData$Length == 9,]), x =2, y = 7, size = 10, family="serif", colour = "black") +
+  annotate("text", label = nrow(subData[subData$Length == 10,]), x =3, y = 7, size = 10, family="serif", colour = "black") +
+  annotate("text", label = nrow(subData[subData$Length == 11,]), x =4, y = 7, size = 10, family="serif", colour = "black") +
+  annotate("text", label = nrow(subData[subData$Length == 12,]), x =5, y = 7, size = 10, family="serif", colour = "black") +
+  annotate("text", label = nrow(subData[subData$Length == 13,]), x =6, y = 7, size = 10, family="serif", colour = "black") +
   geom_hline(yintercept=log2(1.5+2.0), linetype="dashed", color = "black", size=1) +
   geom_hline(yintercept=log2(1.5+0.5), linetype="dashed", color = "black", size=1) +
-  annotate("text", label = nrow(subData[subData$Length == 14,]), x =7, y = 7, size = 8, family="serif", colour = "black") +
-  annotate("text", label = nrow(subData[subData$Length == 15,]), x =8, y = 7, size = 8, family="serif", colour = "black")
+  annotate("text", label = nrow(subData[subData$Length == 14,]), x =7, y = 7, size = 10, family="serif", colour = "black") +
+  annotate("text", label = nrow(subData[subData$Length == 15,]), x =8, y = 7, size = 10, family="serif", colour = "black")
 
 mapPlot
-ggsave("BA.Canonical.png", plot = mapPlot, width = 10, height = 8, units = "in", dpi = 300)
+ggsave("BA.Canonical.png", plot = mapPlot, width = 11, height = 8, units = "in", dpi = 300)
 
 nrow(subData[subData$BestScore < log2(3.5) & subData$Length == 8, ])
 nrow(subData)
