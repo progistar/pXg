@@ -243,11 +243,6 @@ public class Master {
 				
 				// target NGS-read
 				tasks[taskIndex].genomicSequences.add(gSeq);
-				// mock NGS-read
-				if(Parameters.mocks != Constants.MOCK_NONE && gSeq.isMapped()) {
-					tasks[taskIndex].genomicSequences.add(Mock.makeMockRead(gSeq, Parameters.mocks));
-				}
-				
 				taskIndex++;
 				if(taskIndex == tasks.length) taskIndex = 0;
 			}
