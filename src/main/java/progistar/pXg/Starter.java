@@ -18,7 +18,6 @@ public class Starter
     	long startTime = System.currentTimeMillis();
     	// fail to parse params
     	if(ParameterParser.parseParams(args) == -1) {
-    		Logger.close();
     		System.exit(1);
     	}
     	

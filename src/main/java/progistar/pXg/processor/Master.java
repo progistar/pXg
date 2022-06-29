@@ -118,7 +118,7 @@ public class Master {
 			PxGAnnotation pXgA = ResultParser.parseResult(tmpOutputFiles);
 			
 			// removing tmpOutputFiles
-			tmpOutputFiles.forEach(file -> {file.delete();});
+//			tmpOutputFiles.forEach(file -> {file.delete();});
 			
 			// count peptides and scans matching to exp.reads
 			RunInfo.mappingFilterPeptideNum3 = PeptideAnnotation.getPeptideSizeWithXBlocks(pXgA.getXBlockMapper());

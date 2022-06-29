@@ -62,9 +62,16 @@ public class Mock  {
 			
 			int relSize = cigar.relativePositions.length;
 			
-			for(int j=relSize-1; j>=0; j--) {
-				revCigar.relativePositions[index] = cigar.relativePositions[j];
-				index++;
+			for(int j=relSize-1; j>=0; j-=PSD_REV_SIZE) {
+				if(j-PSD_REV_SIZE >= 0) {
+					for(int k=j-PSD_REV_SIZE+1; k<=j; k++) {
+						revCigar.relativePositions[index++] = cigar.relativePositions[k];
+					}
+				} else {
+					for(int k=0; k<=j; k++) {
+						revCigar.relativePositions[index++] = cigar.relativePositions[k];
+					}
+				}
 			}
 			
 		}

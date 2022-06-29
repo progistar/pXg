@@ -90,9 +90,9 @@ public class SamParser {
 			long readCount = 0;
 			while((line = BR.readLine()) != null) {
 				if(line.startsWith("@")) continue; // skip meta
+				if(line.length() == 0) continue;
 				
 				String[] fields = line.split("\\s");
-				
 				// TODO: unmapped reads cannot have genomic position information.
 				// In case of unmapped read,  must consider it! 
 				String qName = fields[FieldIndex.QNAME.value];

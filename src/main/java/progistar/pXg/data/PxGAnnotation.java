@@ -1,6 +1,5 @@
 package progistar.pXg.data;
 
-import java.awt.Point;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;

@@ -87,6 +87,7 @@ public class GenomicSequence {
 			switch (op) {
 	    	case 'M': case 'I':// match or mismatch or Insertion
 	    		this.endPosition = Math.max(this.endPosition, this.startPosition+cigar.relativePositions[cigar.relativePositions.length-1]);
+	    		this.endPosition = Math.max(this.endPosition, this.startPosition+cigar.relativePositions[0]);
 	    		break;
 	    	case '*': // for unmapped
 	    		this.startPosition = 1;

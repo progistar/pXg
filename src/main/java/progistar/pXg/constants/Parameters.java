@@ -78,7 +78,7 @@ public class Parameters {
 	public static String commentMarker				=	"#|@|%"; // if line starts with the pattern, the line will be skipped during parsing the file.
 	
 	// Print all annotated PSMs
-	public static boolean debugMode					=	true;
+	public static boolean debugMode					=	false;
 	
 	// System Parameters
 	public static final String CMD_THREADS			=	"-threads".toLowerCase();
