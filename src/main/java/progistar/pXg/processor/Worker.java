@@ -55,6 +55,8 @@ public class Worker extends Thread {
 				for(GenomicSequence genomicSequence : this.task.genomicSequences) {
 					ArrayList<Output> matches = PeptideAnnotation.find(genomicSequence);
 					
+					// TODO: make decoy matches!
+					
 					/**
 					 * Only consider matched NGS-reads.
 					 * Because we are not interested in unmatched NGS-reads.
