@@ -80,7 +80,7 @@ public class ParameterParser {
 						return -1;
 					}
 				}
-				// -fasta (optional)
+				// -sep (optional)
 				else if(option.equalsIgnoreCase(Parameters.SEP_TYPE)) {
 					Parameters.sepType = args[i+1];
 				}

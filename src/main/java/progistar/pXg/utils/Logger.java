@@ -34,6 +34,14 @@ public class Logger {
 		}
 	}
 	
+	public static void flush () {
+		try {
+			BW.flush();
+		}catch (IOException ioe) {
+			
+		}
+	}
+	
 	public static void create (String fileName) {
 		try {
 			BW = new BufferedWriter(new FileWriter(fileName));

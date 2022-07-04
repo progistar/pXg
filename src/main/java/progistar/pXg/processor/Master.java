@@ -58,6 +58,7 @@ public class Master {
 		// Auto detection of already made index files.
 		
 		try {
+			RunInfo.workerProcessedReads = new long[Parameters.nThreads+1];
 			Worker[] workers = new Worker[Parameters.nThreads];
 			
 			ArrayList<GenomicSequence> genomicSequences = null;
@@ -118,7 +119,9 @@ public class Master {
 			PxGAnnotation pXgA = ResultParser.parseResult(tmpOutputFiles);
 			
 			// removing tmpOutputFiles
-//			tmpOutputFiles.forEach(file -> {file.delete();});
+			tmpOutputFiles.forEach(file -> {file.delete();});
+			
+			RunInfo.printAAStat();
 			
 			// count peptides and scans matching to exp.reads
 			RunInfo.mappingFilterPeptideNum3 = PeptideAnnotation.getPeptideSizeWithXBlocks(pXgA.getXBlockMapper());

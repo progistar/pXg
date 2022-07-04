@@ -8,10 +8,12 @@ import java.util.ArrayList;
 
 import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
+import progistar.pXg.constants.RunInfo;
 import progistar.pXg.data.GenomicSequence;
 import progistar.pXg.data.Mutation;
 import progistar.pXg.data.Output;
 import progistar.pXg.data.PeptideAnnotation;
+import progistar.pXg.utils.Logger;
 
 public class Worker extends Thread {
 
@@ -53,7 +55,36 @@ public class Worker extends Thread {
 			// task for mapping genomic annotation
 			if(this.task.taskType == Constants.TASK_G_MAP) {
 				for(GenomicSequence genomicSequence : this.task.genomicSequences) {
+					RunInfo.workerProcessedReads[this.workerID] ++; // increase a number of processed reads
 					ArrayList<Output> matches = PeptideAnnotation.find(genomicSequence);
+					
+					/*
+					if(RunInfo.workerProcessedReads[this.workerID] % 10000 == 0) {
+
+						Logger.append(RunInfo.workerProcessedReads[this.workerID]+"\t");
+						for(int i=Parameters.minPeptLen; i<=Parameters.maxPeptLen; i++) {
+							int idx = i - Parameters.minPeptLen;
+							
+							long targetCnt = 0;
+							long decoyCnt = 0;
+							long overlapCnt = 0;
+							
+							if(RunInfo.targetPeptideHash[idx] != null) {
+								targetCnt = RunInfo.targetPeptideHash[idx].size();
+							}
+							if(RunInfo.decoyPeptideHash[idx] != null) {
+								decoyCnt = RunInfo.decoyPeptideHash[idx].size();
+							}
+							if(RunInfo.overlappedPeptideHash[idx] != null) {
+								overlapCnt = RunInfo.overlappedPeptideHash[idx].size();
+							}
+							
+							Logger.append("\t"+targetCnt+"\t"+decoyCnt+"\t"+overlapCnt);
+						}
+						Logger.newLine();
+						Logger.flush();
+					}
+					*/
 					
 					/**
 					 * Only consider matched NGS-reads.

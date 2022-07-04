@@ -29,6 +29,7 @@ public class Starter
     	RunInfo.printProcessedChromosomes();
     	RunInfo.printPSMCutoff();
     	RunInfo.printFilterStat();
+    	RunInfo.printTDPeptideStat();
     	System.out.println("\tTotal Elapsed time: "+((endTime-startTime)/1000) + " sec with "+RunInfo.totalProcessedPeptides +" peptides and " +RunInfo.totalProcessedReads+" reads");
     	
     	Logger.append("\tTotal Elapsed time: "+((endTime-startTime)/1000) + " sec with "+RunInfo.totalProcessedPeptides +" peptides and " +RunInfo.totalProcessedReads+" reads");

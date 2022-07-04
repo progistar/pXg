@@ -11,6 +11,7 @@ import org.ahocorasick.trie.Trie;
 
 import progistar.pXg.constants.Parameters;
 import progistar.pXg.constants.RunInfo;
+import progistar.pXg.utils.Logger;
 
 public class PeptideAnnotation {
 
@@ -62,7 +63,17 @@ public class PeptideAnnotation {
 			decoySequence.setLength(0);
 			String target = gSeq.getForwardStrandTranslation(i);
 			String decoy = decoySequence.append(target).reverse().toString();
-			int decoyLength = decoy.length();
+			int targetLen = target.length();
+			int decoyLen = decoy.length();
+			
+//			RunInfo.countTDPeptide(target, decoy);
+			
+			for(int j=0; j<targetLen; j++) {
+				RunInfo.targetAAFreqs[target.charAt(j)-'A']++;
+			}
+			for(int j=0; j<decoyLen; j++) {
+				RunInfo.decoyAAFreqs[decoy.charAt(j)-'A']++;
+			}
 			
 			// for target
 			Collection<Emit> emits = trie.parseText(target);
@@ -78,8 +89,8 @@ public class PeptideAnnotation {
 			emits = trie.parseText(decoy);
 			for(Emit emit : emits) {
 				// convert peptide index to nucleotide index
-				int tmpStart = ((decoyLength - 1) - emit.getEnd());
-				int tmpEnd = ((decoyLength-1) - emit.getStart());
+				int tmpStart = ((decoyLen - 1) - emit.getEnd());
+				int tmpEnd = ((decoyLen-1) - emit.getStart());
 				
 				int start = tmpStart * 3 + i;
 				int end = (tmpEnd+1) * 3 + i - 1;
@@ -94,7 +105,17 @@ public class PeptideAnnotation {
 			decoySequence.setLength(0);
 			String target = gSeq.getReverseStrandTranslation(i);
 			String decoy = decoySequence.append(target).reverse().toString();
-			int decoyLength = decoy.length();
+			int targetLen = target.length();
+			int decoyLen = decoy.length();
+			
+//			RunInfo.countTDPeptide(target, decoy);
+			
+			for(int j=0; j<targetLen; j++) {
+				RunInfo.targetAAFreqs[target.charAt(j)-'A']++;
+			}
+			for(int j=0; j<decoyLen; j++) {
+				RunInfo.decoyAAFreqs[decoy.charAt(j)-'A']++;
+			}
 			
 			// for target
 			Collection<Emit> emits = trie.parseText(target);
@@ -116,8 +137,8 @@ public class PeptideAnnotation {
 			emits = trie.parseText(decoy);
 			for(Emit emit : emits) {
 				// convert peptide index to nucleotide index
-				int tmpStart = ((decoyLength - 1) - emit.getEnd());
-				int tmpEnd = ((decoyLength-1) - emit.getStart());
+				int tmpStart = ((decoyLen - 1) - emit.getEnd());
+				int tmpEnd = ((decoyLen-1) - emit.getStart());
 				
 				int start = tmpStart * 3 + i;
 				int end = (tmpEnd+1) * 3 + i - 1;
