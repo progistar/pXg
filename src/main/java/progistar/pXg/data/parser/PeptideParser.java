@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -112,6 +111,11 @@ public class PeptideParser {
 		
 		RunInfo.lengthFilterPeptideNum2 = PeptideAnnotation.getPeptideSize();
 		RunInfo.lengthFilterScanNum2 = PeptideAnnotation.getScanSize();
+		
+		// calculate total candidate peptides per rank
+		for(PBlock pBlock : PeptideAnnotation.pBlocks) {
+			RunInfo.totalRankPSMs[pBlock.rank]++;
+		}
 		
 		System.out.println("\tElapsed time: "+((endTime-startTime)/1000) + " sec");
 

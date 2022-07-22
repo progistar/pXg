@@ -23,6 +23,10 @@ public class PxGAnnotation {
 	// the first value: xBlocks corresponding to the key 
 	// and the second key: peptide sequence from nucleotides + "_" + genomic locus
 	private Hashtable<String, Hashtable<String, XBlock>> xBlockMapper = new Hashtable<String, Hashtable<String, XBlock>>();
+	// this is a subset of xBlockMapper to map target xBlocks (pass the rna cutoff)
+	private Hashtable<String, Hashtable<String, XBlock>> targetXBlockMapper = new Hashtable<String, Hashtable<String, XBlock>>();
+	// this is a subset of xBlockMapper to map decoy xBlocks (pass the rna cutoff)
+	private Hashtable<String, Hashtable<String, XBlock>> decoyXBlockMapper = new Hashtable<String, Hashtable<String, XBlock>>();
 	private int maxNGSreadCount = 0;
 	
 	/**
@@ -102,6 +106,7 @@ public class PxGAnnotation {
 		final int[] cutoffs = RunInfo.cutoffReads;
 		ArrayList<String> zeroSizeList = new ArrayList<String>();
 		
+		// discard insignificant matches
 		this.xBlockMapper.forEach((pSeq, xBlocks) -> {
 			if(xBlocks.size() != 0) {
 				ArrayList<String> removeList = new ArrayList<String>();
@@ -113,14 +118,9 @@ public class PxGAnnotation {
 					String key = keys.next();
 					XBlock xBlock = xBlocks.get(key);
 					
-					if(xBlock.targetReadCount == 0 && xBlock.mockReadCount > 0) {
-						continue;
-					}
-					
-					if(xBlock.targetReadCount < cutoffs[pSeq.length()]) {
+					if(xBlock.targetReadCount < cutoffs[pSeq.length()] && xBlock.mockReadCount < cutoffs[pSeq.length()]) {
 						removeList.add(key);
-					} else {
-						xBlock.mockReadCount = 0;
+						continue;
 					}
 				}
 				
@@ -165,6 +165,10 @@ public class PxGAnnotation {
 			int length = peptide.length();
 			int[] mockCounts = new int[1];
 			int[] expCounts = new int[1];
+			
+			boolean isExp = false;
+			boolean isMock = false;
+			
 			if(xBlocks != null) {
 				mockCounts = new int[xBlocks.size()];
 				expCounts = new int[xBlocks.size()];
@@ -176,14 +180,19 @@ public class PxGAnnotation {
 					
 					if(xBlock.mockReadCount > 0) {
 						mockCounts[idx] = xBlock.mockReadCount;
+						isMock = true;
 					}
 					if(xBlock.targetReadCount > 0) {
 						expCounts[idx] = xBlock.targetReadCount;
+						isExp = true;
 					}
 					idx++;
 				}
-				
-				
+			}
+			
+			// ignore overlapped sequences
+			if(isExp && isMock) {
+				continue;
 			}
 			
 			if(Parameters.mockPolicy == Constants.MOCK_ALL) {
@@ -366,7 +375,7 @@ public class PxGAnnotation {
 				// peptide sequence without I/L consideration
 				String key = pBlock.getPeptideSequence();
 				
-				Hashtable<String, XBlock> xBlocks = this.xBlockMapper.get(key);
+				Hashtable<String, XBlock> xBlocks = this.targetXBlockMapper.get(key);
 				
 				// there is no available mapping.
 				if(xBlocks != null) {
@@ -445,11 +454,27 @@ public class PxGAnnotation {
 			int bestTargetIndex = -1;
 			int bestDecoyIndex = -1;
 			
+			// logging rank PSMs
+			for(int i=0; i<scanPBlocks.size(); i++) {
+				
+				byte psmStatus = scanPBlocks.get(i).psmStatus;
+				int rank = scanPBlocks.get(i).rank;
+				
+				int isCanonical = scanPBlocks.get(i).isCannonical ? 0 : 1;
+				
+				if(psmStatus == Constants.PSM_STATUS_TARGET) {
+					RunInfo.targetRankPSMs[isCanonical][rank]++;
+				} else if(psmStatus == Constants.PSM_STATUS_DECOY) {
+					RunInfo.decoyRankPSMs[isCanonical][rank]++;
+				}
+			}
+			
+			// select top one
 			for(int i=0; i<scanPBlocks.size(); i++) {
 				
 				byte psmStatus = scanPBlocks.get(i).psmStatus;
 				
-				if(psmStatus == Constants.PSM_STATUS_TARGET) {
+				if(psmStatus == Constants.PSM_STATUS_TARGET || psmStatus == Constants.PSM_STATUS_BOTH) {
 					//select top score from targets
 					bestTargetIndex = i;
 					break;
@@ -489,34 +514,39 @@ public class PxGAnnotation {
 			// peptide sequence without I/L consideration
 			String key = pBlock.getPeptideSequence();
 			
-			Hashtable<String, XBlock> xBlocks = this.xBlockMapper.get(key);
+			// check error!
+			boolean[] expAndMocks = new boolean[2];
+			
+			Hashtable<String, XBlock> xBlocks = this.targetXBlockMapper.get(key);
 			if(xBlocks != null) {
-				
-				// check error!
-				boolean[] expAndMocks = new boolean[2];
 				// only select significantly mapped PSMs
 				// this is because we are interested in P( decoy (score > X) | significantly mapped PSMs)
 				xBlocks.forEach((key_, xBlock) -> {
 					if(xBlock.targetReadCount >= RunInfo.cutoffReads[key.length()]) {
-						pBlock.psmStatus = Constants.PSM_STATUS_TARGET > pBlock.psmStatus ? Constants.PSM_STATUS_TARGET : pBlock.psmStatus;
+						pBlock.psmStatus = Constants.PSM_STATUS_TARGET;
 						pBlock.isCannonical |= xBlock.isCannonical();
 						expAndMocks[0] = true;
 					} 
-					// decoy PSMs
-					// if the decoy appears in the fasta entries, there are chances that the sequence actually is derived from protein coding.
-					// we prevent assigning as decoy in this case.
-					else if(xBlock.mockReadCount >= RunInfo.cutoffReads[key.length()] && !xBlock.isFastaAssigned()) {
-						pBlock.psmStatus = Constants.PSM_STATUS_DECOY > pBlock.psmStatus ? Constants.PSM_STATUS_DECOY : pBlock.psmStatus;
-						pBlock.isCannonical |= xBlock.isCannonical();
+				});
+			}
+			
+			xBlocks = this.decoyXBlockMapper.get(key);
+			if(xBlocks != null) {
+				// only select significantly mapped PSMs
+				// this is because we are interested in P( decoy (score > X) | significantly mapped PSMs)
+				xBlocks.forEach((key_, xBlock) -> {
+					if(xBlock.mockReadCount >= RunInfo.cutoffReads[key.length()]) {
+						if(expAndMocks[0]) {
+							pBlock.psmStatus = Constants.PSM_STATUS_BOTH;
+						} else {
+							pBlock.psmStatus = Constants.PSM_STATUS_DECOY;
+							pBlock.isCannonical |= xBlock.isCannonical();
+						}
 						expAndMocks[1] = true;
 					}
 				});
-				
-				if(expAndMocks[0] && expAndMocks[1]) {
-					System.out.println("markTargetPSMs was being invalid behavior!::");
-					System.out.println("-- exp and mock read xBlocks were coincident!");
-				}
 			}
+			
 		}
 		
 		long endTime = System.currentTimeMillis();
@@ -578,7 +608,7 @@ public class PxGAnnotation {
 				
 				byte case_ = pBlock.psmStatus;
 				
-				if(case_ == Constants.PSM_STATUS_UNDEF) {
+				if(case_ == Constants.PSM_STATUS_UNDEF || case_ == Constants.PSM_STATUS_BOTH) {
 					continue;
 				}
 				
@@ -703,7 +733,7 @@ public class PxGAnnotation {
 		for(int i=0; i<pBlocks.size(); i++) {
 			PBlock pBlock = pBlocks.get(i);
 			
-			if(pBlock.psmStatus == Constants.PSM_STATUS_TARGET) {
+			if(pBlock.psmStatus == Constants.PSM_STATUS_TARGET || pBlock.psmStatus == Constants.PSM_STATUS_BOTH) {
 				if(pBlock.isCannonical) {
 					if(pBlock.score >= RunInfo.cPSMScoreTreshold) {
 						cutoffedPBlocks.add(pBlock);
@@ -742,7 +772,7 @@ public class PxGAnnotation {
 			
 			double minExpXBlockPenalty = Double.MAX_VALUE;
 			double minMockXBlockPenalty = Double.MAX_VALUE;
-			boolean isExpXBlock = false;
+			int peptLen = pSeq.length();
 			
 			while(keys.hasNext()) {
 				String key = keys.next();
@@ -752,36 +782,44 @@ public class PxGAnnotation {
 				xBlock.filterRegions();
 				
 				// find min penalty
-				if(xBlock.targetReadCount > 0) {
+				if(xBlock.targetReadCount >= RunInfo.cutoffReads[peptLen]) {
 					minExpXBlockPenalty = Math.min(xBlock.bestRegionPriority, minExpXBlockPenalty);
-					isExpXBlock = true;
-				} else if(xBlock.mockReadCount > 0) {
+				}
+				if(xBlock.mockReadCount >= RunInfo.cutoffReads[peptLen]) {
 					minMockXBlockPenalty = Math.min(xBlock.bestRegionPriority, minMockXBlockPenalty);
 				}
 			}
 			
 			keys = (Iterator<String>) xBlocks.keys();
-			ArrayList<String> discardList = new ArrayList<String>();
+			
+			// target and decoy xBlocks are assigned.
 			while(keys.hasNext()) {
 				String key = keys.next();
 				XBlock xBlock = xBlocks.get(key);
 				
-				// if there is at least one exp read,
-				// xBlocks with mock reads will be discarded.
-				if(isExpXBlock && xBlock.mockReadCount > 0) {
-					discardList.add(key);
-					continue;
+				if(xBlock.targetReadCount >= RunInfo.cutoffReads[peptLen]) {
+					if(xBlock.bestRegionPriority <= minExpXBlockPenalty) {
+						// for target xBlock mapper
+						Hashtable<String, XBlock> xBlocks_ = this.targetXBlockMapper.get(pSeq);
+						if(xBlocks_ == null) {
+							xBlocks_ = new Hashtable<String, XBlock>();
+							this.targetXBlockMapper.put(pSeq, xBlocks_);
+						}
+						xBlocks_.put(key, xBlock);
+					}
 				}
-				
-				if(xBlock.bestRegionPriority > minExpXBlockPenalty) {
-					discardList.add(key);
+				if(xBlock.mockReadCount >= RunInfo.cutoffReads[peptLen]) {
+					if(xBlock.bestRegionPriority <= minMockXBlockPenalty) {
+						// for decoy xBlock mapper
+						Hashtable<String, XBlock> xBlocks_ = this.decoyXBlockMapper.get(pSeq);
+						if(xBlocks_ == null) {
+							xBlocks_ = new Hashtable<String, XBlock>();
+							this.decoyXBlockMapper.put(pSeq, xBlocks_);
+						}
+						xBlocks_.put(key, xBlock);
+					}
 				}
 			}
-			
-			// remove higher penalties
-			discardList.forEach(key -> {
-				xBlocks.remove(key);
-			});
 		}
 	}
 }

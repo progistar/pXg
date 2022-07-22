@@ -42,7 +42,7 @@ public class UnIDSelector {
 	
 	
 	public static void main(String[] args) throws IOException {
-		String idedFileName = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/7.Unmodified/pXg/S4.PEAKS.UNMOD.rank10.pXg.BA.xCorr";
+		String idedFileName = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/7.Unmodified/pXg/S4.UNMOD.PEAKS.pxg.BA.fdr";
 		String allFileName = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/7.Unmodified/PEAKS/S4.UNMOD.PEAKS.csv";
 		String unidedFileName = allFileName+".unided";
 		

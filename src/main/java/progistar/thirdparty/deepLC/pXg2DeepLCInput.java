@@ -2,6 +2,7 @@ package progistar.thirdparty.deepLC;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -56,9 +57,9 @@ public class pXg2DeepLCInput {
 		int peptideIndex = 20;
 		int peaksScoreIndex = 7;
 		
-		String fileName = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/6.CaliScanwoDeamiFix/pXg/PeptideAnnotationS3_5ppm_002_recal.scanNum.rep1.rank10.pXg.BA.fdr";
-		
-		BufferedReader BR = new BufferedReader(new FileReader(fileName));
+		String fileName = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/7.Unmodified/pXg/S4.UNMOD.PEAKS.pxg.BA.fdr";
+		File file = new File(fileName);
+		BufferedReader BR = new BufferedReader(new FileReader(file));
 		
 		String line = null;
 		
@@ -82,11 +83,11 @@ public class pXg2DeepLCInput {
 				modifications = modifications.substring(0, modifications.length()-1);
 			}
 			//
-			
-			ArrayList<DeepLCData> fraction = fractions.get(fields[fractionIndex]);
+			String fractionName = file.getName().split("\\.")[0];
+			ArrayList<DeepLCData> fraction = fractions.get(fractionName);
 			if(fraction == null) {
 				fraction = new ArrayList<DeepLCData>();
-				fractions.put(fields[fractionIndex], fraction);
+				fractions.put(fractionName, fraction);
 			}
 			
 			if(rmDuplications.get(fields[fractionIndex]+"_"+fields[scanIndex]+"_"+fields[peptideIndex]) == null) {
@@ -104,6 +105,7 @@ public class pXg2DeepLCInput {
 		
 		fractions.forEach( (fName, fraction) -> {
 			try {
+				System.out.println(fName +" is running");
 				BufferedWriter BW = new BufferedWriter(new FileWriter(fName+".csv"));
 				BufferedWriter BWCal = new BufferedWriter(new FileWriter(fName+".cal.csv"));
 				BW.append("seq,modifications,tr");
@@ -115,33 +117,47 @@ public class pXg2DeepLCInput {
 				Collections.sort(fraction);
 				
 				int cnt = 0;
-				while(cnt < 25) {
+				while(cnt < calSize) {
 					for(DeepLCData data : fraction) {
 						BW.append(data.content);
 						BW.newLine();
 						cnt++;
 					}
 				}
+				System.out.println("data size: "+cnt);
 				
 				// for calibration input file
 				double maxRT = 0;
+				double minRT = Double.MAX_VALUE;
 				for(int i=0; i<fraction.size(); i++) {
 					maxRT = Math.max(fraction.get(i).rt, maxRT);
+					minRT = Math.min(fraction.get(i).rt, minRT);
 				}
 				
-				double intervalRT = maxRT/calSize;
+				double intervalRT = (maxRT-minRT)/calSize;
+				System.out.println("RT range: "+minRT+"-"+maxRT);
+				System.out.println("RT Interval: "+intervalRT);
 				for(int i=0; i<calSize; i++) {
-					double startRT = i * intervalRT;
-					double endRT = (i+1) * intervalRT;
+					double startRT = minRT + i * intervalRT;
+					double endRT = minRT + (i+1) * intervalRT;
 					
 					ArrayList<DeepLCData> calData = new ArrayList<DeepLCData>();
-					while(calData.size() < 10) {
+					// max top 10
+					while(calData.size() == 0) {
 						// select top 10 peptides
 						for(int j=0; j<fraction.size(); j++) {
 							DeepLCData data = fraction.get(j);
 							if(data.rt >= startRT && data.rt <= endRT) {
 								calData.add(data);
 							}
+							
+							if(calData.size() == 10) {
+								break;
+							}
+						}
+						
+						if(calData.size() == 0) {
+							break;
 						}
 					}
 					

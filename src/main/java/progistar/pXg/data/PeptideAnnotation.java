@@ -9,6 +9,7 @@ import java.util.Iterator;
 import org.ahocorasick.trie.Emit;
 import org.ahocorasick.trie.Trie;
 
+import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
 import progistar.pXg.constants.RunInfo;
 import progistar.pXg.utils.Logger;
@@ -100,58 +101,61 @@ public class PeptideAnnotation {
 			}
 		}
 		
-		// reverse translation
-		for(int i=0; i<3; i++) {
-			decoySequence.setLength(0);
-			String target = gSeq.getReverseStrandTranslation(i);
-			String decoy = decoySequence.append(target).reverse().toString();
-			int targetLen = target.length();
-			int decoyLen = decoy.length();
-			
-//			RunInfo.countTDPeptide(target, decoy);
-			
-			for(int j=0; j<targetLen; j++) {
-				RunInfo.targetAAFreqs[target.charAt(j)-'A']++;
-			}
-			for(int j=0; j<decoyLen; j++) {
-				RunInfo.decoyAAFreqs[decoy.charAt(j)-'A']++;
-			}
-			
-			// for target
-			Collection<Emit> emits = trie.parseText(target);
-			for(Emit emit : emits) {
-				// convert peptide index to nucleotide index
-				int start = emit.getStart() * 3 + i;
-				int end = (emit.getEnd()+1) * 3 + i - 1;
-			
-				// convert reverse index to forward index
-				int tmp = start;
-				start = ntLen - end - 1;
-				end = ntLen - tmp - 1;
+		// reverse complement translation
+		if(Parameters.translationMethod == Constants.SIX_FRAME) {
+			for(int i=0; i<3; i++) {
+				decoySequence.setLength(0);
+				String target = gSeq.getReverseStrandTranslation(i);
+				String decoy = decoySequence.append(target).reverse().toString();
+				int targetLen = target.length();
+				int decoyLen = decoy.length();
 				
-				Output output = new Output(gSeq, peptideIndexer.get(emit.getKeyword()), start, end, false, true);
-				outputs.add(output);
-			}
-			
-			// for decoy
-			emits = trie.parseText(decoy);
-			for(Emit emit : emits) {
-				// convert peptide index to nucleotide index
-				int tmpStart = ((decoyLen - 1) - emit.getEnd());
-				int tmpEnd = ((decoyLen-1) - emit.getStart());
+//				RunInfo.countTDPeptide(target, decoy);
 				
-				int start = tmpStart * 3 + i;
-				int end = (tmpEnd+1) * 3 + i - 1;
-			
-				// convert reverse index to forward index
-				int tmp = start;
-				start = ntLen - end - 1;
-				end = ntLen - tmp - 1;
+				for(int j=0; j<targetLen; j++) {
+					RunInfo.targetAAFreqs[target.charAt(j)-'A']++;
+				}
+				for(int j=0; j<decoyLen; j++) {
+					RunInfo.decoyAAFreqs[decoy.charAt(j)-'A']++;
+				}
 				
-				Output output = new Output(gSeq, peptideIndexer.get(emit.getKeyword()), start, end, false, false);
-				outputs.add(output);
+				// for target
+				Collection<Emit> emits = trie.parseText(target);
+				for(Emit emit : emits) {
+					// convert peptide index to nucleotide index
+					int start = emit.getStart() * 3 + i;
+					int end = (emit.getEnd()+1) * 3 + i - 1;
+				
+					// convert reverse index to forward index
+					int tmp = start;
+					start = ntLen - end - 1;
+					end = ntLen - tmp - 1;
+					
+					Output output = new Output(gSeq, peptideIndexer.get(emit.getKeyword()), start, end, false, true);
+					outputs.add(output);
+				}
+				
+				// for decoy
+				emits = trie.parseText(decoy);
+				for(Emit emit : emits) {
+					// convert peptide index to nucleotide index
+					int tmpStart = ((decoyLen - 1) - emit.getEnd());
+					int tmpEnd = ((decoyLen-1) - emit.getStart());
+					
+					int start = tmpStart * 3 + i;
+					int end = (tmpEnd+1) * 3 + i - 1;
+				
+					// convert reverse index to forward index
+					int tmp = start;
+					start = ntLen - end - 1;
+					end = ntLen - tmp - 1;
+					
+					Output output = new Output(gSeq, peptideIndexer.get(emit.getKeyword()), start, end, false, false);
+					outputs.add(output);
+				}
 			}
 		}
+		
 		
 		return outputs;
 	}
@@ -202,11 +206,13 @@ public class PeptideAnnotation {
 			int rank = 0;
 			for(int i=0; i<size; i++) {
 				PBlock pBlock = scanPBlocks.get(i);
+				/*
 				if(pBlock.score != prevScore) {
 					rank++;
 					prevScore = pBlock.score;
 				}
-				pBlock.rank = rank;
+				*/
+				pBlock.rank = ++rank;
 			}
 		});
 	}
@@ -288,7 +294,6 @@ public class PeptideAnnotation {
 	 */
 	public static int getPeptideSizeWithXBlocks (Hashtable<String, Hashtable<String, XBlock>> xBlockMapper) {
 		Hashtable<String, String> peptides = new Hashtable<String, String>();
-		
 		for(int i=0; i<pBlocks.size(); i++) {
 			peptides.put(pBlocks.get(i).getPeptideSequence(), "");
 		}
@@ -300,12 +305,12 @@ public class PeptideAnnotation {
 			boolean is = false;
 			Hashtable<String, XBlock> xBlocks = xBlockMapper.get(peptideIL);
 			
-			if(xBlocks != null) {
+			if(xBlocks != null && xBlocks.size() != 0) {
 				Iterator<String> keys = (Iterator<String>) xBlocks.keys();
 				while(keys.hasNext()) {
 					String key = keys.next();
 					XBlock xBlock = xBlocks.get(key);
-					if(xBlock.targetReadCount > 0) {
+					if(xBlock != null && xBlock.targetReadCount > 0) {
 						is = true;
 					}
 				}
@@ -340,12 +345,12 @@ public class PeptideAnnotation {
 				String peptideIL = pBlock.getPeptideSequence(); 
 				Hashtable<String, XBlock> xBlocks = xBlockMapper.get(peptideIL);
 				
-				if(xBlocks != null) {
+				if(xBlocks != null && xBlocks.size() != 0) {
 					Iterator<String> keys = (Iterator<String>) xBlocks.keys();
 					while(keys.hasNext()) {
 						String key = keys.next();
 						XBlock xBlock = xBlocks.get(key);
-						if(xBlock.targetReadCount > 0) {
+						if(xBlock != null && xBlock.targetReadCount > 0) {
 							is = true;
 						}
 					}

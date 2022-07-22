@@ -6,9 +6,12 @@ public class Constants {
 	//        plus, basically, this version number intends to upgrade behaviors of tool.
 	// minor: critical bug fix, change in results something like that.
 	// patch: tiny bug fix, typo, and change code styles something like that.
-	public static final String VERSION = "pXg v1.3.0 (release 2022-05-26)";
+	public static final String VERSION = "pXg v1.5.0 (release 2022-05-26)";
 	public static final String INTRODUCE = "Seunghyuk Choi and Eunok Paek in the Department of Computer Science at Hanyang University in Seoul, South Korea. ";
 	
+	// Translation method
+	public static final byte THREE_FRAME	=	0;
+	public static final byte SIX_FRAME	=	1;
 
 	//
 	public static final byte EXON = 30;
@@ -92,8 +95,9 @@ public class Constants {
 	public static final String EVENT_UNKNOWN		=	"unknown";
 	
 	// PSM Status
-	public static final byte PSM_STATUS_UNDEF		=	0;
-	public static final byte PSM_STATUS_DECOY		=	1;
+	public static final byte PSM_STATUS_UNDEF		=	-1;
+	public static final byte PSM_STATUS_DECOY		=	0;
+	public static final byte PSM_STATUS_BOTH		=	1;
 	public static final byte PSM_STATUS_TARGET		=	2;
 	
 	// ID status

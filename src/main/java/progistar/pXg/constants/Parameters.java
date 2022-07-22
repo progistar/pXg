@@ -80,6 +80,9 @@ public class Parameters {
 	// Print all annotated PSMs
 	public static boolean debugMode					=	false;
 	
+	// Three or Six frame translation
+	public static byte translationMethod			=	Constants.SIX_FRAME;
+	
 	// System Parameters
 	public static final String CMD_THREADS			=	"-threads".toLowerCase();
 	public static int nThreads						=	4;

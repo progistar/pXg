@@ -5,6 +5,15 @@ import java.util.Hashtable;
 import progistar.pXg.utils.Logger;
 
 public class RunInfo {
+	
+	// Count PSMs
+	// 0 for canonical
+	// 1 for noncanonical
+	public static long[][] targetRankPSMs = new long[2][101];
+	public static long[][] decoyRankPSMs = new long[2][101];
+	
+	// Count PSMs
+	public static long[] totalRankPSMs = new long[101];
 
 	// Count peptides
 	public static Hashtable[] targetPeptideHash		= new Hashtable[Parameters.maxPeptLen - Parameters.minPeptLen + 1];
@@ -54,6 +63,27 @@ public class RunInfo {
 	// step7: FDR
 	public static int fdrFilterScanNum7				= 0;
 	public static int fdrFilterPeptideNum7			= 0;
+	
+	public static void printRankPSM () {
+		Logger.append("Rank\tTargetCandidate\tDecoyCandidate\tIsCanonical");
+		Logger.newLine();
+		for(int i=0; i<RunInfo.targetRankPSMs[0].length; i++) {
+			if(RunInfo.targetRankPSMs[0][i] == 0 && RunInfo.decoyRankPSMs[0][i] == 0) {
+				continue;
+			} else {
+				Logger.append(i+"\t"+RunInfo.targetRankPSMs[0][i]+"\t"+RunInfo.decoyRankPSMs[0][i]+"\tTRUE");
+				Logger.newLine();
+			}
+		}
+		for(int i=0; i<RunInfo.targetRankPSMs[1].length; i++) {
+			if(RunInfo.targetRankPSMs[1][i] == 0 && RunInfo.decoyRankPSMs[1][i] == 0) {
+				continue;
+			} else {
+				Logger.append(i+"\t"+RunInfo.targetRankPSMs[1][i]+"\t"+RunInfo.decoyRankPSMs[1][i]+"\tFALSE");
+				Logger.newLine();
+			}
+		}
+	}
 	
 	public static void countTDPeptide (String target, String decoy) {
 		int targetLen = target.length();
@@ -127,34 +157,6 @@ public class RunInfo {
 			char aa = Character.valueOf((char) ('A'+i));
 			System.out.println(aa+"\t"+RunInfo.targetAAFreqs[i]+"\t"+RunInfo.decoyAAFreqs[i]);
 			Logger.append(aa+"\t"+RunInfo.targetAAFreqs[i]+"\t"+RunInfo.decoyAAFreqs[i]);
-			Logger.newLine();
-		}
-	}
-	
-	public static void printTDPeptideStat () {
-		System.out.println("Length\tTargetPeptide\tDecoyPeptide\tOverlap");
-		Logger.append("Length\tTargetPeptide\tDecoyPeptide\tOverlap");
-		Logger.newLine();
-		for(int i=Parameters.minPeptLen; i<=Parameters.maxPeptLen; i++) {
-			int idx = i - Parameters.minPeptLen;
-			
-			long targetCnt = 0;
-			long decoyCnt = 0;
-			long overlapCnt = 0;
-			
-			if(RunInfo.targetPeptideHash[idx] != null) {
-				targetCnt = RunInfo.targetPeptideHash[idx].size();
-			}
-			if(RunInfo.decoyPeptideHash[idx] != null) {
-				decoyCnt = RunInfo.decoyPeptideHash[idx].size();
-			}
-			if(RunInfo.targetPeptideHash[idx] != null && RunInfo.decoyPeptideHash[idx] != null) {
-				RunInfo.targetPeptideHash[idx].putAll(RunInfo.decoyPeptideHash[idx]);
-				overlapCnt = targetCnt + decoyCnt - RunInfo.targetPeptideHash[idx].size();
-			}
-			
-			System.out.println(i+"\t"+targetCnt+"\t"+decoyCnt+"\t"+overlapCnt);
-			Logger.append(i+"\t"+targetCnt+"\t"+decoyCnt+"\t"+overlapCnt);
 			Logger.newLine();
 		}
 	}

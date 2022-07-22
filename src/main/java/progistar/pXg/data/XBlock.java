@@ -24,6 +24,7 @@ public class XBlock {
 	public String fullReadSequence	=	null; // for unmapped read
 	public double bestRegionPriority 	= 	Double.MAX_VALUE;
 	
+	
 	// with the same key value block
 	// the block will be null if there is no next sibling.
 	public ArrayList<XBlock> siblingXBlocks	=	new ArrayList<XBlock>();
