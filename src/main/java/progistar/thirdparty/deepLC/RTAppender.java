@@ -19,32 +19,27 @@ public class RTAppender {
 	public static String CYSTEINLY = "Cysteinyl";
 	
 	public static void main(String[] args) throws IOException {
-		String pXgFileName = "C:\\Users\\progi\\Desktop\\Projects\\pXg\\Qi_MCP2021\\Results\\h1975wc.pxg.netMHCpan";
-		String deeplcFolder = "C:\\Users\\progi\\Desktop\\Projects\\pXg\\Qi_MCP2021\\RT";
+		String pXgFileName = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/7.Unmodified/pXg/S4.UNMOD.PEAKS.pxg.BA.fdr";
+		String deeplcFolder = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/RT/S4_deeplc_predictions.csv";
 		
-		File[] files = new File(deeplcFolder).listFiles();
+		File file = new File(deeplcFolder);
 		// key
 		// fileName_InferredPeptide_PTM_RT
 		// value
 		// predicted RT
 		Hashtable<String, String> RTMapper = new Hashtable<String, String>();
 		
-		for(File file : files) {
-			if(file.getName().contains("deeplc_predictions")) {
-				BufferedReader BR = new BufferedReader(new FileReader(file));
-				String line = null;
-				
-				String fileName = file.getName().split("\\.")[0]+".raw";
-				BR.readLine(); // skip header
-				while((line = BR.readLine()) != null) {
-					String[] fields = line.split("\\,");
-					String key = fileName+"_"+fields[1]+"_"+fields[2]+"_"+Double.parseDouble(fields[3]);
-					
-					RTMapper.put(key, fields[4]);
-				}
-				BR.close();
-			}
+		BufferedReader BR = new BufferedReader(new FileReader(file));
+		String line = null;
+		
+		BR.readLine(); // skip header
+		while((line = BR.readLine()) != null) {
+			String[] fields = line.split("\\,");
+			String key = fields[1]+"_"+fields[2]+"_"+Double.parseDouble(fields[3]);
+			
+			RTMapper.put(key, fields[4]);
 		}
+		BR.close();
 		
 		// read PXG	
 		Hashtable<String, String> massToModName = new Hashtable<String, String>();
@@ -56,12 +51,9 @@ public class RTAppender {
 		
 		int peaksPeptideIndex = 3;
 		int rtIndex = 11;
-		int fractionIndex = 1;
-		int peptideIndex = 19;
+		int peptideIndex = 20;
 		
-		BufferedReader BR = new BufferedReader(new FileReader(pXgFileName));
-		
-		String line = null;
+		BR = new BufferedReader(new FileReader(pXgFileName));
 		
 		// header
 		System.out.println(BR.readLine()+"\tdeeplcRT");
@@ -82,7 +74,7 @@ public class RTAppender {
 			}
 			//
 			
-			String key = fields[fractionIndex]+"_"+fields[peptideIndex]+"_"+modifications+"_"+Double.parseDouble(fields[rtIndex]);
+			String key = fields[peptideIndex]+"_"+modifications+"_"+Double.parseDouble(fields[rtIndex]);
 			String pRT = RTMapper.get(key);
 			
 			if(pRT == null) {
