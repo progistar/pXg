@@ -46,6 +46,83 @@ public class Spectra {
 		if(this.fileType == FILE_TYPE_MGF) readMGF (this.fileName, selectiveScans);
 	}
 	
+	public Spectra (String fileName, int fileType) {
+		this.fileName = fileName;
+		this.fileType = fileType;
+		
+		spectra = new ArrayList<Spectrum>();
+		sortedRTSpectra = new TreeMap<Double, Spectrum>();
+		scanIndexer = new Hashtable<Integer, Spectrum>();
+		
+		try {
+			BufferedReader BR = new BufferedReader(new FileReader(fileName));
+			String line = null;
+			int index = -1;
+			double pepMass = 0;
+			double precursorInt = 0;
+			int charge = 0;
+			double rt = 0;
+			String title = null;
+			int scanNum = -1;
+			String peptide = null;
+			
+			ArrayList<double[]> peaks = null;
+			
+			Pattern peakPattern = Pattern.compile("^[0-9]");
+			Pattern scanPattern = Pattern.compile("[\\.]+[0-9]+[\\.]+");
+			
+			while((line = BR.readLine()) != null) {
+				if(line.startsWith("BEGIN")) {
+					peaks = new ArrayList<double[]>();
+					index ++;
+				}else if(line.startsWith("TITLE")) {
+					title = line.split("\\=")[1];
+					Matcher matcher = scanPattern.matcher(title);
+					if(matcher.find()) {
+						scanNum = Integer.parseInt(matcher.group().replace(".", ""));
+					}
+				}else if(line.startsWith("RTIN")) {
+					rt = Double.parseDouble(line.split("\\=")[1]);
+				}else if(line.startsWith("PEPTIDE")) {
+					peptide = line.split("\\=")[1];
+				}else if(line.startsWith("PEPMASS")) {
+					pepMass = Double.parseDouble(line.split("\\s")[0].split("\\=")[1]);
+					try {
+						precursorInt = Double.parseDouble(line.split("\\s")[1]);
+					}catch(Exception e) {
+						System.out.println(line+"");
+						e.printStackTrace();
+					}
+				}else if(line.startsWith("CHARGE")){
+					charge = Integer.parseInt(line.split("\\=")[1].replace("+", ""));
+				}else if(peakPattern.matcher(line).find()) {
+					double[] peak = new double[2];
+					String[] peakStr = line.split("\\s");
+					peak[0] = Double.parseDouble(peakStr[0]);
+					peak[1] = Double.parseDouble(peakStr[1]);
+					peaks.add(peak);
+				}else if(line.startsWith("END")) {
+					Spectrum spectrum = new Spectrum(scanNum, charge, 2, pepMass, peaks, rt, index);
+					spectrum.setPrecursorInt(precursorInt);
+					spectrum.setTitle(title);
+					spectrum.setPeptide(peptide);
+					spectra.add(spectrum);
+					if(sortedRTSpectra.get(rt) != null) System.err.println("Duplicated RT was observed!");
+					sortedRTSpectra.put(rt, spectrum);
+					
+					maxRT = maxRT < rt ? rt : maxRT;
+					minRT = minRT > rt ? rt : minRT;
+					
+					// if scanNum is -1, then it is missing value.
+					if(scanNum != -1) scanIndexer.put(scanNum, spectrum);
+				}
+			}
+			
+			BR.close();
+		}catch(IOException ioe) {
+			
+		}
+	}
 	//TODO: READ MGF
 	private void readMGF (String fileName, ArrayList<Integer> selectiveScans) {
 		spectra = new ArrayList<Spectrum>();
@@ -103,6 +180,7 @@ public class Spectra {
 					Spectrum spectrum = new Spectrum(scanNum, charge, 2, pepMass, peaks, rt, index);
 					spectrum.setPrecursorInt(precursorInt);
 					spectrum.setTitle(title);
+					spectrum.setPeptide(targetedScans.get(title));
 					spectra.add(spectrum);
 					if(sortedRTSpectra.get(rt) != null) System.err.println("Duplicated RT was observed!");
 					sortedRTSpectra.put(rt, spectrum);
@@ -207,7 +285,8 @@ public class Spectra {
 		File outputFile = new File(fileName);
 		BufferedWriter BW = new BufferedWriter(new FileWriter(outputFile));
 		
-		String titleHeader = outputFile.getName().substring(0, outputFile.getName().lastIndexOf("."));
+		//String titleHeader = outputFile.getName().substring(0, outputFile.getName().lastIndexOf("."));
+		String titleHeader = this.fileName.substring(0, this.fileName.lastIndexOf("."));
 		for(int i=0; i<size; i++) {
 			spectrum = this.getSpectrumByIndex(i);
 			if(spectrum != null) {
@@ -226,6 +305,8 @@ public class Spectra {
 					BW.append("PEPMASS=").append(spectrum.getPrecursorMz()+"\t").append(spectrum.getPrecursorInt()+"");
 					BW.newLine();
 					BW.append("CHARGE=").append(spectrum.getCharge()+"+");
+					BW.newLine();
+					BW.append("PEPTIDE=").append(spectrum.getPeptide());
 					BW.newLine();
 					int peakSize = spectrum.sizeOfPeaks();
 					for(int j=0; j<peakSize; j++) {

@@ -17,7 +17,18 @@ public class Spectrum {
 	private double precursorMz = 0;
 	private double precursorInt = 0;
 	private double[] basePeak = null;
-	private ArrayList<double[]> peaks = null;
+	public ArrayList<double[]> peaks = null;
+
+	// ad-hoc
+	private String peptide = null;
+	public void setPeptide(String peptide) {
+		this.peptide = peptide;
+	}
+	
+	public String getPeptide () {
+		return this.peptide;
+	}
+	
 	
 	/**
 	 * If you want to skip putting peak list, then just give null.<br>
@@ -100,6 +111,10 @@ public class Spectrum {
 	
 	public double[] getPeak (int index) {
 		return this.peaks.get(index);
+	}
+	
+	public void removePeak (int index) {
+		this.peaks.remove(index);
 	}
 	
 	public ArrayList<double[]> getPeaks () {

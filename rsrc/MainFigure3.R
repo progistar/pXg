@@ -22,7 +22,7 @@ sampleC <- c(`Subject 1` = redC, `Subject 2`=blueC, `Subject 3`=greenC, `Subject
 staticThemeLeftTop <- theme(text = element_text(size=25, color = "black")
                             , axis.text.x = element_text(size=20, color="black"), axis.text.y = element_text(size=20, color="black"),
                             legend.justification = c("right", "top"),
-                            legend.position= c(.22, .98),
+                            legend.position= c(.18, .98),
                             legend.text = element_text(size=20, color = "black"),
                             legend.box.background = element_rect(linetype = 1, size = 1))
 
@@ -34,169 +34,55 @@ staticThemeRightTop <- theme(text = element_text(size=25, color = "black")
                              legend.box.background = element_rect(linetype = 1, size = 1))
 
 staticThemeRightBottom <- theme(text = element_text(size=25, color = "black")
-                             , axis.text.x = element_text(size=20, color="black"), axis.text.y = element_text(size=20, color="black"),
-                             legend.justification = c("right", "bottom"),
-                             legend.position= c(.98, .05),
-                             legend.text = element_text(size=20, color = "black"),
-                             legend.box.background = element_rect(linetype = 1, size = 1))
+                                , axis.text.x = element_text(size=20, color="black"), axis.text.y = element_text(size=20, color="black"),
+                                legend.justification = c("right", "bottom"),
+                                legend.position= c(.98, .05),
+                                legend.text = element_text(size=20, color = "black"),
+                                legend.box.background = element_rect(linetype = 1, size = 1))
+
+staticThemeRight <- theme(text = element_text(size=25, color = "black")
+                          , axis.text.x = element_text(size=20, color="black"), axis.text.y = element_text(size=20, color="black"),
+                          legend.justification = c("right", "bottom"),
+                          legend.position= c(.98, .25),
+                          legend.text = element_text(size=20, color = "black"),
+                          legend.box.background = element_rect(linetype = 1, size = 1))
 
 
 staticThemeTop <- theme(text = element_text(size=25, color = "black")
-                             , axis.text.x = element_text(size=20, color="black"), axis.text.y = element_text(size=20, color="black"),
-                             legend.justification = c("center"),
-                             legend.position= "top",
-                             legend.text = element_text(size=20, color = "black"),
-                             legend.box.background = element_rect(linetype = 1, size = 1))
-
-staticThemeBottom <- theme(text = element_text(size=25, color = "black")
                         , axis.text.x = element_text(size=20, color="black"), axis.text.y = element_text(size=20, color="black"),
                         legend.justification = c("center"),
-                        legend.position= "bottom",
+                        legend.position= "top",
                         legend.text = element_text(size=20, color = "black"),
                         legend.box.background = element_rect(linetype = 1, size = 1))
+
+staticThemeBottom <- theme(text = element_text(size=25, color = "black")
+                           , axis.text.x = element_text(size=20, color="black"), axis.text.y = element_text(size=20, color="black"),
+                           legend.justification = c("center"),
+                           legend.position= "bottom",
+                           legend.text = element_text(size=20, color = "black"),
+                           legend.box.background = element_rect(linetype = 1, size = 1))
 
 staticThemeNone <- theme(text = element_text(size=25, color = "black")
                          , axis.text.x = element_text(size=20, color="black"), axis.text.y = element_text(size=20, color="black"),
                          legend.position = "none")
 
 
-setwd("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/7.Unmodified")
+setwd("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/9.Unmodified_10ppm/")
 
-
-## RNA Read Distribution
-dataS1 <- read.csv(file = "pXg/S1.UNMOD.PEAKS.pxg.pval.dist", header = T, sep="\t", as.is = as.double())
-dataS2 <- read.csv(file = "pXg/S2.UNMOD.PEAKS.pxg.pval.dist", header = T, sep="\t", as.is = as.double())
-dataS3 <- read.csv(file = "pXg/S3.UNMOD.PEAKS.pxg.pval.dist", header = T, sep="\t", as.is = as.double())
-dataS4 <- read.csv(file = "pXg/S4.UNMOD.PEAKS.pxg.pval.dist", header = T, sep="\t", as.is = as.double())
-
-dataS1$Subject <- "Subject 1"
-dataS2$Subject <- "Subject 2"
-dataS3$Subject <- "Subject 3"
-dataS4$Subject <- "Subject 4"
-
-data <- rbind(dataS1, dataS2, dataS3, dataS4)
-data$Subject <- factor(data$Subject, levels = c("Subject 1", "Subject 2", "Subject 3", "Subject 4"))
-
-data$"Peptide length" <- as.character(data$PeptideLength)
-data$Mock <- log2(data$Mock+1)
-data$Experiment <- log2(data$Experiment+1)
-#data$`Peptide length` <- factor(data$PeptideLength, levels = c('8','9','10','11','12','13', '14', '15'))
-data <- data[data$ReadCount <= 30, ]
-
-data_length89 <- data[data$PeptideLength <= 9, ]
-data_length89[data_length89$PeptideLength == 8, ]$`Peptide length` <- "Length 8"
-data_length89[data_length89$PeptideLength == 9, ]$`Peptide length` <- "Length 9"
-
-g <- ggplot(data = data_length89, aes(x=ReadCount, y=Mock, fill=`Subject`)) +
-  theme_bw() +
-  scale_color_manual(values=sampleC) +
-  geom_line(size = 1, aes(color = Subject)) +
-  xlab("Read") +
-  ylab(TeX("$Log_{2}$(number of peptides + 1)")) +
-  scale_x_continuous(breaks=seq(from=0, to=30, by = 1)) +
-  staticThemeRightTop +
-  theme(legend.key.size = unit(0.2, "in"), legend.key.width = unit(0.6, "in")) +
-  geom_point() +
-  facet_grid(rows = vars(`Peptide length`))
-g
-ggsave("read.png", plot = g, width = 14, height = 9, units = "in", dpi = 300)
-
-## Decoy ratio
-data <- read_excel(path = "pXg/FDR_Analysis.xlsx", sheet = "DecoyRatio")
-data$TargetRatio <- data$TargetCandidate/(data$TargetCandidate+data$DecoyCandidate)
-data$Rank <- as.character(data$Rank)
-data$Rank <- factor(data$Rank, levels = c('1', '2', '3', '4', '5', '6', '7', '8', '9', '10'))
-g <- ggplot(data = data[data$IsCanonical == FALSE, ], aes(x=Rank, y=TargetRatio, fill=`Subject`)) +
-  theme_bw() +
-  scale_fill_brewer(palette="Set1") +
-  geom_bar(stat = "identity", position = position_dodge())+
-  xlab("Rank") +
-  ylab("Target PSM ratio") +
-  scale_y_continuous(breaks = seq(from=0.0, to=1.0, by = 0.1)) +
-  #ylab(TeX(r'($\frac{PSM_{decoy}}{PSM_{target}+PSM_{decoy}})')) +
-  staticThemeTop +
-  theme(legend.key.size = unit(0.2, "in"), legend.key.width = unit(0.6, "in")) +
-  facet_grid(rows = vars(`Cutoff`))
-g
-
-ggsave("targetratio.nc.png", plot = g, width = 14, height = 9, units = "in", dpi = 300)
-
-## TD distribution
-data <- read_excel(path = "pXg/FDR_Analysis.xlsx", sheet = "TD")
-data_score <- data.frame()
-data$ncCount
-data$Class
-data$Cutoff
-data$Subject
-
-
-for(idx in c(1:nrow(data))) {
-  d <- data[idx, ]
-  while(d$ncCount != 0) {
-    data_score <- rbind(data_score, d)
-    d$ncCount <- d$ncCount - 1
-  }
-}
-
-median_sd1 <- function(x) {
-  m <- mean(x)
-  ymin <- m-sd(x)
-  ymax <- m+sd(x)
-  m <- median(x)
-  return(c(y=m,ymin=ymin,ymax=ymax))
-}
-
-data_score$Class <- factor(data_score$Class, levels = c("Target", "Decoy"))
-data_score$Score <- as.double(data_score$Score)
-g <- ggplot(data = data_score, aes(x=Subject, y=Score, fill=`Class`)) +
-  theme_bw() +
-  geom_violin(trim = T) +
-  scale_fill_manual(values = c(blueC, redC)) +
-  scale_y_continuous(breaks = seq(from = 0, to =100, by = 10)) +
-  stat_summary(fun.data = mean_sd1, geom="pointrange", color = "white", position = position_dodge2(width = 0.9), ) +
-  xlab("Subject") +
-  ylab("ALC score") +
-  staticThemeTop +
-  theme(legend.key.size = unit(0.2, "in"), legend.key.width = unit(0.6, "in")) +
-  facet_grid(rows = vars(`Cutoff`))
-g
-
-ggsave("TD.nc.png", plot = g, width = 14, height = 9, units = "in", dpi = 300)
-
-median(data_score[data_score$Cutoff == "All" & data_score$Subject == "Subject 1" & data_score$Class == "Target", ]$Score)
-median(data_score[data_score$Cutoff == "p < 0.01" & data_score$Subject == "Subject 1" & data_score$Class == "Target", ]$Score)
-median(data_score[data_score$Cutoff == "All" & data_score$Subject == "Subject 1" & data_score$Class == "Decoy", ]$Score)
-median(data_score[data_score$Cutoff == "p < 0.01" & data_score$Subject == "Subject 1" & data_score$Class == "Decoy", ]$Score)
-
-median(data_score[data_score$Cutoff == "All" & data_score$Subject == "Subject 2" & data_score$Class == "Target", ]$Score)
-median(data_score[data_score$Cutoff == "p < 0.01" & data_score$Subject == "Subject 2" & data_score$Class == "Target", ]$Score)
-median(data_score[data_score$Cutoff == "All" & data_score$Subject == "Subject 2" & data_score$Class == "Decoy", ]$Score)
-median(data_score[data_score$Cutoff == "p < 0.01" & data_score$Subject == "Subject 2" & data_score$Class == "Decoy", ]$Score)
-
-median(data_score[data_score$Cutoff == "All" & data_score$Subject == "Subject 3" & data_score$Class == "Target", ]$Score)
-median(data_score[data_score$Cutoff == "p < 0.01" & data_score$Subject == "Subject 3" & data_score$Class == "Target", ]$Score)
-median(data_score[data_score$Cutoff == "All" & data_score$Subject == "Subject 3" & data_score$Class == "Decoy", ]$Score)
-median(data_score[data_score$Cutoff == "p < 0.01" & data_score$Subject == "Subject 3" & data_score$Class == "Decoy", ]$Score)
-
-median(data_score[data_score$Cutoff == "All" & data_score$Subject == "Subject 4" & data_score$Class == "Target", ]$Score)
-median(data_score[data_score$Cutoff == "p < 0.01" & data_score$Subject == "Subject 4" & data_score$Class == "Target", ]$Score)
-median(data_score[data_score$Cutoff == "All" & data_score$Subject == "Subject 4" & data_score$Class == "Decoy", ]$Score)
-median(data_score[data_score$Cutoff == "p < 0.01" & data_score$Subject == "Subject 4" & data_score$Class == "Decoy", ]$Score)
-
-## Binding affinity
 dataS1 <- read_excel(path = "pXgResults.xlsx", sheet = "B-LCL1_FDR10")
 dataS2 <- read_excel(path = "pXgResults.xlsx", sheet = "B-LCL2_FDR10")
 dataS3 <- read_excel(path = "pXgResults.xlsx", sheet = "B-LCL3_FDR10")
 dataS4 <- read_excel(path = "pXgResults.xlsx", sheet = "B-LCL4_FDR10")
+
 dataS1 <- dataS1[, -c(38:43)]
 dataS2 <- dataS2[, -c(38:43)]
 dataS3 <- dataS3[, -c(38:43)]
 dataS4 <- dataS4[, -c(38:43)]
 
-dataS1$Sample <- "Subject 1"
-dataS2$Sample <- "Subject 2"
-dataS3$Sample <- "Subject 3"
-dataS4$Sample <- "Subject 4"
+dataS1$Subject <- "Subject 1"
+dataS2$Subject <- "Subject 2"
+dataS3$Subject <- "Subject 3"
+dataS4$Subject <- "Subject 4"
 
 dataS1 <- dataS1[str_detect(dataS1$Peptide, "\\+", negate = T), ]
 dataS1 <- dataS1[!duplicated(dataS1[,c('InferredPeptide')]), ]
@@ -207,162 +93,141 @@ dataS3 <- dataS3[!duplicated(dataS3[,c('InferredPeptide')]), ]
 dataS4 <- dataS4[str_detect(dataS4$Peptide, "\\+", negate = T), ]
 dataS4 <- dataS4[!duplicated(dataS4[,c('InferredPeptide')]), ]
 
-data <- rbind(dataS1, dataS2, dataS3, dataS4)
-data$Length <- as.character(data$Length)
-data$Length <- factor(data$Length, levels=c("8", "9", "10", "11", "12", "13", "14", "15"))
+allData <- rbind(dataS1, dataS2, dataS3, dataS4)
 
-data$BestScore <- log2(data$BestScore+1.5)
-data$Class <- "Canonical"
-data[data$IsCanonical == "TRUE", ]$Class <- "Canonical"
-data[data$IsCanonical == "FALSE", ]$Class <- "Noncanonical"
+subData <- allData[allData$BestScore < 2, ]
+subData$Type <- "WB"
+subData[subData$BestScore < 2, ]$Type <- "WB"
+subData[subData$BestScore < 0.5, ]$Type <- "SB"
+subData$Class <- "Canonical"
+subData[subData$IsCanonical == "FALSE", ]$Class <- "Noncanonical"
+nrow(subData[subData$Class == "Noncanonical", ])
+nrow(subData[subData$Class == "Canonical", ])
 
-mapPlot <- ggplot(data=data, aes(x=Length, y=BestScore, fill=Length)) +
+nrow(subData[subData$Subject == "Subject 1" & subData$Class == "Canonical", ])
+nrow(subData[subData$Subject == "Subject 2" & subData$Class == "Canonical", ])
+nrow(subData[subData$Subject == "Subject 3" & subData$Class == "Canonical", ])
+nrow(subData[subData$Subject == "Subject 4" & subData$Class == "Canonical", ])
+
+nrow(subData[subData$Subject == "Subject 1" & subData$Class == "Noncanonical", ])
+nrow(subData[subData$Subject == "Subject 2" & subData$Class == "Noncanonical", ])
+nrow(subData[subData$Subject == "Subject 3" & subData$Class == "Noncanonical", ])
+nrow(subData[subData$Subject == "Subject 4" & subData$Class == "Noncanonical", ])
+
+
+subData$Subject <- factor(subData$Subject, levels = c("Subject 1", "Subject 2", "Subject 3", "Subject 4"))
+
+### Unique selection
+subDataUnique <- subData
+subDataUnique <- subDataUnique[subDataUnique$Class == "Noncanonical", ]
+
+subDataUniqueSelection <- subDataUnique[subDataUnique$EventCount == 1, ]
+subDataUniqueSelection <- subDataUniqueSelection[subDataUniqueSelection$GeneIDCount <= 1, ]
+subDataUniqueSelection <- subDataUniqueSelection[subDataUniqueSelection$GenomicLociCount <= 1, ]
+### shared
+subDataSharedSelection <- subDataUnique[subDataUnique$EventCount > 1 | subDataUnique$GeneIDCount > 1 | subDataUnique$GenomicLociCount > 1, ]
+
+nrow(subDataUnique)
+nrow(subDataUniqueSelection)
+nrow(subDataSharedSelection)
+
+nrow(subDataUniqueSelection[subDataUniqueSelection$Subject == "Subject 1", ])
+nrow(subDataUniqueSelection[subDataUniqueSelection$Subject == "Subject 2", ])
+nrow(subDataUniqueSelection[subDataUniqueSelection$Subject == "Subject 3", ])
+nrow(subDataUniqueSelection[subDataUniqueSelection$Subject == "Subject 4", ])
+
+tmp <- subDataUniqueSelection[subDataUniqueSelection$Subject == "Subject 1" | subDataUniqueSelection$Subject == "Subject 2" | subDataUniqueSelection$Subject == "Subject 3", ]
+a1 <- nrow(tmp)
+tmp <- tmp[!duplicated(tmp[,c('InferredPeptide')]), ]
+a2 <- nrow(tmp)
+a3 <- a1 - a2
+print(a2)
+print(a3)
+
+byEventCount <- subDataSharedSelection[subDataSharedSelection$EventCount > 1, ]
+byGeneIDCount <- subDataSharedSelection[subDataSharedSelection$GeneIDCount > 1, ]
+byGenomicLociCount <- subDataSharedSelection[subDataSharedSelection$GenomicLociCount > 1, ]
+
+nrow(byEventCount)
+nrow(byGeneIDCount)
+nrow(byGenomicLociCount)
+
+## shared venn count
+inter3 <- subDataShared[subDataShared$EventCount > 1 & subDataShared$GeneIDCount > 1 & subDataShared$GenomicLociCount > 1,]
+interEventLoci <- subDataShared[subDataShared$EventCount > 1 & subDataShared$GenomicLociCount > 1,]
+interEventGene <- subDataShared[subDataShared$EventCount > 1 & subDataShared$GeneIDCount > 1,]
+interLociGene <- subDataShared[subDataShared$GeneIDCount > 1 & subDataShared$GenomicLociCount > 1,]
+eventOnly <- subDataShared[subDataShared$EventCount > 1 & subDataShared$GeneIDCount <= 1 & subDataShared$GenomicLociCount <= 1,]
+
+nrow(eventOnly)
+nrow(inter3)
+nrow(interEventLoci)
+nrow(interEventGene)
+nrow(interLociGene)
+
+t.test(subDataUnique[subDataUnique$Log10Abundance !=0 & subDataUnique$Subject == "Subject 1" & subDataUnique$Class == "Canonical", ]$Log2Abundance, subDataUnique[subDataUnique$Log10Abundance !=0 & subDataUnique$Subject == "Subject 1" & subDataUnique$Class == "Noncanonical", ]$Log2Abundance)
+abPlot <- ggplot(data=subDataUnique[subDataUnique$Log10Abundance != 0 & subDataUnique$Class == "Noncanonical", ], aes(x=Events, y=Log10Abundance)) +
   theme_bw() +
-  scale_fill_brewer(palette="Set1") +
+  scale_fill_brewer(palette="Set3") +
   geom_boxplot() +
   theme(text = element_text(size=20)) +
-  scale_y_continuous(breaks=seq(from=0, to=7, by= 1), limits = c(0,7)) +
   staticThemeNone +
-  labs(y= TeX("$Log_{2}$(1.5+%Rank)"), x = "Peptide length") +
-  facet_grid(cols = vars(Sample), rows = vars(Class)) +
-  geom_hline(yintercept=log2(1.5+2.0), linetype="dashed", color = "blue", size=0.5) +
-  geom_hline(yintercept=log2(1.5+0.5), linetype="dashed", color = "red", size=0.5)
+  labs(y= TeX("$Log_{10}$(Abundance+1)"), x =  NULL) +
+  coord_flip()
+  #facet_grid(rows = vars(Events))
+abPlot
+ggsave("quant.event.png", plot = abPlot, width = 12, height = 10, units = "in", dpi = 300)
+#nrow(subDataUnique[subDataUnique$Class == "Noncanonical" & subDataUnique$BestScore < 2, ])
+#tmp <- subDataUnique[!duplicated(subDataUnique[,c('InferredPeptide')]), ]
+#nrow(tmp[tmp$Class == "Noncanonical"&tmp$BestScore < 2, ])
 
-mapPlot
-ggsave("BA.png", plot = mapPlot, width = 14, height = 8, units = "in", dpi = 300)
+## Rename Events
+## With/without mutations separately.
 
 
-## Ided PSMs according to rank
-dataS1 <- read_excel(path = "pXgResults.xlsx", sheet = "B-LCL1_FDR10")
-dataS2 <- read_excel(path = "pXgResults.xlsx", sheet = "B-LCL2_FDR10")
-dataS3 <- read_excel(path = "pXgResults.xlsx", sheet = "B-LCL3_FDR10")
-dataS4 <- read_excel(path = "pXgResults.xlsx", sheet = "B-LCL4_FDR10")
-dataS1 <- dataS1[, -c(38:43)]
-dataS2 <- dataS2[, -c(38:43)]
-dataS3 <- dataS3[, -c(38:43)]
-dataS4 <- dataS4[, -c(38:43)]
+subDataUniqueSelection[subDataUniqueSelection$Events == "5'-UTR;sense", ]$Events <- "5'-UTR"
+subDataUniqueSelection[subDataUniqueSelection$Events == "3'-UTR;sense", ]$Events <- "3'-UTR"
+subDataUniqueSelection[subDataUniqueSelection$Events == "noncoding;sense", ]$Events <- "ncRNA"
+subDataUniqueSelection[subDataUniqueSelection$Events == "frameshift;sense", ]$Events <- "frameshift"
+subDataUniqueSelection[subDataUniqueSelection$Events == "intronic;sense", ]$Events <- "intron"
+subDataUniqueSelection[subDataUniqueSelection$Events == "intergenic;sense", ]$Events <- "intergenic"
+subDataUniqueSelection[subDataUniqueSelection$Events == "proteincoding;antisense", ]$Events <- "PC;asRNA"
+subDataUniqueSelection[subDataUniqueSelection$Events == "proteincoding;sense;alternativesplicing", ]$Events <- "PC;AS"
+subDataUniqueSelection[subDataUniqueSelection$Events == "noncoding;sense;alternativesplicing", ]$Events <- "ncRNA;AS"
+subDataUniqueSelection[subDataUniqueSelection$Events == "noncoding;antisense;alternativesplicing", ]$Events <- "ncRNA;asRNA;AS"
+subDataUniqueSelection[subDataUniqueSelection$Events == "5'-UTR;antisense", ]$Events <- "5'-UTR;asRNA"
+subDataUniqueSelection[subDataUniqueSelection$Events == "3'-UTR;antisense", ]$Events <- "3'-UTR;asRNA"
+subDataUniqueSelection[subDataUniqueSelection$Events == "intronic;antisense", ]$Events <- "intron;asRNA"
+subDataUniqueSelection[subDataUniqueSelection$Events == "noncoding;antisense", ]$Events <- "ncRNA;asRNA"
+subDataUniqueSelection[subDataUniqueSelection$Events == "unknown", ]$Events <- "unknown"
+subDataUniqueSelection[subDataUniqueSelection$Events == "proteincoding;sense", ]$Events <- "PC"
 
-dataS1$Sample <- "Subject 1"
-dataS2$Sample <- "Subject 2"
-dataS3$Sample <- "Subject 3"
-dataS4$Sample <- "Subject 4"
+#subDataUniqueSelection[subDataUniqueSelection$Mutations != "-", ]$Events <- paste(subDataUniqueSelection[subDataUniqueSelection$Mutations != "-", ]$Events, "mutations", sep=";")
+subDataUniqueSelectionWOMut <- subDataUniqueSelection[subDataUniqueSelection$Mutations != "-", ]
+tmp <- subDataUniqueSelection
+tmp <- tmp[tmp$Subject == 'Subject 1' | tmp$Subject == 'Subject 2', ]
 
-data <- rbind(dataS1, dataS2, dataS3, dataS4)
+tmp <- tmp[!duplicated(tmp[,c('InferredPeptide')]), ]
+nrow(tmp[tmp$Events == "PC", ])
+tmp$GeneNames
+tmp <- tmp[!duplicated(tmp[, c("GeneNames")]), ]
+nrow(tmp)
+subDataUniqueSelectionWOMut$Events <- factor(subDataUniqueSelectionWOMut$Events, 
+                               levels = c("PC", "5'-UTR", "ncRNA", "frameshift", "3'-UTR", "intron", "intergenic", 
+                                          "PC;AS", "3'-UTR;asRNA", "PC;asRNA", "ncRNA;AS",  
+                                          "intron;asRNA", "ncRNA;asRNA","unknown" , 
+                                          "ncRNA;asRNA;AS", "5'-UTR;asRNA"))
 
-data$Class <- "Canonical"
-data[data$IsCanonical == "TRUE", ]$Class <- "Canonical"
-data[data$IsCanonical == "FALSE", ]$Class <- "Noncanonical"
-data$Type <- "NB"
-data[data$BestScore < 2, ]$Type <- "WB"
-data[data$BestScore < 0.5, ]$Type <- "SB"
-data_rank <- data.frame(Rank=numeric(), Type=character(), Class=character(), Subject=character(), PSM=numeric())
-
-for(idx in c(1: nrow(data))) {
-  sub_data <- data[idx, ]
-  rank <- sub_data$Rank
-  type <- sub_data$Type
-  class_ <- sub_data$Class
-  subject <- sub_data$Sample
-  
-  if(nrow(data_rank[data_rank$Rank == rank & data_rank$Type == type & data_rank$Class == class_ & data_rank$Subject == subject, ]) == 0){
-    data_rank[nrow(data_rank)+1, ] = c(rank, type, class_, subject, 1)
-    
-  } else {
-    data_rank[data_rank$Rank == rank & data_rank$Type == type & data_rank$Class == class_ & data_rank$Subject == subject, ]$PSM <- as.numeric(data_rank[data_rank$Rank == rank & data_rank$Type == type & data_rank$Class == class_ & data_rank$Subject == subject, ]$PSM)+1
-  }
-}
-data_rank$Rank <- factor(data_rank$Rank, levels = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
-data_rank$PSM <- as.numeric(data_rank$PSM)
-data_rank$Type <- factor(data_rank$Type, levels = c("SB", "WB", "NB"))
-
-g <- ggplot(data = data_rank, aes(x=Subject, y=PSM, fill=Type)) +
+## mutated
+topRankedPlot <- ggplot(data=subDataUniqueSelectionWOMut[subDataUniqueSelectionWOMut$Class == "Noncanonical", ], aes(x=Events, fill=Subject)) +
+  scale_fill_brewer(palette="Set1") +
   theme_bw() +
-  geom_bar(stat = "identity")+
-  scale_fill_manual(values = c(blueC, greenC, redC)) +
-  ylab("PSM") +
+  geom_bar(aes(x= (..count..), y=reorder(Events, desc(Events))), position=position_dodge2(preserve = "single", padding = 0, reverse = T), width = 0.5) +
   staticThemeRightBottom +
-  theme(legend.key.size = unit(0.2, "in"), legend.key.width = unit(0.6, "in")) +
-  facet_grid(rows = vars(`Class`), scales = "free")
-g
+  labs(y="Event", x = "A number of unique ncMAPs")
+  #coord_flip() +
+  #theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 
-ggsave("PSMs.png", plot = g, width = 8, height = 8, units = "in", dpi = 300)
+topRankedPlot
+ggsave("ncCategoryMut.png", plot = topRankedPlot, width = 12, height = 8, units = "in", dpi = 300)
 
-g <- ggplot(data = data_rank, aes(x=Rank, y=PSM, fill=Type)) +
-  theme_bw() +
-  geom_bar(stat = "identity")+
-  scale_fill_manual(values = c(blueC, greenC, redC)) +
-  #scale_y_continuous(breaks = seq(from=0, to=1, by=0.2)) +
-  xlab("Rank") +
-  ylab("PSM") +
-  staticThemeRightBottom +
-  theme(legend.key.size = unit(0.2, "in"), legend.key.width = unit(0.6, "in")) +
-  facet_grid(cols = vars(`Subject`), rows = vars(Class), scales = "free")
-g
-
-ggsave("Rank.png", plot = g, width = 14, height = 8, units = "in", dpi = 300)
-
-g <- ggplot(data = data_rank, aes(x=Class, y=PSM, fill=Rank)) +
-  theme_bw() +
-  geom_bar(position="fill", stat = "identity")+
-  scale_fill_brewer(palette = "Set3")+
-  scale_y_continuous(breaks = seq(from=0, to=1, by=0.2)) +
-  ylab("Proportion") +
-  staticThemeTop +
-  theme(legend.key.size = unit(0.2, "in"), legend.key.width = unit(0.6, "in")) +
-  facet_grid(cols = vars(`Subject`))
-g
-
-ggsave("Rank2.png", plot = g, width = 16, height = 8, units = "in", dpi = 300)
-
-## RT prediction
-dataS1 <- read_excel(path = "pXgResults.xlsx", sheet = "B-LCL1_FDR10")
-dataS2 <- read_excel(path = "pXgResults.xlsx", sheet = "B-LCL2_FDR10")
-dataS3 <- read_excel(path = "pXgResults.xlsx", sheet = "B-LCL3_FDR10")
-dataS4 <- read_excel(path = "pXgResults.xlsx", sheet = "B-LCL4_FDR10")
-dataS1 <- dataS1[, -c(38:43)]
-dataS2 <- dataS2[, -c(38:43)]
-dataS3 <- dataS3[, -c(38:43)]
-dataS4 <- dataS4[, -c(38:43)]
-
-dataS1$Subject <- "Subject 1"
-dataS2$Subject <- "Subject 2"
-dataS3$Subject <- "Subject 3"
-dataS4$Subject <- "Subject 4"
-
-dataS1$DeltaRT <- dataS1$deeplcRT - dataS1$RT
-dataS2$DeltaRT <- dataS2$deeplcRT - dataS2$RT
-dataS3$DeltaRT <- dataS3$deeplcRT - dataS3$RT
-dataS4$DeltaRT <- dataS4$deeplcRT - dataS4$RT
-
-dataS1 <- dataS1[order(abs(dataS1$DeltaRT)), ]
-dataS2 <- dataS2[order(abs(dataS2$DeltaRT)), ]
-dataS3 <- dataS3[order(abs(dataS3$DeltaRT)), ]
-dataS4 <- dataS4[order(abs(dataS4$DeltaRT)), ]
-
-dataS1 <- dataS1[str_detect(dataS1$Peptide, "\\+", negate = T), ]
-dataS1 <- dataS1[!duplicated(dataS1[,c('InferredPeptide')]), ]
-dataS2 <- dataS2[str_detect(dataS2$Peptide, "\\+", negate = T), ]
-dataS2 <- dataS2[!duplicated(dataS2[,c('InferredPeptide')]), ]
-dataS3 <- dataS3[str_detect(dataS3$Peptide, "\\+", negate = T), ]
-dataS3 <- dataS3[!duplicated(dataS3[,c('InferredPeptide')]), ]
-dataS4 <- dataS4[str_detect(dataS4$Peptide, "\\+", negate = T), ]
-dataS4 <- dataS4[!duplicated(dataS4[,c('InferredPeptide')]), ]
-
-plot(dataS1$RT, dataS1$deeplcRT)
-plot(dataS2$RT, dataS2$deeplcRT)
-plot(dataS3[dataS3$IsCanonical == F, ]$RT, dataS3[dataS3$IsCanonical == F, ]$deeplcRT)
-plot(dataS4$RT, dataS4$deeplcRT)
-plot(dataS4[dataS4$IsCanonical == T, ]$RT, dataS4[dataS4$IsCanonical == T, ]$deeplcRT)
-
-hist(dataS1$DeltaRT, breaks = 100)
-hist(dataS2$DeltaRT, breaks = 100)
-hist(dataS3$DeltaRT, breaks = 100)
-hist(dataS4$DeltaRT, breaks = 100)
-g <- ggplot(data = dataS4, aes(x=RT, y=deeplcRT)) +
-  theme_bw() +
-  geom_point() +
-  xlab("Rank") +
-  ylab("Proportion") +
-  theme(legend.key.size = unit(0.2, "in"), legend.key.width = unit(0.6, "in"))
-g
-  
