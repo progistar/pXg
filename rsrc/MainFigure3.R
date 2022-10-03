@@ -208,7 +208,7 @@ tmp <- subDataUniqueSelection
 tmp <- tmp[tmp$Subject == 'Subject 1' | tmp$Subject == 'Subject 2', ]
 
 tmp <- tmp[!duplicated(tmp[,c('InferredPeptide')]), ]
-nrow(tmp[tmp$Events == "PC", ])
+nrow(tmp[tmp$Events == "intron", ])
 tmp$GeneNames
 tmp <- tmp[!duplicated(tmp[, c("GeneNames")]), ]
 nrow(tmp)

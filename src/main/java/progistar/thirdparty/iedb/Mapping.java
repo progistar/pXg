@@ -11,8 +11,8 @@ import java.util.Hashtable;
 public class Mapping {
 
 	public static void main(String[] args) throws IOException {
-		File iedbFile = new File("/Users/gistar/projects/pXg/IEDB/IEDB.host");
-		File pXgFile = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/7.Unmodified/IEDBInput/S4.PEAKS.UNMOD.rank10.pXg.BA.xCorr.fdr");
+		File iedbFile = new File("/Users/gistar/projects/pXg/IEDB/EpitopeTable_20220925_MHC.csv");
+		File pXgFile = new File("/Users/gistar/projects/pXg/IEDB/198UniquencMAPs.tsv");
 		
 		Hashtable<String, String> iedbMapper = loadIEDB(iedbFile);
 		
@@ -22,48 +22,16 @@ public class Mapping {
 		
 		// skip header
 		BW.append(BR.readLine());
-		BW.append("\tIEDB");
+		BW.append("\tAtigenName\tAntigenID\tParentProtein\tParentID\tIEDBComment");
 		BW.newLine();
 		
-		Hashtable<String, String> duplicates = new Hashtable<String, String>();
 		while((line = BR.readLine()) != null) {
 			String[] fields = line.split("\t");
 			String peptide = fields[20];
-			String isBA = fields[43];
-			String isCanonical = fields[36];
-			String eventCount = fields[32];
-			String geneIDCount = fields[28];
-			String genomicLoci = fields[19];
-			
-			if(!eventCount.equalsIgnoreCase("1")) {
-				continue;
-			}
-			
-			if(!(geneIDCount.equalsIgnoreCase("1") || geneIDCount.equalsIgnoreCase("0") || geneIDCount.equalsIgnoreCase("-"))) {
-				continue;
-			}
-			
-			if(!(genomicLoci.equalsIgnoreCase("1") || genomicLoci.equalsIgnoreCase("0") || genomicLoci.equalsIgnoreCase("-"))) {
-				continue;
-			}
-			
-			if(duplicates.get(peptide) != null) {
-				continue;
-			}
-			
-			duplicates.put(peptide, "");
-			
-			if(isCanonical.equalsIgnoreCase("TRUE")) {
-				continue;
-			}
-			
-			if(isBA.equalsIgnoreCase("NB")) {
-				continue;
-			}
 			
 			String iedbInfo = iedbMapper.get(peptide);
 			if(iedbInfo == null) {
-				iedbInfo = "NA";
+				iedbInfo = "NotMatched";
 			}
 			
 			BW.append(line+"\t"+iedbInfo);
@@ -80,10 +48,35 @@ public class Mapping {
 		String line = null;
 		
 		BR.readLine(); // skip header
+		BR.readLine();	
 		while((line = BR.readLine()) != null) {
-			String[] fields = line.split("\t");
-			String peptide = fields[0];
-			iedb.put(peptide, line);
+			String[] fields = line.split("\\,");
+			fields[13] = fields[13].replace("\"", "");
+			fields[2] = fields[2].replace("\"", "");
+			String peptide = fields[2];
+			String antigenName = fields[9].replace("\"", "");
+			String antigenID = fields[10].replace("\"", "");
+			String parentProtein = fields[11].replace("\"", "");
+			String parentID = fields[12].replace("\"", "");
+			String comment = fields[16].replace("\"", "");
+			
+			if(antigenName.length() == 0) {
+				antigenName = "NA";
+			}
+			if(antigenID.length() == 0) {
+				antigenID = "NA";
+			}
+			if(parentProtein.length() == 0) {
+				parentProtein = "NA";
+			}
+			if(parentID.length() == 0) {
+				parentID = "NA";
+			}
+			if(comment.length() == 0) {
+				comment = "NA";
+			}
+			
+			iedb.put(peptide, antigenName+"\t"+antigenID+"\t"+parentProtein+"\t"+parentID+"\t"+comment);
 		}
 		
 		BR.close();
