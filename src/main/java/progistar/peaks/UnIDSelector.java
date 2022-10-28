@@ -15,7 +15,6 @@ public class UnIDSelector {
 	public static final int PXG_SPEC_FILE_IDX = 1;
 	public static final int PXG_SCAN_IDX = 4;
 	public static final int PXG_PEPTIDE_IDX = 20;
-	public static final int PXG_IS_CANONICAL = 36;
 	
 	public static Hashtable<String, String> readPXG (File file) throws IOException {
 		BufferedReader BR = new BufferedReader(new FileReader(file));
@@ -27,7 +26,6 @@ public class UnIDSelector {
 			String[] fields = line.split("\t");
 			String key = fields[PXG_SPEC_FILE_IDX] +"_"+fields[PXG_SCAN_IDX].split("\\:")[1];
 			String peptide = fields[PXG_PEPTIDE_IDX];
-			String type = fields[PXG_IS_CANONICAL];
 			if(pxgPSMs.get(key) == null) {
 				peptide = peptide.replaceAll("[+-.\\(\\)0123456789*]", "");
 				pxgPSMs.put(key, peptide);
@@ -42,11 +40,12 @@ public class UnIDSelector {
 	
 	
 	public static void main(String[] args) throws IOException {
-		String idedFileName = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/7.Unmodified/pXg/S4.UNMOD.PEAKS.pxg.BA.fdr";
-		String allFileName = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/7.Unmodified/PEAKS/S4.UNMOD.PEAKS.csv";
-		String unidedFileName = allFileName+".unided";
+		String idedFileName = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/9.Unmodified_10ppm/pXg_notcutoff/S4.RAW.PEAKS.nocut.pxg";
+		String allFileName = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/9.Unmodified_10ppm/PEAKS/S4.RAW.PEAKS.csv";
+		String unidedFileName = allFileName+".top1.unided";
 		
 		Hashtable<String, String> idList = readPXG(new File(idedFileName));
+		Hashtable<String, String> unidedList = new Hashtable<String, String>();
 		File allFile = new File(allFileName);
 		
 		BufferedReader BR = new BufferedReader(new FileReader(allFile));
@@ -62,14 +61,18 @@ public class UnIDSelector {
 			String[] fields = line.split(",");
 			String key = fields[PXG_SPEC_FILE_IDX] +"_"+fields[PXG_SCAN_IDX].split("\\:")[1];
 			if(idList.get(key) == null) {
-				BW.append(line);
-				BW.newLine();
+				if(unidedList.get(key) == null) {
+					BW.append(line);
+					BW.newLine();
+					unidedList.put(key, "");
+				}
 			} else {
 				remove++;
 			}
 		}
 		
-		System.out.println(idList.size()+" were ided and "+remove+" were removed");
+		System.out.println(idList.size()+" were matched and "+remove+" were removed");
+		System.out.println("top 1 was selected: "+unidedList.size());
 		BR.close();
 		BW.close();
 		

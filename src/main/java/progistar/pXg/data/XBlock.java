@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import progistar.pXg.constants.Constants;
+import progistar.pXg.constants.Parameters;
 import progistar.pXg.utils.ENSTMapper;
 import progistar.pXg.utils.Priority;
 
@@ -40,7 +41,7 @@ public class XBlock {
 		// wildtype
 		if(mutations.equalsIgnoreCase("-")) {
 			// proteincoding;sense
-			if(events.equalsIgnoreCase("proteincoding;sense")) {
+			if(events.equalsIgnoreCase(Constants.EVENT_PROTEINCODING+";"+Constants.EVENT_SENSE)) {
 				isCannonical = true;
 			}
 		}
@@ -170,9 +171,18 @@ public class XBlock {
 					isDuplicated.put(fastaID, true);
 				}
 			}
-			String annotation = fasta.substring(1).toString();
-			mapper.put("key", annotation);
-			mapper.put("count", annotation.split("\\|").length+"");
+			String[] annotations = fasta.substring(1).toString().split("\\|");
+			mapper.put("count", annotations.length+"");
+			
+			StringBuilder annotation = new StringBuilder();
+			for(int i=0; i<annotations.length; i++) {
+				if( i == Parameters.maxProteinOut) {
+					annotation.append("|").append("...");
+					break;
+				}
+				annotation.append("|").append(annotations[i]);
+			}
+			mapper.put("key", annotation.toString().substring(1));
 		} else {
 			// default behavior when there is no IDs.
 			mapper.put("key", Constants.ID_NULL);

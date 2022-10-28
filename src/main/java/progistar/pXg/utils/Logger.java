@@ -3,6 +3,7 @@ package progistar.pXg.utils;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
 
 import progistar.pXg.constants.Constants;
 
@@ -46,6 +47,9 @@ public class Logger {
 		try {
 			BW = new BufferedWriter(new FileWriter(fileName));
 			BW.append(Constants.VERSION);
+			BW.newLine();
+			LocalDate date = LocalDate.now();
+			BW.append("Analysis date: "+date.toString());
 			BW.newLine();
 		}catch (IOException ioe) {
 			

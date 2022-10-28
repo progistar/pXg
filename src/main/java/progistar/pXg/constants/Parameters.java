@@ -77,6 +77,8 @@ public class Parameters {
 	public static final String cMarker				=	"cm".toLowerCase();
 	public static String commentMarker				=	"#|@|%"; // if line starts with the pattern, the line will be skipped during parsing the file.
 	
+	public static int maxProteinOut					=	10;
+	
 	// Print all annotated PSMs
 	public static boolean debugMode					=	false;
 	

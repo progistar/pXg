@@ -120,7 +120,7 @@ idPlot <- ggplot(data=scaData[scaData$Class == "B-LCL", ], aes(x=Precursor, y=Co
   geom_bar(stat = "identity", position = position_dodge())+
   staticThemeRight +
   theme(text = element_text(size=20), axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
-  guides(fill = guide_legend(title = "Observed\n Subjects")) +
+  guides(fill = guide_legend(title = "Observed\n subjects")) +
   labs(y= NULL, x = NULL)
 
 idPlot

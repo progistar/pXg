@@ -21,7 +21,7 @@ public class SamSelector {
 	
 	
 	public static void main(String[] args) throws IOException {
-		writeSam(args[0], args[1]);
+		writeSam("/Users/gistar/projects/pXg/Laumont_NatCommun2016/AlignedSAM/S1.sorted.sam", "CCGGGTCATCCCTCTGTAAGACAGACT");
 	}
 	
 	/**
@@ -31,10 +31,10 @@ public class SamSelector {
 	 * @param samFilePath
 	 * @param numOfRecords
 	 */
-	public static void writeSam (String samFilePath, String targetChr) {
+	public static void writeSam (String samFilePath, String targetSequence) {
 		try {
 			File samFile = new File(samFilePath);
-			File outSamFile = new File(samFile.getAbsolutePath().replace(".sam", ".sub."+targetChr+".sam"));
+			File outSamFile = new File(samFile.getAbsolutePath().replace(".sam", ".sub."+targetSequence+".sam"));
 			
 			BufferedReader BR = new BufferedReader(new FileReader(samFile));
 			BufferedWriter BW = new BufferedWriter(new FileWriter(outSamFile));
@@ -48,7 +48,8 @@ public class SamSelector {
 					BW.newLine();
 				}  else  {
 					String[] fields = line.split("\t");
-					if(fields[FieldIndex.CHR.value].equalsIgnoreCase(targetChr)) {
+					
+					if(fields[FieldIndex.SEQUENCE.value].contains(targetSequence)) {
 						BW.append(line);
 						BW.newLine();
 					}

@@ -6,7 +6,7 @@ public class Constants {
 	//        plus, basically, this version number intends to upgrade behaviors of tool.
 	// minor: critical bug fix, change in results something like that.
 	// patch: tiny bug fix, typo, and change code styles something like that.
-	public static final String VERSION = "pXg v1.5.0 (release 2022-05-26)";
+	public static final String VERSION = "pXg v1.6.0 (release 2022-10-28)";
 	public static final String INTRODUCE = "Seunghyuk Choi and Eunok Paek in the Department of Computer Science at Hanyang University in Seoul, South Korea. ";
 	
 	// Translation method
@@ -82,16 +82,16 @@ public class Constants {
 	public static final String OUTPUT_G_PEPTIDE		=	"[PEPTIDE]";
 	
 	// Events
-	public static final String EVENT_ANTISENSE		=	"antisense";
+	public static final String EVENT_ANTISENSE		=	"asRNA";
 	public static final String EVENT_SENSE			=	"sense";
-	public static final String EVENT_5UTR			=	"5'-UTR";
-	public static final String EVENT_3UTR			=	"3'-UTR";
-	public static final String EVENT_NONCODING		=	"noncoding";
-	public static final String EVENT_INTERGENIC		=	"intergenic";
-	public static final String EVENT_INTRON			=	"intronic";
-	public static final String EVENT_FRAMESHIFT		=	"frameshift";
-	public static final String EVENT_PROTEINCODING	=	"proteincoding";
-	public static final String EVENT_AS				=	"alternativesplicing";
+	public static final String EVENT_5UTR			=	"5`-UTR";
+	public static final String EVENT_3UTR			=	"3`-UTR";
+	public static final String EVENT_NONCODING		=	"ncRNA";
+	public static final String EVENT_INTERGENIC		=	"IGR";
+	public static final String EVENT_INTRON			=	"IR";
+	public static final String EVENT_FRAMESHIFT		=	"FS";
+	public static final String EVENT_PROTEINCODING	=	"PC";
+	public static final String EVENT_AS				=	"AS";
 	public static final String EVENT_UNKNOWN		=	"unknown";
 	
 	// PSM Status

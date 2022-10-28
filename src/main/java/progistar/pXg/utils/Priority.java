@@ -45,9 +45,9 @@ public class Priority {
 			}
 			
 			// region score
-			// F = 5'-UTR
-			// T = 3'-UTR
-			// N = non-coding such as lncRNA/pseudogenes
+			// F = 5`-UTR
+			// T = 3`-UTR
+			// N = non-coding such as ncRNAs
 			if(regions[0].contains(Constants.MARK_5UTR+"") || 
 					regions[0].contains(Constants.MARK_3UTR+"") || 
 					regions[0].contains(Constants.MARK_NCDS+"")) {
@@ -69,7 +69,7 @@ public class Priority {
 				rPenalty += 20;
 			}
 			
-			// antisense = antisense
+			// antisense = asRNA
 			if(regions[1].equalsIgnoreCase("antisense")) {
 				rPenalty += 30;
 			}
