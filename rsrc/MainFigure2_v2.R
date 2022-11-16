@@ -73,8 +73,14 @@ staticThemeNone <- theme(text = element_text(size=25, color = "black")
                          legend.position = "none")
 
 
-setwd("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/9.Unmodified_10ppm/")
+setwd("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/")
 
+tmp <- read_excel(path = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/pXgResults_nocut.xlsx", sheet = "Subject 4")
+tmp <- tmp[!duplicated(tmp$InferredPeptide), ]
+nrow(tmp[tmp$IsCanonical == "TRUE" & tmp$`MHC-I` != "NB", ])
+nrow(tmp[tmp$IsCanonical == "TRUE", ])
+nrow(tmp[tmp$IsCanonical == "FALSE" & tmp$`MHC-I` != "NB" & tmp$`Denovo score` >= 94, ])
+nrow(tmp[tmp$IsCanonical == "FALSE" & tmp$`Denovo score` >= 94, ])
 
 binderData <- read_excel(path = "OPF_Analysis.xlsx", sheet = "Binder")
 binderData$Type <- factor(binderData$Type, levels = c("Unmatched", "At least 1", "p < 0.01", "At least 1 + FDR", "p < 0.01 + FDR"))
@@ -108,10 +114,10 @@ idPlot <- ggplot(data = IDData, aes(x=Type, y=MAP, group = Subject)) +
 idPlot
 ggsave("IDCount.png", plot = idPlot, width = 4, height = 6, units = "in", dpi = 300)
 
-dataS1 <- read_excel(path = "pXgResults.xlsx", sheet = "B-LCL1_FDR10")
-dataS2 <- read_excel(path = "pXgResults.xlsx", sheet = "B-LCL2_FDR10")
-dataS3 <- read_excel(path = "pXgResults.xlsx", sheet = "B-LCL3_FDR10")
-dataS4 <- read_excel(path = "pXgResults.xlsx", sheet = "B-LCL4_FDR10")
+dataS1 <- read_excel(path = "pXgResults_p001_FDR.xlsx", sheet = "Subject 1")
+dataS2 <- read_excel(path = "pXgResults_p001_FDR.xlsx", sheet = "Subject 2")
+dataS3 <- read_excel(path = "pXgResults_p001_FDR.xlsx", sheet = "Subject 3")
+dataS4 <- read_excel(path = "pXgResults_p001_FDR.xlsx", sheet = "Subject 4")
 dataS1 <- dataS1[, -c(38:43)]
 dataS2 <- dataS2[, -c(38:43)]
 dataS3 <- dataS3[, -c(38:43)]
@@ -165,8 +171,17 @@ data_rank$Type <- factor(data_rank$Type, levels = c("SB", "WB", "NB"))
 data_rank$isTop <- "Rank N"
 data_rank[data_rank$Rank == "1", ]$isTop <- "Rank 1"
 
-sum(data_rank[data_rank$isTop != "Rank 1" & data_rank$Type != "NB" & data_rank$Class == "Canonical", ]$PSM)/sum(data_rank[data_rank$isTop == "Rank 1" & data_rank$Type != "NB", ]$PSM)sum(data_rank[data_rank$isTop == "Rank 1" & data_rank$Type != "NB" & data_rank$Class == "Canonical", ]$PSM)
-sum(data_rank[data_rank$isTop != "Rank 1" & data_rank$Type != "NB" & data_rank$Class != "Canonical", ]$PSM)/sum(data_rank[data_rank$isTop == "Rank 1" & data_rank$Type != "NB" & data_rank$Class != "Canonical", ]$PSM)
+inc <- sum(data_rank[data_rank$isTop != "Rank 1" & data_rank$Type != "NB" & data_rank$Class == "Canonical"  & data_rank$Subject == "Subject 1", ]$PSM)/sum(data_rank[data_rank$isTop == "Rank 1" & data_rank$Type != "NB" & data_rank$Subject == "Subject 1" & data_rank$Class == "Canonical", ]$PSM)
+inc <- inc + sum(data_rank[data_rank$isTop != "Rank 1" & data_rank$Type != "NB" & data_rank$Class == "Canonical"  & data_rank$Subject == "Subject 2", ]$PSM)/sum(data_rank[data_rank$isTop == "Rank 1" & data_rank$Type != "NB" & data_rank$Subject == "Subject 2" & data_rank$Class == "Canonical", ]$PSM)
+inc <- inc + sum(data_rank[data_rank$isTop != "Rank 1" & data_rank$Type != "NB" & data_rank$Class == "Canonical"  & data_rank$Subject == "Subject 3", ]$PSM)/sum(data_rank[data_rank$isTop == "Rank 1" & data_rank$Type != "NB" & data_rank$Subject == "Subject 3" & data_rank$Class == "Canonical", ]$PSM)
+inc <- inc + sum(data_rank[data_rank$isTop != "Rank 1" & data_rank$Type != "NB" & data_rank$Class == "Canonical"  & data_rank$Subject == "Subject 4", ]$PSM)/sum(data_rank[data_rank$isTop == "Rank 1" & data_rank$Type != "NB" & data_rank$Subject == "Subject 4" & data_rank$Class == "Canonical", ]$PSM)
+inc/4
+
+inc <- sum(data_rank[data_rank$isTop != "Rank 1" & data_rank$Type != "NB" & data_rank$Class == "Noncanonical"  & data_rank$Subject == "Subject 1", ]$PSM)/sum(data_rank[data_rank$isTop == "Rank 1" & data_rank$Type != "NB" & data_rank$Subject == "Subject 1" & data_rank$Class == "Noncanonical" , ]$PSM)
+inc <- inc + sum(data_rank[data_rank$isTop != "Rank 1" & data_rank$Type != "NB" & data_rank$Class == "Noncanonical"  & data_rank$Subject == "Subject 2", ]$PSM)/sum(data_rank[data_rank$isTop == "Rank 1" & data_rank$Type != "NB" & data_rank$Subject == "Subject 2" & data_rank$Class == "Noncanonical" , ]$PSM)
+inc <- inc + sum(data_rank[data_rank$isTop != "Rank 1" & data_rank$Type != "NB" & data_rank$Class == "Noncanonical"  & data_rank$Subject == "Subject 3", ]$PSM)/sum(data_rank[data_rank$isTop == "Rank 1" & data_rank$Type != "NB" & data_rank$Subject == "Subject 3" & data_rank$Class == "Noncanonical" , ]$PSM)
+inc <- inc + sum(data_rank[data_rank$isTop != "Rank 1" & data_rank$Type != "NB" & data_rank$Class == "Noncanonical"  & data_rank$Subject == "Subject 4", ]$PSM)/sum(data_rank[data_rank$isTop == "Rank 1" & data_rank$Type != "NB" & data_rank$Subject == "Subject 4" & data_rank$Class == "Noncanonical" , ]$PSM)
+inc/4
 
 g <- ggplot(data = data_rank[data_rank$Type != "NB", ], aes(x=Subject, y=PSM, fill=isTop)) +
   theme_bw() +
@@ -187,9 +202,10 @@ ggsave("PSMs.png", plot = g, width = 7, height = 5.5, units = "in", dpi = 300)
 #ggsave("Figure2.png", plot = figure2, width = 12, height = 6, units = "in", dpi = 300)
 
 ## Event catalog
-dataS2 <- read_excel(path = "pXgResults.xlsx", sheet = "B-LCL2_FDR10")
-dataS3 <- read_excel(path = "pXgResults.xlsx", sheet = "B-LCL3_FDR10")
-dataS4 <- read_excel(path = "pXgResults.xlsx", sheet = "B-LCL4_FDR10")
+dataS1 <- read_excel(path = "pXgResults_p001_FDR.xlsx", sheet = "Subject 1")
+dataS2 <- read_excel(path = "pXgResults_p001_FDR.xlsx", sheet = "Subject 2")
+dataS3 <- read_excel(path = "pXgResults_p001_FDR.xlsx", sheet = "Subject 3")
+dataS4 <- read_excel(path = "pXgResults_p001_FDR.xlsx", sheet = "Subject 4")
 
 dataS1 <- dataS1[, -c(38:43)]
 dataS2 <- dataS2[, -c(38:43)]
@@ -217,37 +233,49 @@ subDataUnique <- subData[subData$Class == "Noncanonical", ]
 subDataUnique <- subDataUnique[subDataUnique$EventCount == 1, ]
 subDataUnique <- subDataUnique[subDataUnique$GeneIDCount <= 1, ]
 subDataUnique <- subDataUnique[subDataUnique$GenomicLociCount <= 1, ]
+
+tmp <- subDataUnique[subDataUnique$GeneIDCount > 1 | subDataUnique$EventCount > 1 | subDataUnique$GenomicLociCount > 1, ]
+nrow(tmp[!duplicated(tmp$InferredPeptide), ])
+
+tmp <- tmp[!duplicated(tmp$InferredPeptide), ]
+
 # meta characteristics
 subDataUnique$AS <- FALSE
 subDataUnique$asRNA <- FALSE
 
-subDataUnique[subDataUnique$Events == "proteincoding;sense;alternativesplicing", ]$AS <- TRUE
-subDataUnique[subDataUnique$Events == "noncoding;antisense;alternativesplicing", ]$AS <- TRUE
-subDataUnique[subDataUnique$Events == "noncoding;sense;alternativesplicing", ]$AS <- TRUE
-subDataUnique[subDataUnique$Events == "proteincoding;antisense", ]$asRNA <- TRUE
-subDataUnique[subDataUnique$Events == "5'-UTR;antisense", ]$asRNA <- TRUE
-subDataUnique[subDataUnique$Events == "3'-UTR;antisense", ]$asRNA <- TRUE
-subDataUnique[subDataUnique$Events == "intronic;antisense", ]$asRNA <- TRUE
-subDataUnique[subDataUnique$Events == "noncoding;antisense;alternativesplicing", ]$asRNA <- TRUE
-subDataUnique[subDataUnique$Events == "noncoding;antisense", ]$asRNA <- TRUE
+subDataUnique[subDataUnique$Events == "PC;sense;AS", ]$AS <- TRUE
+subDataUnique[subDataUnique$Events == "ncRNA;asRNA;AS", ]$AS <- TRUE
+subDataUnique[subDataUnique$Events == "ncRNA;sense;AS", ]$AS <- TRUE
+subDataUnique[subDataUnique$Events == "IR;sense;AS", ]$AS <- TRUE
+subDataUnique[subDataUnique$Events == "IR;asRNA;AS", ]$AS <- TRUE
+
+subDataUnique[subDataUnique$Events == "PC;asRNA", ]$asRNA <- TRUE
+subDataUnique[subDataUnique$Events == "5`-UTR;asRNA", ]$asRNA <- TRUE
+subDataUnique[subDataUnique$Events == "3`-UTR;asRNA", ]$asRNA <- TRUE
+subDataUnique[subDataUnique$Events == "IR;asRNA", ]$asRNA <- TRUE
+subDataUnique[subDataUnique$Events == "IR;asRNA;AS", ]$asRNA <- TRUE
+subDataUnique[subDataUnique$Events == "ncRNA;asRNA;AS", ]$asRNA <- TRUE
+subDataUnique[subDataUnique$Events == "ncRNA;asRNA", ]$asRNA <- TRUE
 
 
-subDataUnique[subDataUnique$Events == "5'-UTR;sense", ]$Events <- "5`-UTR"
-subDataUnique[subDataUnique$Events == "3'-UTR;sense", ]$Events <- "3`-UTR"
-subDataUnique[subDataUnique$Events == "noncoding;sense", ]$Events <- "ncRNA"
-subDataUnique[subDataUnique$Events == "frameshift;sense", ]$Events <- "FS"
-subDataUnique[subDataUnique$Events == "intronic;sense", ]$Events <- "IR"
-subDataUnique[subDataUnique$Events == "intergenic;sense", ]$Events <- "IGR"
-subDataUnique[subDataUnique$Events == "proteincoding;antisense", ]$Events <- "Coding"
-subDataUnique[subDataUnique$Events == "proteincoding;sense;alternativesplicing", ]$Events <- "Coding"
-subDataUnique[subDataUnique$Events == "noncoding;sense;alternativesplicing", ]$Events <- "ncRNA"
-subDataUnique[subDataUnique$Events == "noncoding;antisense;alternativesplicing", ]$Events <- "ncRNA"
-subDataUnique[subDataUnique$Events == "5'-UTR;antisense", ]$Events <- "5`-UTR"
-subDataUnique[subDataUnique$Events == "3'-UTR;antisense", ]$Events <- "3`-UTR"
-subDataUnique[subDataUnique$Events == "intronic;antisense", ]$Events <- "IR"
-subDataUnique[subDataUnique$Events == "noncoding;antisense", ]$Events <- "ncRNA"
+subDataUnique[subDataUnique$Events == "5`-UTR;sense", ]$Events <- "5`-UTR"
+subDataUnique[subDataUnique$Events == "3`-UTR;sense", ]$Events <- "3`-UTR"
+subDataUnique[subDataUnique$Events == "ncRNA;sense", ]$Events <- "ncRNA"
+subDataUnique[subDataUnique$Events == "FS;sense", ]$Events <- "FS"
+subDataUnique[subDataUnique$Events == "IR;sense", ]$Events <- "IR"
+subDataUnique[subDataUnique$Events == "IR;sense;AS", ]$Events <- "IR"
+subDataUnique[subDataUnique$Events == "IR;asRNA;AS", ]$Events <- "IR"
+subDataUnique[subDataUnique$Events == "IGR;sense", ]$Events <- "IGR"
+subDataUnique[subDataUnique$Events == "PC;asRNA", ]$Events <- "Coding"
+subDataUnique[subDataUnique$Events == "PC;sense;AS", ]$Events <- "Coding"
+subDataUnique[subDataUnique$Events == "ncRNA;sense;AS", ]$Events <- "ncRNA"
+subDataUnique[subDataUnique$Events == "ncRNA;asRNA;AS", ]$Events <- "ncRNA"
+subDataUnique[subDataUnique$Events == "5`-UTR;asRNA", ]$Events <- "5`-UTR"
+subDataUnique[subDataUnique$Events == "3`-UTR;asRNA", ]$Events <- "3`-UTR"
+subDataUnique[subDataUnique$Events == "IR;asRNA", ]$Events <- "IR"
+subDataUnique[subDataUnique$Events == "ncRNA;asRNA", ]$Events <- "ncRNA"
 subDataUnique[subDataUnique$Events == "unknown", ]$Events <- "Unknown"
-subDataUnique[subDataUnique$Events == "proteincoding;sense", ]$Events <- "Coding"
+subDataUnique[subDataUnique$Events == "PC;sense", ]$Events <- "Coding"
 
 subDataUnique$Mutation <- TRUE
 subDataUnique[subDataUnique$Mutations == "-", ]$Mutation <- FALSE
@@ -272,18 +300,17 @@ peptideLevel[peptideLevel$Subject == "Subject 4",]$`Subject 4` <- peptideLevel[p
 
 #write.table(peptideLevel, file = "ncMAPs.tsv", sep = "\t")
 
-peptideLevel <- read_excel(path = "pXgResults.xlsx", sheet = "Deep_ncMAPs")
+peptideLevel <- read_excel(path = "pXgResults_p001_FDR.xlsx", sheet = "ncMAP")
 peptideLevel$Events <- factor(peptideLevel$Events, 
-                              levels = c("Coding", "5`-UTR", "ncRNA", "FS", "3`-UTR", "IR", "IGR", 
-                                         "Unknown"))
+                              levels = c("Coding", "5`-UTR", "FS", "IR", "ncRNA", "3`-UTR", "IGR", "Unknown"))
 peptideLevel <- peptideLevel[order(peptideLevel$Events, -peptideLevel$PSM1, -peptideLevel$PSM2, -peptideLevel$PSM3, -peptideLevel$PSM4),]
 
 peptideLevel$Event <- 8
 peptideLevel[peptideLevel$Events == "5`-UTR", ]$Event <- 7
-peptideLevel[peptideLevel$Events == "ncRNA", ]$Event <- 6
-peptideLevel[peptideLevel$Events == "FS", ]$Event <- 5
-peptideLevel[peptideLevel$Events == "3`-UTR", ]$Event <- 4
-peptideLevel[peptideLevel$Events == "IR", ]$Event <- 3
+peptideLevel[peptideLevel$Events == "FS", ]$Event <- 6
+peptideLevel[peptideLevel$Events == "IR", ]$Event <- 5
+peptideLevel[peptideLevel$Events == "ncRNA", ]$Event <- 4
+peptideLevel[peptideLevel$Events == "3`-UTR", ]$Event <- 3
 peptideLevel[peptideLevel$Events == "IGR", ]$Event <- 2
 peptideLevel[peptideLevel$Events == "Unknown", ]$Event <- 1
 
@@ -316,15 +343,15 @@ nrow(peptideLevel[peptideLevel$Event == 3 & peptideLevel$`Observed subjects` > 1
 nrow(peptideLevel[peptideLevel$Event == 2 & peptideLevel$`Observed subjects` > 1, ])
 nrow(peptideLevel[peptideLevel$Event == 1 & peptideLevel$`Observed subjects` > 1, ])
 
-pdf(file = "Events.pdf", width = 8, height = 10)
-Heatmap(t(peptideLevel[, c("Event")]), width = 0.3, height = unit(0.3, "cm"), col = brewer.pal(n=8, name="Set1"),
+pdf(file = "Events.pdf", width = 12, height = 10)
+Heatmap(t(peptideLevel[, c("Event")]), width = 0.5, height = unit(0.3, "cm"), col = brewer.pal(n=8, name="Set1"),
         show_row_names = F, 
         cluster_columns = F, show_column_dend = F, heatmap_legend_param = list(
-          title = "Event", labels = c("Coding", "5`-UTR", "ncRNA", "FS", "3`-UTR", "IR", "IGR", 
+          title = "Event", labels = c("Coding", "5`-UTR", "FS", "IR", "ncRNA", "3`-UTR", "IGR", 
                                       "Unknown"),
           color_bar = "discrete", direction = "horizontal", ncol = 2, nrow = 4
         )) %v%
-  Heatmap(t(peptideLevel[, c("PSM1", "PSM2", "PSM3", "PSM4")]), width = 0.3, height = unit(2, "cm"), 
+  Heatmap(t(peptideLevel[, c("PSM1", "PSM2", "PSM3", "PSM4")]), width = 0.5, height = unit(2.2, "cm"), 
           row_title = "PSM", row_title_rot = 90, show_row_names = F, row_title_gp = gpar(fontsize = 11, fontface="bold"),
           col = brewer.pal(name="Blues", n=4), 
           cluster_columns = F, show_column_dend = F, cluster_rows = F, heatmap_legend_param = list(
@@ -332,14 +359,14 @@ Heatmap(t(peptideLevel[, c("Event")]), width = 0.3, height = unit(0.3, "cm"), co
             labels = c("0", "1", "2", ">2"), legend_height = unit(1, "cm"),
             color_bar = "discrete", nrow = 1
           )) %v%
-  Heatmap(t(peptideLevel[, c("Read1","Read2","Read3","Read4")]), width = 0.3, height = unit(2, "cm"),
+  Heatmap(t(peptideLevel[, c("Read1","Read2","Read3","Read4")]), width = 0.5, height = unit(2.2, "cm"),
           show_row_names = F,
           row_title = "Read", row_title_rot = 90, row_title_gp = gpar(fontsize = 11, fontface="bold"),
           col = brewer.pal(name="Reds", n=8),
           cluster_columns = F, show_column_dend = F, cluster_rows = F, heatmap_legend_param = list(
             title = "log2(number of reads+1)",legend_height = unit(1, "cm"), nrow = 1, direction = "horizontal"
           )) %v%
-  Heatmap(t(peptideLevel[, c("Mutation1","Mutation2","Mutation3","Mutation4")]), width = 0.3, height = unit(2, "cm"),
+  Heatmap(t(peptideLevel[, c("Mutation1","Mutation2","Mutation3","Mutation4")]), width = 0.5, height = unit(2.2, "cm"),
           show_row_names = F,
           cluster_columns = F, show_column_dend = F, cluster_rows = F, row_title_gp = gpar(fontsize = 11, fontface="bold"),
           row_title = "Mutation", row_title_rot = 90,
@@ -349,7 +376,7 @@ Heatmap(t(peptideLevel[, c("Event")]), width = 0.3, height = unit(0.3, "cm"), co
             labels = c("0", "1", "2", "3", "4"), legend_height = unit(1, "cm"), 
             color_bar = "discrete", nrow = 1
           ))  %v%
-  Heatmap(t(peptideLevel[, c("AS1","AS2","AS3","AS4")]), width = 0.3, height = unit(1, "cm"),
+  Heatmap(t(peptideLevel[, c("AS1","AS2","AS3","AS4")]), width = 0.5, height = unit(1.3, "cm"),
           show_row_names = F,
           row_title = "AS", row_title_rot = 90, row_title_gp = gpar(fontsize = 11, fontface="bold"),
           col = brewer.pal(name="Reds", n=3),
@@ -358,7 +385,7 @@ Heatmap(t(peptideLevel[, c("Event")]), width = 0.3, height = unit(0.3, "cm"), co
             labels = c("N", "Y"), legend_height = unit(1, "cm"),
             color_bar = "discrete", nrow = 1
           )) %v%
-  Heatmap(t(peptideLevel[, c("asRNA1","asRNA2","asRNA3","asRNA4")]), width = 0.3, height = unit(1, "cm"),
+  Heatmap(t(peptideLevel[, c("asRNA1","asRNA2","asRNA3","asRNA4")]), width = 0.5, height = unit(1.3, "cm"),
           show_row_names = F,
           row_title = "asRNA", row_title_rot = 90, row_title_gp = gpar(fontsize = 11, fontface="bold"),
           col = brewer.pal(name="Blues", n=3),

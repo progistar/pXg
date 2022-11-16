@@ -26,11 +26,11 @@ public class SpectralScores {
 		
 		
 		
-		PeptideLoader.loadPeptideList("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/9.Unmodified_10ppm/ProteomToolsHLA/Matched_NCPeptideList.tsv");
+		PeptideLoader.loadPeptideList("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/ProteomeToolsHLA/Matched_NCPeptideList.tsv");
 		
 		// load pxg MGF
-		Spectra pxgSpectra = new Spectra("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/9.Unmodified_10ppm/ProteomToolsHLA/selectedMGF_pXg.mgf", Spectra.FILE_TYPE_MGF);
-		Spectra ptSpectra = new Spectra("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/9.Unmodified_10ppm/ProteomToolsHLA/selectedMGF_proteomtools.mgf", Spectra.FILE_TYPE_MGF);
+		Spectra pxgSpectra = new Spectra("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/ProteomeToolsHLA/selectedMGF_pXg.mgf", Spectra.FILE_TYPE_MGF);
+		Spectra ptSpectra = new Spectra("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/ProteomeToolsHLA/selectedMGF_PT.mgf", Spectra.FILE_TYPE_MGF);
 		
 		calSCA(pxgSpectra, ptSpectra, pxgSpectra);
 	}
@@ -335,21 +335,37 @@ public class SpectralScores {
 			return 0;
 		}
 		
+		double maxExpInt = 0;
+		double maxThrInt = 0;
 		for(int i=0; i<experimentalPeaks.size(); i++) {
 //			maxExp = Math.max(experimentalPeaks.get(i)[1], maxExp);
-			maxExp += experimentalPeaks.get(i)[1];
+			maxExp += experimentalPeaks.get(i)[1] * experimentalPeaks.get(i)[1];
+			maxExpInt = Math.max(experimentalPeaks.get(i)[1], maxExpInt);
 //			maxExp = Math.max(maxExp, s1_.getPeak(i)[1]);
 //			maxExp += s1_.getPeak(i)[1];
 		}
 		for(int i=0; i<syntheticPeaks.size(); i++) {
 //			maxThr = Math.max(syntheticPeaks.get(i)[1], maxThr);
-			maxThr += syntheticPeaks.get(i)[1];
+			maxThr += syntheticPeaks.get(i)[1] * syntheticPeaks.get(i)[1];
+			maxThrInt = Math.max(syntheticPeaks.get(i)[1], maxThrInt);
 //			maxThr = Math.max(maxThr, s2_.getPeak(i)[1]);
 //			maxThr += s2_.getPeak(i)[1];
 		}
 
-		s1_.peaks = experimentalPeaks;
-		s2_.peaks = syntheticPeaks;
+		for(int i=0; i<s1_.peaks.size(); i++) {
+			if(s1_.peaks.get(i)[1] > maxExpInt) {
+				s1_.peaks.remove(i--);
+			}
+		}
+		
+		for(int i=0; i<s2_.peaks.size(); i++) {
+			if(s2_.peaks.get(i)[1] > maxThrInt) {
+				s2_.peaks.remove(i--);
+			}
+		}
+		
+		//s1_.peaks = experimentalPeaks;
+		//s2_.peaks = syntheticPeaks;
 		
 		int sizeOfExp = experimentalPeaks.size();
 		int sizeOfThr = syntheticPeaks.size();
@@ -359,18 +375,19 @@ public class SpectralScores {
 		for(int i=0; i<sizeOfThr; i++) {
 			thrPeaks[i][0] = syntheticPeaks.get(i)[0];
 			thrPeaks[i][1] = syntheticPeaks.get(i)[1];
-			thrPeaks[i][1] = thrPeaks[i][1] / maxThr;
+			thrPeaks[i][1] = thrPeaks[i][1] / Math.sqrt(maxThr);
 		}
 		
 		for(int i=0; i<sizeOfExp; i++) {
 			expPeaks[i][0] = experimentalPeaks.get(i)[0];
 			expPeaks[i][1] = experimentalPeaks.get(i)[1];
-			expPeaks[i][1] = expPeaks[i][1] / maxExp;
+			expPeaks[i][1] = expPeaks[i][1] / Math.sqrt(maxExp);
 		}
 		
 		
 		
 		// normalization theoretical peaks.
+		/*
 		double norThr = 0;
 		for(int i=0; i<sizeOfThr; i++) {
 			thrPeaks[i][1] = thrPeaks[i][1];
@@ -393,7 +410,7 @@ public class SpectralScores {
 		}
 		norExp = Math.sqrt(norExp);
 		for(int i=0; i<sizeOfExp; i++) expPeaks[i][1] = expPeaks[i][1] / norExp;
-		
+		*/
 		// 
 		double innerproduct = 0;
 		// inner product

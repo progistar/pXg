@@ -11,8 +11,8 @@ public class MergeSpectra {
 
 	
 	public static void main(String[] args) throws IOException {
-		File[] fileList = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/9.Unmodified_10ppm/ProteomToolsHLA/SelectedMGF_pXg").listFiles();
-		File outputFile = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/9.Unmodified_10ppm/ProteomToolsHLA/selectedMGF_pXg.mgf");
+		File[] fileList = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/ProteomeToolsHLA/selectedMGF_pXg").listFiles();
+		File outputFile = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/ProteomeToolsHLA/selectedMGF_pXg.mgf");
 		
 		BufferedWriter BW = new BufferedWriter(new FileWriter(outputFile));
 		

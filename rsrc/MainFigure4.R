@@ -74,39 +74,77 @@ staticThemeNone <- theme(text = element_text(size=25, color = "black")
 setwd("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/")
 
 
-IEDBData <- read_excel(path = "pXgResults_p001_FDR.xlsx", sheet = "ncMAP")
-IEDBData$Event <- IEDBData$Events
+scaData <- read_excel(path = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/ProteomeToolsHLA/UniqueNoncanonicalPSMs.xlsx", 
+                      sheet = "SA")
+scaData$Class <- "B-LCL"
+scaData$SA <- scaData$`SA B-LCL`
 
-ncRNA <- paste("ncRNA\n(",nrow(IEDBData[IEDBData$Events == "ncRNA",] ), ")", sep = "")
-n5UTR <- paste("5`-UTR\n(",nrow(IEDBData[IEDBData$Events == "5`-UTR",] ), ")", sep = "")
-FS <- paste("FS\n(",nrow(IEDBData[IEDBData$Events == "FS",] ), ")", sep = "")
-IR <- paste("IR\n(",nrow(IEDBData[IEDBData$Events == "IR",] ), ")", sep = "")
-Coding <- paste("Coding\n(",nrow(IEDBData[IEDBData$Events == "Coding",] ), ")", sep = "")
-n3UTR <- paste("3`-UTR\n(",nrow(IEDBData[IEDBData$Events == "3`-UTR",] ), ")", sep = "")
-n3UTR <- paste("3`-UTR\n(",nrow(IEDBData[IEDBData$Events == "3`-UTR",] ), ")", sep = "")
+scaDataPT <- scaData
+scaDataPT$Class <- "ProteomeTools"
+scaDataPT$SA <- scaDataPT$`SA ProteomeTools`
+scaData <- rbind(scaData, scaDataPT)
+scaData$mStatus <- 1
+scaData[scaData$Mutations == "-", ]$mStatus <- 0
+scaData[scaData$Mutations == "chr22:22792800T>C|chr22:22792803A>C", ]$mStatus <- 2
+## Coding 14
+## 5`-UTR 20
+## FS 13
+## ncRNA 4
+## 3`-UTR 4
+## IR 2
+## IGR 1
+## IR;AS 1
+scaData$Events <- factor(scaData$Events, levels = c("5`-UTR", "Coding", "FS", "ncRNA", "3`-UTR", "IR", "IR;AS", "IGR"))
+scaDataBLCL <- scaData[scaData$Class == "B-LCL", ]
+scaDataBLCL$Event <- scaDataBLCL$Events
+scaDataBLCL$Precursor <- factor(scaDataBLCL$Precursor,
+                                levels = scaDataBLCL$Precursor[order(scaDataBLCL$Events, decreasing = FALSE)])
 
-IEDBData[IEDBData$Event == "ncRNA",]$Event <- 
-IEDBData[IEDBData$Event == "5`-UTR",]$Event <- 
-IEDBData[IEDBData$Event == "FS",]$Event <- 
-IEDBData[IEDBData$Event == "IR",]$Event <- 
-IEDBData[IEDBData$Event == "Coding",]$Event <- 
-IEDBData[IEDBData$Event == "3`-UTR",]$Event <- 
 
-
-
-IEDBData$Event <- factor(IEDBData$Event, levels = c("ncRNA", "5`-UTR", "FS", "IR", "Coding", "3`-UTR", "IGR", "Unknown"))
-IEDBData$Category <- factor(IEDBData$Category, levels = c("Fully annotated", "Partially annotated", "NA"))
-g <- ggplot(data = IEDBData, aes(x=Event, fill = Category)) +
+boxPlot_ <- ggplot(data = scaData, aes(x=Class, y=SA, fill=`Class`)) +
   theme_bw() +
-  staticThemeTop +
-  geom_bar(position = "fill") +
-  scale_fill_brewer(palette = "Set1") +
-  ylab("MAP") +
-  xlab("") +
-  theme(axis.text.x = element_text(angle=45, vjust = 1, hjust = 1))
-g
+  geom_boxplot() +
+  scale_fill_manual(values = c(blueC, redC)) +
+  scale_y_continuous(breaks = seq(from = 0, to =1, by = 0.1), limits = c(0, 1)) +
+  xlab(NULL) +
+  ylab("SA") +
+  staticThemeNone +
+  theme(legend.key.size = unit(0.2, "in"), legend.key.width = unit(0.6, "in"))
+boxPlot_
 
-ggsave("IEDB.png", plot = g, width = 12, height = 6, units = "in", dpi = 300)
+ggsave("SCA_box.png", plot = boxPlot_, width = 5, height = 8, units = "in", dpi = 300)
+
+mutPlot <- ggplot(data=scaDataBLCL, aes(x=Precursor, y=mStatus, fill = "Count")) +
+  scale_fill_grey() +
+  theme_bw() +
+  scale_y_continuous(breaks = seq(from = 0, to =2, by = 1), limits = c(0, 2)) +
+  geom_bar(stat = "identity", position = position_dodge())+
+  staticThemeRight +
+  theme(text = element_text(size=20), axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
+  guides(fill = guide_legend(title = "Mutation")) +
+  labs(y= NULL, x = NULL)
+
+mutPlot
+
+ggsave("SCA_mut.png", plot = mutPlot, width = 19, height = 1, units = "in", dpi = 300)
+
+scaPlot <- ggplot(data=scaDataBLCL, aes(x=Precursor, y=SA, fill=Event)) +
+  theme_bw() +
+  scale_fill_brewer(palette="Set1") +
+  geom_bar(stat = "identity", position = position_dodge())+
+  theme(text = element_text(size=20), axis.text.x = element_text(angle = 60, vjust = 1, hjust = 1)) +
+  staticThemeRight +
+  labs(y= "SA", x = "Precursor")
+
+scaPlot
+ggsave("SCA_Hist.png", plot = scaPlot, width = 20, height = 6, units = "in", dpi = 300)
+
+scatterPlot <- ggplot(data = scaData, aes(x=`SA B-LCL`, y=`SA ProteomeTools`, fill = Events)) +
+  geom_point()
+
+scatterPlot
+
+
 
 
 

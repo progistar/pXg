@@ -85,6 +85,19 @@ public class Parameters {
 	// Three or Six frame translation
 	public static byte translationMethod			=	Constants.SIX_FRAME;
 	
+	// Penalty
+	public static double PENALTY_MUTATION			=	1;
+	public static double PENALTY_AS					=	10;
+	public static double PENALTY_5UTR				=	20;
+	public static double PENALTY_3UTR				=	20;
+	public static double PENALTY_FS					=	20;
+	public static double PENALTY_ncRNA				=	20;
+	public static double PENALTY_IR					=	30;
+	public static double PENALTY_IGR				=	30;
+	public static double PENALTY_asRNA				=	30;
+	public static double PENALTY_UNMAP				=	100;
+	
+	
 	// System Parameters
 	public static final String CMD_THREADS			=	"-threads".toLowerCase();
 	public static int nThreads						=	4;

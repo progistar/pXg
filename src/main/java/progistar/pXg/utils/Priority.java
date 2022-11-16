@@ -4,6 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import progistar.pXg.constants.Constants;
+import progistar.pXg.constants.Parameters;
 
 public class Priority {
 
@@ -36,47 +37,61 @@ public class Priority {
 			
 			// mutation score
 			if(!mutations.equalsIgnoreCase("-")) {
-				mPenalty = mutations.split("\\|").length;
+				mPenalty = mutations.split("\\|").length * Parameters.PENALTY_MUTATION;
 			}
 			
 			// alternative splicing
 			if(regions[3].charAt(0) == Constants.MARK_AS) {
-				rPenalty += 10;
+				rPenalty += Parameters.PENALTY_AS;
 			}
 			
 			// region score
 			// F = 5`-UTR
 			// T = 3`-UTR
 			// N = non-coding such as ncRNAs
-			if(regions[0].contains(Constants.MARK_5UTR+"") || 
-					regions[0].contains(Constants.MARK_3UTR+"") || 
-					regions[0].contains(Constants.MARK_NCDS+"")) {
-				rPenalty += 20;
+			if(regions[0].contains(Constants.MARK_5UTR+"")) {
+				rPenalty += Parameters.PENALTY_5UTR;
 			}
-			else
+			
+			if(regions[0].contains(Constants.MARK_3UTR+"")) {
+				rPenalty += Parameters.PENALTY_3UTR;
+			}
+			
+			if(regions[0].contains(Constants.MARK_NCDS+"")) {
+				rPenalty += Parameters.PENALTY_ncRNA;
+			}
+			
 			// strvar
 			// I = intron
 			// - = intergenic
-			if(regions[0].contains(Constants.MARK_INTRON+"") || regions[0].contains(Constants.MARK_INTERGENIC+"")) {
-				rPenalty += 30;
-				
+			if(regions[0].contains(Constants.MARK_INTRON+"")) {
+				rPenalty += Parameters.PENALTY_IR;
 				if(regions[0].contains(Constants.MARK_CDS+"")) {
-					rPenalty -= 5; // if containing CDS, up-vote.
+					rPenalty -= Parameters.PENALTY_IR * 0.1; // if containing CDS, up-vote.
 				}
 			} 
+			
+			if(regions[0].contains(Constants.MARK_INTERGENIC+"")) {
+				rPenalty += Parameters.PENALTY_IGR;;
+				if(regions[0].contains(Constants.MARK_CDS+"")) {
+					rPenalty -= Parameters.PENALTY_IGR * 0.1; // if containing CDS, up-vote.
+				}
+			}
+			
 			// Outofframe
-			else if(regions[2].charAt(0) != Constants.IN_FRAME) {
-				rPenalty += 20;
+			
+			if(regions[2].charAt(0) != Constants.IN_FRAME) {
+				rPenalty += Parameters.PENALTY_FS;
 			}
 			
 			// antisense = asRNA
 			if(regions[1].equalsIgnoreCase("antisense")) {
-				rPenalty += 30;
+				rPenalty += Parameters.PENALTY_asRNA;
 			}
 			
 			// worst-case... unmapped
 			if(regions[0].contains(Constants.MARK_UNMAPPED+"")) {
-				rPenalty += 100;
+				rPenalty += Parameters.PENALTY_UNMAP;
 			}
 			
 			penalty = rPenalty + mPenalty;

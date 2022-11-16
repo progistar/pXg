@@ -12,9 +12,9 @@ import java.util.Hashtable;
 public class PoolIDList {
 
 	public static void main(String[] args) throws IOException {
-		File expFile = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/9.Unmodified_10ppm/ProteomToolsHLA/ProteomToolsHLAList.tsv");
-		File idFile = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/9.Unmodified_10ppm/ProteomToolsHLA/ProteomToolsIDList.tsv");
-		File pxgFile = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/9.Unmodified_10ppm/ProteomToolsHLA/UniqueNoncanonicalPSMs.tsv");
+		File expFile = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/ProteomeToolsHLA/ProteomToolsHLAList.tsv");
+		File idFile = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/ProteomeToolsHLA/ProteomToolsIDList.tsv");
+		File pxgFile = new File("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/ProteomeToolsHLA/UniqueNoncanonicalPSMs.tsv");
 		Hashtable<String, String> experiementalMapper = loadMapper(expFile, 1);
 		Hashtable<String, String> idMapper = loadMapper(idFile, 0);
 		

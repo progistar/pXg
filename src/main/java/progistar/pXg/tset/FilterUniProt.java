@@ -13,7 +13,7 @@ import org.ahocorasick.trie.Trie;
 public class FilterUniProt {
 
 	public static void main(String[] args) throws IOException {
-		BufferedReader BR = new BufferedReader(new FileReader("C:\\Users\\progi\\Desktop\\Projects\\pXg\\Laumont_NatCommun2016\\Results\\crypticPeptides.txt"));
+		BufferedReader BR = new BufferedReader(new FileReader("/Users/gistar/projects/pXg/Laumont_NatCommun2016/LaumontResults/Laumont_Conventional.tsv"));
 		String line = null;
 		
 		System.out.println(BR.readLine()+"\tUniProtID");
@@ -32,7 +32,7 @@ public class FilterUniProt {
 		
 		BR.close();
 		
-		BR = new BufferedReader(new FileReader("C:\\Bioinformatics\\0.Databases\\2.HumanProteins\\uniprot_iso_202103.fasta"));
+		BR = new BufferedReader(new FileReader("/Users/gistar/projects/pXg/Laumont_NatCommun2016/2204_Human_HHV4_179Contam_UniProteome.fasta"));
 		StringBuilder protein = new StringBuilder();
 		ArrayList<String> proteins = new ArrayList<String>();
 		while((line = BR.readLine()) != null) {
@@ -61,7 +61,7 @@ public class FilterUniProt {
 		for(int i=0; i<oriSequences.size(); i++) {
 			String ilSeq = sequences.get(i);
 			if(finds.get(ilSeq) != null) {
-				System.out.println(oriSequences.get(i)+"\tYes");
+				//System.out.println(oriSequences.get(i)+"\tYes");
 			} else {
 				System.out.println(oriSequences.get(i)+"\tNo");
 			}

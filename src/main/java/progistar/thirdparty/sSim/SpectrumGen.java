@@ -43,6 +43,7 @@ public class SpectrumGen {
 		Hashtable<String, String> idedScanTitleMapper = new Hashtable<String, String>();
 		Hashtable<String, String> idedFileMapper = new Hashtable<String, String>();
 		for(File file : msmsFiles) {
+			if(file.getName().startsWith(".")) continue;
 			BufferedReader BR = new BufferedReader(new FileReader(file));
 			String line = null;
 			

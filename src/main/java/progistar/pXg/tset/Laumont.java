@@ -91,6 +91,7 @@ public class Laumont {
 			String laumontL = cLaumont.get(peptide);
 			if(laumontL != null) {
 				cOverlap.put(peptide, l+"\t"+laumontL);
+				System.out.println(l+"\t"+laumontL);
 			}
 		});
 		
@@ -98,7 +99,6 @@ public class Laumont {
 			String laumontL = ncLaumont.get(peptide);
 			if(laumontL != null) {
 				ncOverlap.put(peptide, l+"\t"+laumontL);
-				System.out.println(l+"\t"+laumontL);
 			}
 		});
 		

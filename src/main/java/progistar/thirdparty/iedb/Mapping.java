@@ -12,7 +12,7 @@ public class Mapping {
 
 	public static void main(String[] args) throws IOException {
 		File iedbFile = new File("/Users/gistar/projects/pXg/IEDB/EpitopeTable_20220925_MHC.csv");
-		File pXgFile = new File("/Users/gistar/projects/pXg/IEDB/198UniquencMAPs.tsv");
+		File pXgFile = new File("/Users/gistar/projects/pXg/IEDB/298UniquencMAPs.tsv");
 		
 		Hashtable<String, String> iedbMapper = loadIEDB(iedbFile);
 		
@@ -27,7 +27,7 @@ public class Mapping {
 		
 		while((line = BR.readLine()) != null) {
 			String[] fields = line.split("\t");
-			String peptide = fields[20];
+			String peptide = fields[0];
 			
 			String iedbInfo = iedbMapper.get(peptide);
 			if(iedbInfo == null) {
