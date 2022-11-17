@@ -13,6 +13,7 @@ import java.util.Iterator;
 import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
 import progistar.pXg.constants.RunInfo;
+import progistar.pXg.data.parser.GTFExportor;
 import progistar.pXg.utils.Logger;
 
 public class PxGAnnotation {
@@ -340,8 +341,18 @@ public class PxGAnnotation {
 	
 	public void write (String fileName) {
 		try {
-			File file = new File(fileName);
-			BufferedWriter BW = new BufferedWriter(new FileWriter(file));
+			// TSV output
+			File tsvFile = new File(fileName);
+			BufferedWriter BW = new BufferedWriter(new FileWriter(tsvFile));
+			
+			File gtfFile = new File(Parameters.exportGTFPath);
+			BufferedWriter BWGTF = new BufferedWriter(new FileWriter(gtfFile));
+			
+			File samFile = new File(Parameters.exportSAMPath);
+			BufferedWriter BWSAM = new BufferedWriter(new FileWriter(samFile));
+			
+			File vcfFile = new File(Parameters.exportVCFPath);
+			BufferedWriter BWVCF = new BufferedWriter(new FileWriter(vcfFile));
 			
 			ArrayList<PBlock> pBlocks = PeptideAnnotation.pBlocks;
 			
@@ -371,6 +382,8 @@ public class PxGAnnotation {
 			File outFile = new File(Parameters.unmappedFilePath);
 			BufferedWriter BWUnmapped = new BufferedWriter(new FileWriter(outFile));
 			
+			
+			
 			for(PBlock pBlock : pBlocks) {
 				// peptide sequence without I/L consideration
 				String key = pBlock.getPeptideSequence();
@@ -390,6 +403,7 @@ public class PxGAnnotation {
 								gLociCount = xBlocks.size()+"";
 							}
 							
+							// TSV writer
 							BW.append(pBlock.toString()).append("\t").append(pBlock.rank+"\t").append(gLociCount+"\t").append(xBlock.toString()).append("\t"+pBlock.isCannonical);
 							BW.newLine();
 							
@@ -405,8 +419,9 @@ public class PxGAnnotation {
 									BWUnmapped.append(thisXBlock.sequenceID).append("\t").append(thisXBlock.fullReadSequence).append("\t").append(thisXBlock.genomicSequence);
 									BWUnmapped.newLine();
 								}
-								
-							}
+ 							} else {
+ 								GTFExportor.writeGTF(pBlock, xBlock, BWGTF);
+ 							}
 							
 						}catch(IOException ioe) {
 							
@@ -416,6 +431,10 @@ public class PxGAnnotation {
 			}
 			
 			BW.close();
+			BWGTF.close();
+			BWVCF.close();
+			BWSAM.close();
+			
 			BWUnmapped.close();
 			
 		}catch(IOException ioe) {

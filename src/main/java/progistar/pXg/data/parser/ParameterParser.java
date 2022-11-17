@@ -16,7 +16,7 @@ public class ParameterParser {
 	 */
 	public static int parseParams (String[] args) {
 		try {
-			System.out.println(Constants.VERSION);
+			System.out.println(Constants.VERSION+" "+Constants.RELEASE);
 			System.out.println(Constants.INTRODUCE);
 			System.out.println();
 			
@@ -98,6 +98,9 @@ public class ParameterParser {
 					Parameters.ngsStatFilePath = Parameters.outputFilePath +".pval.dist";
 					Parameters.psmStatFilePath = Parameters.outputFilePath +".fdr.dist";
 					Parameters.unmappedFilePath = Parameters.outputFilePath +".unmapped";
+					Parameters.exportGTFPath = Parameters.outputFilePath +".gtf";
+					Parameters.exportSAMPath = Parameters.outputFilePath +".sam";
+					Parameters.exportVCFPath = Parameters.outputFilePath +".vcf";
 					
 					if(isExist(Parameters.outputFilePath)) {
 						printAlreadyExistFileOrDirectory(Parameters.outputFilePath);

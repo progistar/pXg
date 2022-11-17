@@ -22,11 +22,14 @@ public class Parameters {
 	public static String ngsStatFilePath				=	null;
 	public static String psmStatFilePath				=	null;
 	public static String unmappedFilePath				=	null;
+	public static String exportGTFPath					=	null;
+	public static String exportSAMPath					=	null;
+	public static String exportVCFPath					=	null;
 	
 
 	// Significant NGS-read mapping
 	public static final String CMD_P_VALUE			=	"-pval".toLowerCase();
-	public static double pvalue						=	0.05;
+	public static double pvalue						=	0.01;
 	
 	// FDR estimation at PSM level
 	public static final String CMD_FDR				=	"-fdr".toLowerCase();
@@ -97,6 +100,11 @@ public class Parameters {
 	public static double PENALTY_asRNA				=	30;
 	public static double PENALTY_UNMAP				=	100;
 	
+	// Export option
+	public static boolean EXPORT_TSV				=	true;
+	public static boolean EXPORT_GTF				=	true;
+	public static boolean EXPORT_SAM				=	true;
+	public static boolean EXPORT_VCF				=	true;
 	
 	// System Parameters
 	public static final String CMD_THREADS			=	"-threads".toLowerCase();
