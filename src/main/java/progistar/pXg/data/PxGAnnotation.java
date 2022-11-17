@@ -14,6 +14,7 @@ import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
 import progistar.pXg.constants.RunInfo;
 import progistar.pXg.data.parser.GTFExportor;
+import progistar.pXg.data.parser.SAMExportor;
 import progistar.pXg.utils.Logger;
 
 public class PxGAnnotation {
@@ -422,6 +423,7 @@ public class PxGAnnotation {
  							} else {
  								GTFExportor.writeGTF(pBlock, xBlock, BWGTF);
  							}
+							SAMExportor.putSequenceID(xBlock);
 							
 						}catch(IOException ioe) {
 							
@@ -433,6 +435,9 @@ public class PxGAnnotation {
 			BW.close();
 			BWGTF.close();
 			BWVCF.close();
+			
+			// write exportSAM
+			SAMExportor.writeSAM(BWSAM);
 			BWSAM.close();
 			
 			BWUnmapped.close();

@@ -70,12 +70,12 @@ public class ResultParser {
 							xBlock.targetReadCount++;
 						}
 						
+						xBlock.sequenceID = uniqueID;
 						if(fullReads == null) {
 							// put xBlock
 							annotation.putXBlock(pSeq, xBlock);
 						} else {
 							// those xBlocks are needed to merge into contig.
-							xBlock.sequenceID = uniqueID;
 							xBlock.genomicLocus = "-";
 							annotation.putXBlock(pSeq, xBlock);
 							

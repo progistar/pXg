@@ -11,6 +11,7 @@ import progistar.pXg.utils.Priority;
 public class XBlock {
 	// Note that only unmapped reads store sequenceID.
 	// Mapped reads do not need this information
+	// ==> ** Fixed: All reads store sequenceID. ** <==
 	public String sequenceID		=	null;
 	
 	public int targetReadCount		=	0;
