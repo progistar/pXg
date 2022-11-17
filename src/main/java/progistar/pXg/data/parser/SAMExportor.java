@@ -18,7 +18,7 @@ public class SAMExportor {
 		sequenceIDChecker.put(xBlock.sequenceID.split("\\_")[0], "");
 		
 		xBlock.siblingXBlocks.forEach((sxBlock) -> {
-			sequenceIDChecker.put(xBlock.sequenceID.split("\\_")[0], "");
+			sequenceIDChecker.put(sxBlock.sequenceID.split("\\_")[0], "");
 		});
 		
 	}
