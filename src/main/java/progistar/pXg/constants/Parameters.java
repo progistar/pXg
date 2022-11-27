@@ -95,6 +95,17 @@ public class Parameters {
 	public static byte translationMethod			=	Constants.SIX_FRAME;
 	
 	// Penalty
+	public static final String CMD_PENALTY_MUTATION	=	"-pMut".toLowerCase();
+	public static final String CMD_PENALTY_AS		=	"-pAS".toLowerCase();
+	public static final String CMD_PENALTY_5UTR		=	"-p5UTR".toLowerCase();
+	public static final String CMD_PENALTY_3UTR		=	"-p3UTR".toLowerCase();
+	public static final String CMD_PENALTY_FS		=	"-pFS".toLowerCase();
+	public static final String CMD_PENALTY_ncRNA	=	"-pncRNA".toLowerCase();
+	public static final String CMD_PENALTY_IR		=	"-pIR".toLowerCase();
+	public static final String CMD_PENALTY_IGR		=	"-pIGR".toLowerCase();
+	public static final String CMD_PENALTY_asRNA	=	"-pasRNA".toLowerCase();
+	public static final String CMD_PENALTY_UNMAP	=	"-punmap".toLowerCase();
+	
 	public static double PENALTY_MUTATION			=	1;
 	public static double PENALTY_AS					=	10;
 	public static double PENALTY_5UTR				=	20;
