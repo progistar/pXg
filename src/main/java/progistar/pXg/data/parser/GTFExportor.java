@@ -24,6 +24,7 @@ public class GTFExportor {
 		String rank = pBlock.rank+"";
 		String mutation = xBlock.mutations;
 		String events = xBlock.toEvents().get("key");
+		String fastaID = xBlock.toFastaIDs().get("key");
 		
 		String chr = genomicLoci[0].split("\\:")[0];
 		String startPos = null;
@@ -53,6 +54,7 @@ public class GTFExportor {
 		BW.append(" nucleotide \"").append(nucleotide).append("\";"); // attributes: nucleotide
 		BW.append(" rank \"").append(rank).append("\";"); // attributes: rank
 		BW.append(" score \"").append(score).append("\";"); // attributes: score
+		BW.append(" fastaID \"").append(fastaID).append("\";"); // attributes: fasta matched list
 		BW.newLine();
 		
 		ArrayList<String> locusInfo = new ArrayList<String>();

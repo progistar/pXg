@@ -346,14 +346,22 @@ public class PxGAnnotation {
 			File tsvFile = new File(fileName);
 			BufferedWriter BW = new BufferedWriter(new FileWriter(tsvFile));
 			
-			File gtfFile = new File(Parameters.exportGTFPath);
-			BufferedWriter BWGTF = new BufferedWriter(new FileWriter(gtfFile));
+			File gtfFile = null;
+			BufferedWriter BWGTF = null;
 			
-			File samFile = new File(Parameters.exportSAMPath);
-			BufferedWriter BWSAM = new BufferedWriter(new FileWriter(samFile));
+			if(Parameters.EXPORT_GTF) {
+				gtfFile = new File(Parameters.exportGTFPath);
+				BWGTF = new BufferedWriter(new FileWriter(gtfFile));
+			}
+			final BufferedWriter BWGTF_ = BWGTF;
 			
-			File vcfFile = new File(Parameters.exportVCFPath);
-			BufferedWriter BWVCF = new BufferedWriter(new FileWriter(vcfFile));
+			File samFile = null;
+			BufferedWriter BWSAM = null;
+			
+			if(Parameters.EXPORT_SAM) {
+				samFile = new File(Parameters.exportSAMPath);
+				BWSAM = new BufferedWriter(new FileWriter(samFile));
+			}
 			
 			ArrayList<PBlock> pBlocks = PeptideAnnotation.pBlocks;
 			
@@ -421,10 +429,22 @@ public class PxGAnnotation {
 									BWUnmapped.newLine();
 								}
  							} else {
- 								GTFExportor.writeGTF(pBlock, xBlock, BWGTF);
+ 								// GTF writer
+ 								if(Parameters.EXPORT_GTF) {
+ 									if(			(Parameters.EXPORT_CANONICAL && pBlock.isCannonical) ||
+ 											(Parameters.EXPORT_NONCANONICAL && !pBlock.isCannonical)) {
+ 										GTFExportor.writeGTF(pBlock, xBlock, BWGTF_);
+ 									}
+ 								}
+ 								
+ 								// SAM ID Mapper
+ 								if(Parameters.EXPORT_SAM) {
+ 									if(			(Parameters.EXPORT_CANONICAL && pBlock.isCannonical) ||
+ 											(Parameters.EXPORT_NONCANONICAL && !pBlock.isCannonical)) {
+ 										SAMExportor.putSequenceID(xBlock);
+ 									}
+ 								}
  							}
-							SAMExportor.putSequenceID(xBlock);
-							
 						}catch(IOException ioe) {
 							
 						}
@@ -432,16 +452,17 @@ public class PxGAnnotation {
 				} 
 			}
 			
-			BW.close();
-			BWGTF.close();
-			BWVCF.close();
-			
 			// write exportSAM
-			SAMExportor.writeSAM(BWSAM);
-			BWSAM.close();
-			
+			BW.close();
 			BWUnmapped.close();
 			
+			if(Parameters.EXPORT_GTF) {
+				BWGTF.close();
+			}
+			if(Parameters.EXPORT_SAM) {
+				SAMExportor.writeSAM(BWSAM);
+				BWSAM.close();
+			}
 		}catch(IOException ioe) {
 			
 		}

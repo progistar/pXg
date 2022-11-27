@@ -46,6 +46,12 @@ public class Parameters {
 	public static byte	mocks						=	Constants.MOCK_PSD_REVERSE;
 	public static byte	mockPolicy				=	Constants.MOCK_MAX_ONE;
 	
+	// Output format
+	public static final String CMD_SAM_FORMAT		=	"-out_sam".toLowerCase();
+	public static final String CMD_GTF_FORMAT		=	"-out_gtf".toLowerCase();
+	public static final String CMD_NONCANONICAL		=	"-out_noncanonical".toLowerCase();
+	public static final String CMD_CANONICAL		=	"-out_canonical".toLowerCase();
+	
 	// GTF partition size
 	public static final String CMD_GENOMIC_ANNOTATION_PARTITION_SIZE		=	"-gtf_partition_size".toLowerCase();
 	public static int partitionSize					=	5000000; // 5 * 10^6 * 10 * 8 = 0.4 G
@@ -104,7 +110,8 @@ public class Parameters {
 	public static boolean EXPORT_TSV				=	true;
 	public static boolean EXPORT_GTF				=	true;
 	public static boolean EXPORT_SAM				=	true;
-	public static boolean EXPORT_VCF				=	true;
+	public static boolean EXPORT_NONCANONICAL		=	true;
+	public static boolean EXPORT_CANONICAL			=	true;
 	
 	// System Parameters
 	public static final String CMD_THREADS			=	"-threads".toLowerCase();

@@ -42,14 +42,18 @@ public class ParameterParser {
 				System.out.println("                         You can write in this way (min-max, both inclusive) : 8-13");
 				System.out.println("  -fasta               : Canonical sequence database to report conservative assignment of noncanonical PSMs");
 				System.out.println("  -rank                : How many candidates will be considered per a scan. Default is 100 (in other words, use all ranked candidates)");
+				System.out.println("  -out_sam             : Report matched reads as SAM format (true or false). Default is true.");
+				System.out.println("  -out_gtf             : Report matched peptides as GTF format (true or false). Default is true.");
+				System.out.println("  -out_noncanonial     : Report noncaonical peptides for SAM and/or GTF formats (true or false). Default is true.");
+				System.out.println("  -out_canonial        : Report caonical peptides for SAM and/or GTF formats (true or false). Default is true.");
 				System.out.println("  -gtf_partition_size  : The size of treating genomic region at once. Default is 5000000");
 				System.out.println("  -sam_partition_size  : The size of treating number of reads at once. Default is 1000000");
-				System.out.println("  -threads             : The number of threads. Default is 4");
+				//System.out.println("  -threads             : The number of threads. Default is 4");
 				System.out.println();
 				System.out.println("Example1");
-				System.out.println("java -Xmx30G -jar pXg.jar -gtf gencode.gtf -sam aligned.sorted.sam -psm peaks.result -pept_col 4 -score_col 8 -scan_cols 1,2,5 -out peaks.pXg");
+				System.out.println("java -Xmx30G -jar pXg.jar -gtf gencode.gtf -sam aligned.sorted.sam -psm peaks.result -pept_col 4 -score_col 8 -scan_cols 1,2,5  -pval 0.01 -fdr 0.1 -out_canonical false -out peaks.pXg");
 				System.out.println("Example2");
-				System.out.println("java -Xmx30G -jar pXg.jar -gtf gencode.gtf -sam aligned.sorted.sam -psm peaks.result -pept_col 4 -score_col 8 -scan_cols 1,2,5 -out peaks.pXg -pval 0.05 -fdr 0.01 -length 8-13 -threads 2");
+				System.out.println("java -Xmx30G -jar pXg.jar -gtf gencode.gtf -sam aligned.sorted.sam -psm peaks.result -pept_col 4 -score_col 8 -scan_cols 1,2,5  -pval 0.01 -fdr 0.1 -length 8-13 -out peaks.pXg");
 				return -1;
 			}
 			
@@ -100,7 +104,6 @@ public class ParameterParser {
 					Parameters.unmappedFilePath = Parameters.outputFilePath +".unmapped";
 					Parameters.exportGTFPath = Parameters.outputFilePath +".gtf";
 					Parameters.exportSAMPath = Parameters.outputFilePath +".sam";
-					Parameters.exportVCFPath = Parameters.outputFilePath +".vcf";
 					
 					if(isExist(Parameters.outputFilePath)) {
 						printAlreadyExistFileOrDirectory(Parameters.outputFilePath);
@@ -153,6 +156,30 @@ public class ParameterParser {
 				// -sam_partition_size (optional)
 				else if(option.equalsIgnoreCase(Parameters.CMD_THREADS)) {
 					Parameters.nThreads = Integer.parseInt(args[i+1]);
+				} 
+				// -out_sam (optional)
+				else if(option.equalsIgnoreCase(Parameters.CMD_SAM_FORMAT)) {
+					if(args[i+1].equalsIgnoreCase("false")) {
+						Parameters.EXPORT_SAM = false;
+					}
+				}
+				// -out_gtf (optional)
+				else if(option.equalsIgnoreCase(Parameters.CMD_GTF_FORMAT)) {
+					if(args[i+1].equalsIgnoreCase("false")) {
+						Parameters.EXPORT_GTF = false;
+					}
+				}
+				// -out_canonical (optional)
+				else if(option.equalsIgnoreCase(Parameters.CMD_CANONICAL)) {
+					if(args[i+1].equalsIgnoreCase("false")) {
+						Parameters.EXPORT_CANONICAL = false;
+					}
+				}
+				// -out_noncanonical (optional)
+				else if(option.equalsIgnoreCase(Parameters.CMD_NONCANONICAL)) {
+					if(args[i+1].equalsIgnoreCase("false")) {
+						Parameters.EXPORT_NONCANONICAL = false;
+					}
 				}
 
 			}
@@ -222,7 +249,11 @@ public class ParameterParser {
 		System.out.println(" OUT_READ_DIST.: "+Parameters.ngsStatFilePath);
 		System.out.println(" OUT_PSM_DIST.: "+Parameters.psmStatFilePath);
 		System.out.println(" OUT_UNMAPPED: "+Parameters.unmappedFilePath);
-		System.out.println(" THREADS: "+Parameters.nThreads);
+		System.out.println(" OUT_SAM: "+Parameters.EXPORT_SAM);
+		System.out.println(" OUT_GTF: "+Parameters.EXPORT_GTF);
+		System.out.println(" OUT_CANONICAL: "+Parameters.EXPORT_CANONICAL);
+		System.out.println(" OUT_NONCANONICAL: "+Parameters.EXPORT_NONCANONICAL);
+		//System.out.println(" THREADS: "+Parameters.nThreads);
 		
 		// append to logger
 		Logger.append("Running info");
@@ -259,8 +290,16 @@ public class ParameterParser {
 		Logger.newLine();
 		Logger.append(" OUT_UNMAPPED: "+Parameters.unmappedFilePath);
 		Logger.newLine();
-		Logger.append(" THREADS: "+Parameters.nThreads);
+		Logger.append(" OUT_SAM: "+Parameters.EXPORT_SAM);
 		Logger.newLine();
+		Logger.append(" OUT_GTF: "+Parameters.EXPORT_GTF);
+		Logger.newLine();
+		Logger.append(" OUT_CANONICAL: "+Parameters.EXPORT_CANONICAL);
+		Logger.newLine();
+		Logger.append(" OUT_NONCANONICAL: "+Parameters.EXPORT_NONCANONICAL);
+		Logger.newLine();
+		//Logger.append(" THREADS: "+Parameters.nThreads);
+		//Logger.newLine();
 	}
 	
 	private static boolean isMandatoryOkay () {
