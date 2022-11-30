@@ -59,9 +59,6 @@ public class Parameters {
 	public static final String CMD_GENOMIC_SEQUENCE_PARTITION_SIZE			=	"-sam_partition_size".toLowerCase();
 	public static int readSize						=	1000000; // 1 * 10^6
 	
-	// READ sequencing 
-	public static byte READ_STRAND					=	Constants.FORWARD_STRAND_READS;
-	
 	// Peptide file
 	// for user-friendly purpose, peptideColumnIndex is taken one-based and converted to zero-based.
 	public static final String CMD_PEPTIDE_COLUMN_INDEX	=	"-pept_col".toLowerCase();
@@ -87,9 +84,6 @@ public class Parameters {
 	public static String commentMarker				=	"#|@|%"; // if line starts with the pattern, the line will be skipped during parsing the file.
 	
 	public static int maxProteinOut					=	10;
-	
-	// Print all annotated PSMs
-	public static boolean debugMode					=	false;
 	
 	// Three or Six frame translation
 	public static byte translationMethod			=	Constants.SIX_FRAME;
@@ -127,4 +121,6 @@ public class Parameters {
 	// System Parameters
 	public static final String CMD_THREADS			=	"-threads".toLowerCase();
 	public static int nThreads						=	1;
+	
+	public static boolean isDecoyOut 				=	true;
 }

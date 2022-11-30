@@ -365,7 +365,7 @@ public class PxGAnnotation {
 			
 			ArrayList<PBlock> pBlocks = PeptideAnnotation.pBlocks;
 			
-			
+			BW.append("Label").append("\t");
 			BW.append(PeptideAnnotation.toFields()).append("\t");
 			BW.append("Rank").append("\t");
 			BW.append("GenomicLociCount").append("\t");
@@ -391,13 +391,18 @@ public class PxGAnnotation {
 			File outFile = new File(Parameters.unmappedFilePath);
 			BufferedWriter BWUnmapped = new BufferedWriter(new FileWriter(outFile));
 			
-			
-			
 			for(PBlock pBlock : pBlocks) {
 				// peptide sequence without I/L consideration
 				String key = pBlock.getPeptideSequence();
 				
-				Hashtable<String, XBlock> xBlocks = this.targetXBlockMapper.get(key);
+				// for target
+				Hashtable<String, XBlock> xBlocksTmp = this.targetXBlockMapper.get(key);
+				if(xBlocksTmp == null && Parameters.isDecoyOut) {
+					xBlocksTmp = this.decoyXBlockMapper.get(key);
+				}
+				
+				// for final state
+				Hashtable<String, XBlock> xBlocks = xBlocksTmp;
 				
 				// there is no available mapping.
 				if(xBlocks != null) {
@@ -413,7 +418,7 @@ public class PxGAnnotation {
 							}
 							
 							// TSV writer
-							BW.append(pBlock.toString()).append("\t").append(pBlock.rank+"\t").append(gLociCount+"\t").append(xBlock.toString()).append("\t"+pBlock.isCannonical);
+							BW.append(pBlock.toString()).append("\t").append(pBlock.rank+"\t").append(gLociCount+"\t").append(xBlock.toString(pBlock.psmStatus)).append("\t"+pBlock.isCannonical);
 							BW.newLine();
 							
 							// if this is unmapped, then store.
@@ -429,20 +434,23 @@ public class PxGAnnotation {
 									BWUnmapped.newLine();
 								}
  							} else {
- 								// GTF writer
- 								if(Parameters.EXPORT_GTF) {
- 									if(			(Parameters.EXPORT_CANONICAL && pBlock.isCannonical) ||
- 											(Parameters.EXPORT_NONCANONICAL && !pBlock.isCannonical)) {
- 										GTFExportor.writeGTF(pBlock, xBlock, BWGTF_);
- 									}
- 								}
  								
- 								// SAM ID Mapper
- 								if(Parameters.EXPORT_SAM) {
- 									if(			(Parameters.EXPORT_CANONICAL && pBlock.isCannonical) ||
- 											(Parameters.EXPORT_NONCANONICAL && !pBlock.isCannonical)) {
- 										SAMExportor.putSequenceID(xBlock);
- 									}
+ 								if(pBlock.psmStatus != Constants.PSM_STATUS_DECOY) {
+ 	 								// GTF writer
+ 	 								if(Parameters.EXPORT_GTF) {
+ 	 									if(			(Parameters.EXPORT_CANONICAL && pBlock.isCannonical) ||
+ 	 											(Parameters.EXPORT_NONCANONICAL && !pBlock.isCannonical)) {
+ 	 										GTFExportor.writeGTF(pBlock, xBlock, BWGTF_);
+ 	 									}
+ 	 								}
+ 	 								
+ 	 								// SAM ID Mapper
+ 	 								if(Parameters.EXPORT_SAM) {
+ 	 									if(			(Parameters.EXPORT_CANONICAL && pBlock.isCannonical) ||
+ 	 											(Parameters.EXPORT_NONCANONICAL && !pBlock.isCannonical)) {
+ 	 										SAMExportor.putSequenceID(xBlock);
+ 	 									}
+ 	 								}
  								}
  							}
 						}catch(IOException ioe) {
@@ -605,7 +613,6 @@ public class PxGAnnotation {
 	 */
 	public void fdrEstimation () {
 		// if decoy mode is on, report all PSMs regardless of target and decoy status.
-		if(Parameters.debugMode) return;
 		
 		double cTargetCount = 0;
 		double ncTargetCount = 0;
@@ -778,7 +785,7 @@ public class PxGAnnotation {
 		for(int i=0; i<pBlocks.size(); i++) {
 			PBlock pBlock = pBlocks.get(i);
 			
-			if(pBlock.psmStatus == Constants.PSM_STATUS_TARGET || pBlock.psmStatus == Constants.PSM_STATUS_BOTH) {
+			if(pBlock.psmStatus == Constants.PSM_STATUS_TARGET || pBlock.psmStatus == Constants.PSM_STATUS_BOTH || Parameters.isDecoyOut) {
 				if(pBlock.isCannonical) {
 					if(pBlock.score >= RunInfo.cPSMScoreTreshold) {
 						cutoffedPBlocks.add(pBlock);

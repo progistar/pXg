@@ -57,8 +57,13 @@ public class PBlock implements Comparable<PBlock> {
 	public String toString () {
 		StringBuilder recordLine = new StringBuilder();
 		
-		recordLine.append(this.record[0]);
-		for(int i=1; i<this.record.length; i++) {
+		if(this.psmStatus == Constants.PSM_STATUS_DECOY) {
+			recordLine.append("-1");
+		} else {
+			recordLine.append("1");
+		}
+		
+		for(int i=0; i<this.record.length; i++) {
 			recordLine.append("\t").append(this.record[i]);
 		}
 		

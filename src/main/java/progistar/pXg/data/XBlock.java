@@ -65,7 +65,7 @@ public class XBlock {
 	 * return record. <br>
 	 * 
 	 */
-	public String toString () {
+	public String toString (byte psmStatus) {
 		Hashtable<String, String> geneIDs = toGeneIDs();
 		Hashtable<String, String> geneNames = toGeneNames();
 		Hashtable<String, String> events = toEvents();
@@ -80,16 +80,27 @@ public class XBlock {
 			}
 		}
 		
-		
-		return peptideSequence +"\t"+genomicLocus+"\t"
-				+strand+"\t"+genomicSequence
-				+"\t"+mutations
-				+"\t"+tAnnotations+"\t"+transCount
-				+"\t"+geneIDs.get("key")+"\t"+geneIDs.get("count")
-				+"\t"+geneNames.get("key")+"\t"+geneNames.get("count")
-				+"\t"+events.get("key")+"\t"+events.get("count")
-				+"\t"+fastaIDs.get("key")+"\t"+fastaIDs.get("count")
-				+"\t"+targetReadCount;
+		if(psmStatus == Constants.PSM_STATUS_DECOY) {
+			return new StringBuilder(peptideSequence).reverse().toString() +"\t"+genomicLocus+"\t"
+					+strand+"\t"+genomicSequence
+					+"\t"+mutations
+					+"\t"+tAnnotations+"\t"+transCount
+					+"\t"+geneIDs.get("key")+"\t"+geneIDs.get("count")
+					+"\t"+geneNames.get("key")+"\t"+geneNames.get("count")
+					+"\t"+events.get("key")+"\t"+events.get("count")
+					+"\t"+fastaIDs.get("key")+"\t"+fastaIDs.get("count")
+					+"\t"+mockReadCount;
+		} else {
+			return peptideSequence +"\t"+genomicLocus+"\t"
+					+strand+"\t"+genomicSequence
+					+"\t"+mutations
+					+"\t"+tAnnotations+"\t"+transCount
+					+"\t"+geneIDs.get("key")+"\t"+geneIDs.get("count")
+					+"\t"+geneNames.get("key")+"\t"+geneNames.get("count")
+					+"\t"+events.get("key")+"\t"+events.get("count")
+					+"\t"+fastaIDs.get("key")+"\t"+fastaIDs.get("count")
+					+"\t"+targetReadCount;
+		}
 	}
 	
 	/**

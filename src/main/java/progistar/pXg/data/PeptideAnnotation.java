@@ -46,7 +46,7 @@ public class PeptideAnnotation {
 		
 		RunInfo.totalProcessedPeptides = sequences.size();
 		
-		System.out.println("A total of "+sequences.size()+" peptides was detected without duplications.");
+		System.out.println("A total of "+sequences.size()+" peptides were detected without duplications.");
 		System.out.println("Build keyword trie...");
 		trie = Trie.builder().addKeywords(sequences).build();
 		System.out.println("Done!");
