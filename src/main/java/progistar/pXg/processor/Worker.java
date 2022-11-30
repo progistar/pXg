@@ -89,7 +89,7 @@ public class Worker extends Thread {
 						}
 						
 						if(decoyMatches.size() != 0) {
-							writeTmpOutput(BW, decoyMatches, genomicSequence, "XXX_");
+							writeTmpOutput(BW, decoyMatches, genomicSequence, Constants.DECOY_PREFIX);
 						}
 					}
 				}

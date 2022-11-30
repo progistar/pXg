@@ -13,6 +13,9 @@ public class Constants {
 	// Translation method
 	public static final byte THREE_FRAME	=	0;
 	public static final byte SIX_FRAME	=	1;
+	
+	// Decoy prefix
+	public static final String DECOY_PREFIX	=	"Decoy@";
 
 	//
 	public static final byte EXON = 30;

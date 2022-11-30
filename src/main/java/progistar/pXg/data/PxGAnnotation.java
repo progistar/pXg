@@ -434,23 +434,20 @@ public class PxGAnnotation {
 									BWUnmapped.newLine();
 								}
  							} else {
+								// GTF writer
+ 								if(Parameters.EXPORT_GTF) {
+ 									if(			(Parameters.EXPORT_CANONICAL && pBlock.isCannonical) ||
+ 											(Parameters.EXPORT_NONCANONICAL && !pBlock.isCannonical)) {
+ 										GTFExportor.writeGTF(pBlock, xBlock, BWGTF_);
+ 									}
+ 								}
  								
- 								if(pBlock.psmStatus != Constants.PSM_STATUS_DECOY) {
- 	 								// GTF writer
- 	 								if(Parameters.EXPORT_GTF) {
- 	 									if(			(Parameters.EXPORT_CANONICAL && pBlock.isCannonical) ||
- 	 											(Parameters.EXPORT_NONCANONICAL && !pBlock.isCannonical)) {
- 	 										GTFExportor.writeGTF(pBlock, xBlock, BWGTF_);
- 	 									}
- 	 								}
- 	 								
- 	 								// SAM ID Mapper
- 	 								if(Parameters.EXPORT_SAM) {
- 	 									if(			(Parameters.EXPORT_CANONICAL && pBlock.isCannonical) ||
- 	 											(Parameters.EXPORT_NONCANONICAL && !pBlock.isCannonical)) {
- 	 										SAMExportor.putSequenceID(xBlock);
- 	 									}
- 	 								}
+ 								// SAM ID Mapper
+ 								if(Parameters.EXPORT_SAM) {
+ 									if(			(Parameters.EXPORT_CANONICAL && pBlock.isCannonical) ||
+ 											(Parameters.EXPORT_NONCANONICAL && !pBlock.isCannonical)) {
+ 										SAMExportor.putSequenceID(xBlock);
+ 									}
  								}
  							}
 						}catch(IOException ioe) {

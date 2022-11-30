@@ -36,7 +36,7 @@ public class ResultParser {
 					if(field[0].equalsIgnoreCase(Constants.OUTPUT_G_UNIQUE_ID)) {
 						uniqueID = field[1];
 						// decoy decision
-						if(uniqueID.startsWith("XXX")) {
+						if(uniqueID.startsWith(Constants.DECOY_PREFIX)) {
 							isDecoy = true;
 						} else {
 							isDecoy = false;

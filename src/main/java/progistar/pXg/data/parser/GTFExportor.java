@@ -16,6 +16,9 @@ public class GTFExportor {
 	
 	public static void writeGTF (PBlock pBlock, XBlock xBlock, BufferedWriter BW) throws IOException {
 		String peptide = xBlock.peptideSequence;
+		if(pBlock.psmStatus == Constants.PSM_STATUS_DECOY) {
+			peptide = new StringBuilder(peptide).reverse().toString();
+		}
 		String nucleotide = xBlock.genomicSequence;
 		String[] genomicLoci = xBlock.genomicLocus.split("\\|");
 		char strand = xBlock.strand;

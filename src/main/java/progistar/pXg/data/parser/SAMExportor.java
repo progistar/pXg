@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Hashtable;
 
+import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
 import progistar.pXg.data.XBlock;
 
@@ -33,8 +34,15 @@ public class SAMExportor {
 				BW.newLine();
 			} else {
 				String sequenceID = line.split("\\s")[0];
+				// for target check
 				if(sequenceIDChecker.get(sequenceID) != null) {
 					BW.append(line);
+					BW.newLine();
+				}
+				// for decoy check
+				sequenceID = Constants.DECOY_PREFIX + sequenceID;
+				if(sequenceIDChecker.get(sequenceID) != null) {
+					BW.append(Constants.DECOY_PREFIX).append(line);
 					BW.newLine();
 				}
 			}
