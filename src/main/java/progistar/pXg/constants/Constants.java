@@ -106,5 +106,13 @@ public class Constants {
 	
 	// ID status
 	public static final String ID_NULL				=	"-";
-
+	
+	
+	/** pXg TSV Parser Constants **/
+	public static final String INFERRED_PEPTIDE_COLUMN_NAME	=	"InferredPeptide";
+	public static final String NUCLEOTIDE_COLUMN_NAME		=	"Nucleotide";
+	public static final String STRAND_COLUMN_NAME			=	"Strand";
+	public static final String EVENT_COLUMN_NAME			=	"Events";
+	
+	
 }

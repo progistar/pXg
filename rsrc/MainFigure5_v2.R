@@ -77,27 +77,14 @@ setwd("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10
 
 tmp <- read_excel(path = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/Laumont_Comparison/Comparison_v2.xlsx", sheet = "Mascot-reanalysis-summary")
 
-tmp$ALCScore <- 0
-tmp[tmp$Category == "Overlap", ]$ALCScore <- tmp[tmp$Category == "Overlap", ]$`pXg_ALC (%)`
-tmp[tmp$Category == "Laumont", ]$ALCScore <- tmp[tmp$Category == "Laumont", ]$`PEAKS_ALC (%)`
-tmp[tmp$Category == "pXg", ]$ALCScore <- tmp[tmp$Category == "pXg", ]$`pXg_ALC (%)`
-
 staticThemeRightTop <- theme(text = element_text(size=25, color = "black")
                              , axis.text.x = element_text(size=20, color="black"), 
                              axis.text.y = element_text(size=20, color="black"),
-                             legend.position= c(0.85, 0.1),
+                             legend.position= c(0.8, 0.1),
                              legend.text = element_text(size=15, color = "black"),
                              legend.title = element_text(size=0, color = "black"))
 
-tmp$Category <- factor(tmp$Category, levels = c("pXg", "Overlap", "Laumont"))
-tmp$Comparison <- "Overlap"
-tmp[tmp$Category == "pXg", ]$Comparison <- "pXg only"
-tmp[tmp$Category == "Laumont", ]$Comparison <- "Laumont only"
-tmp$Comparison <- factor(tmp$Comparison, levels = c("pXg only", "Overlap", "Laumont only"))
-
-nrow(tmp[tmp$Laumont_Event == "asRNA", ])
-nrow(tmp[tmp$pXg_Events == "asRNA", ])
-g <- ggplot(data = tmp, aes(x=MascotScore, y=ALCScore, colour=Comparison)) +
+g <- ggplot(data = tmp, aes(x=Mascot_Score, y=`pXg_ALC (%)`, color = Category)) +
   theme_bw() +
   staticThemeRightTop +
   #staticThemeNone +
@@ -106,77 +93,33 @@ g <- ggplot(data = tmp, aes(x=MascotScore, y=ALCScore, colour=Comparison)) +
   ylab("ALC score") +
   xlab("Mascot score")
 
-g <- ggExtra::ggMarginal(g, type = "boxplot", groupFill = TRUE, groupColour = T)
+g <- ggExtra::ggMarginal(g, type = "boxplot", groupColour = T, groupFill = T)
 g
 
-mean(tmp[tmp$Category == "pXg", ]$`pXg_ALC (%)`)
-mean(tmp[tmp$Category == "pXg", ]$MascotScore)
-mean(tmp[tmp$Category == "Laumont", ]$ALCScore)
-mean(tmp[tmp$Category == "Laumont", ]$MascotScore)
-
-mean(tmp[tmp$Category == "Overlap", ]$`pXg_ALC (%)`)
-mean(tmp[tmp$Category == "Overlap", ]$MascotScore)
-
-
+mean(tmp$`pXg_ALC (%)`)
+mean(tmp$Mascot_Score)
 
 ggsave("Comparison_score.png", plot = g, width = 8, height = 8, units = "in", dpi = 300)
 
+classFlow <- tmp
+classFlow[classFlow$pXg_IsCanonical == "TRUE", ]$pXg_Events <- "Coding"
+classFlow[classFlow$pXg_Events == "PC;asRNA", ]$pXg_Events <- "asRNA"
+classFlow[classFlow$pXg_Events == "5`-UTR|FS", ]$pXg_Events <- "FS|5`-UTR"
+classFlow$Laumont_GenomicLoci <- paste("chr", classFlow$Laumont_Chromosome, ":", classFlow$Laumont_Start, "-", classFlow$Laumont_Stop, sep = "")
 
-tmp$Class <- "NA"
+a <- classFlow[classFlow$Category == "Different sequence" & classFlow$Laumont_Event == classFlow$pXg_Events, 
+               c("Mascot_Scan", "Laumont_Event", "pXg_Events","Mascot_Peptide", "Laumont_Peptide", "pXg_InferredPeptide", 
+                 "Laumont_Ensembl_gene_id", "pXg_GeneIDs", "pXg_IsCanonical", "Laumont_GenomicLoci", "pXg_GenomicLoci")]
 
-## Laumont => pXg
-tmpLaumontTopXg <- tmp[tmp$Category == "Laumont" & tmp$pXg_Fraction != 0, ]
-tmpLaumontTopXg$Class <- "Unique"
-tmpLaumontTopXg[tmpLaumontTopXg$`pXg_MHC-I` == "NB", ]$Class <- "NB"
-tmpLaumontTopXg[tmpLaumontTopXg$`pXg_MHC-I` != "NB" & 
-                  (tmpLaumontTopXg$pXg_GeneNameCount > 1 |
-                     tmpLaumontTopXg$pXg_EventCount > 1 |
-                     tmpLaumontTopXg$pXg_GenomicLociCount > 1
-                     ), ]$Class <- "Shared"
-tmpLaumontTopXg[tmpLaumontTopXg$pXg_Match == "Equivalent AA composition", ]$pXg_Match <- "Equivalent"
-tmpLaumontTopXg[tmpLaumontTopXg$pXg_Match == "Different AA composition", ]$pXg_Match <- "Different"
+nrow(classFlow[classFlow$Category == "Equivalent sequence", ])
+nrow(classFlow[classFlow$Category != "Equivalent sequence", ])
+classFlow$Mascot_Scan
+classFlow$pXg_GenomicLoci
+classFlow$Mascot_Peptide
 
-tmppXgToLaumont <- tmp[tmp$Category == "pXg" & tmp$Laumont_Peptide != 0, ]
-tmppXgToLaumont$Class <- "Unique"
-tmppXgToLaumont[tmppXgToLaumont$pXg_Match == "Equivalent AA composition", ]$pXg_Match <- "Equivalent"
-tmppXgToLaumont[tmppXgToLaumont$pXg_Match == "Different AA composition", ]$pXg_Match <- "Different"
-
-tmpChange <- rbind(tmppXgToLaumont, tmpLaumontTopXg)
-
-tmpChange$pXg_Match <- factor(tmpChange$pXg_Match, c("Different", "Equivalent"))
-tmpChange$Comparison <- "pXg only"
-tmpChange[tmpChange$Category == "Laumont", ]$Comparison <- "Laumont only"
-
-a <- tmpChange[tmpChange$Class == "Unique",]
-write.table(a, file = "73unique_changes.tsv", sep = "\t")
-
-
-nrow(tmpChange[tmpChange$Class == "Unique" & tmpChange$pXg_Events == "Coding", ])
-nrow(tmpChange[tmpChange$Class == "Unique" & tmpChange$Laumont_Event == "Coding", ])
-
-g <- ggplot(data = tmpChange, aes(x=Class, fill = Class)) +
-  theme_bw() +
-  #staticThemeRight +
-  staticThemeNone +
-  geom_bar() +
-  scale_fill_brewer(palette = "Set1") +
-  ylab("MAP") +
-  xlab("") +
-  #scale_x_discrete(position = "top") +
-  #rotate() +
-  theme(axis.text.x = element_text(angle=45, vjust = 1, hjust = 1))
-  #facet_grid(cols = vars(`Comparison`), switch = "y", scales = "free")
-g
-
-ggsave("LtoP.png", plot = g, width = 6, height = 10, units = "in", dpi = 300)
-
-nrow(tmpChange[tmpChange$pXg_Events != "Coding" & tmpChange$Laumont_Event == "Coding", ])
-
-#lOnly[lOnly$pXg_Events == "Coding;asRNA", ]$pXg_Events <- "asRNA"
-tmpChange[tmpChange$pXg_Events == "PC;asRNA", ]$pXg_Events <- "asRNA"
-tmpChange[tmpChange$pXg_IsCanonical == "TRUE", ]$pXg_Events <- "Coding"
-
-networkLink <- tmpChange[tmpChange$Class == "Unique", ] %>% mutate(Laumont_Event = paste(Laumont_Event, " ")) %>% 
+#networkLink <- classFlow[classFlow$Category == "Different sequence" & classFlow$Laumont_Event != classFlow$pXg_Events, ] %>% 
+networkLink <- classFlow[classFlow$Category == "Different sequence", ] %>% 
+  mutate(Laumont_Event = paste(Laumont_Event, " ")) %>% 
   group_by(source = Laumont_Event, target = pXg_Events) %>% 
   summarise(value = n()) %>%
   as.data.frame()
@@ -194,7 +137,7 @@ networkPlot <- sankeyNetwork(Links = networkLink, Nodes = networkNode,
 
 networkPlot
 
-saveNetwork(networkPlot, "network.html")
+saveNetwork(networkPlot, "network_diffSeq.html")
 
 g <- ggplot(data = tmpChange, aes(x=MascotScore, y=ALCScore, colour=Category)) +
   theme_bw() +

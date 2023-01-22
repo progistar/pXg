@@ -81,20 +81,25 @@ ncRNA <- paste("ncRNA\n(",nrow(IEDBData[IEDBData$Events == "ncRNA",] ), ")", sep
 n5UTR <- paste("5`-UTR\n(",nrow(IEDBData[IEDBData$Events == "5`-UTR",] ), ")", sep = "")
 FS <- paste("FS\n(",nrow(IEDBData[IEDBData$Events == "FS",] ), ")", sep = "")
 IR <- paste("IR\n(",nrow(IEDBData[IEDBData$Events == "IR",] ), ")", sep = "")
-Coding <- paste("Coding\n(",nrow(IEDBData[IEDBData$Events == "Coding",] ), ")", sep = "")
+Coding <- paste("Coding\n(mutated)\n(",nrow(IEDBData[IEDBData$Events == "Coding",] ), ")", sep = "")
 n3UTR <- paste("3`-UTR\n(",nrow(IEDBData[IEDBData$Events == "3`-UTR",] ), ")", sep = "")
-n3UTR <- paste("3`-UTR\n(",nrow(IEDBData[IEDBData$Events == "3`-UTR",] ), ")", sep = "")
-
-IEDBData[IEDBData$Event == "ncRNA",]$Event <- 
-IEDBData[IEDBData$Event == "5`-UTR",]$Event <- 
-IEDBData[IEDBData$Event == "FS",]$Event <- 
-IEDBData[IEDBData$Event == "IR",]$Event <- 
-IEDBData[IEDBData$Event == "Coding",]$Event <- 
-IEDBData[IEDBData$Event == "3`-UTR",]$Event <- 
+IGR <- paste("IGR\n(",nrow(IEDBData[IEDBData$Events == "IGR",] ), ")", sep = "")
+Unknown <- paste("Unknown\n(",nrow(IEDBData[IEDBData$Events == "Unknown",] ), ")", sep = "")
 
 
+IEDBData[IEDBData$Event == "ncRNA",]$Event <- ncRNA
+IEDBData[IEDBData$Event == "5`-UTR",]$Event <- n5UTR
+IEDBData[IEDBData$Event == "FS",]$Event <- FS
+IEDBData[IEDBData$Event == "IR",]$Event <- IR
+IEDBData[IEDBData$Event == "Coding",]$Event <- Coding
+IEDBData[IEDBData$Event == "3`-UTR",]$Event <- n3UTR
+IEDBData[IEDBData$Event == "IGR",]$Event <- IGR
+IEDBData[IEDBData$Event == "Unknown",]$Event <- Unknown
+  
+  
+  
 
-IEDBData$Event <- factor(IEDBData$Event, levels = c("ncRNA", "5`-UTR", "FS", "IR", "Coding", "3`-UTR", "IGR", "Unknown"))
+IEDBData$Event <- factor(IEDBData$Event, levels = c(ncRNA, n5UTR, FS, IR, Coding, n3UTR, IGR, Unknown))
 IEDBData$Category <- factor(IEDBData$Category, levels = c("Fully annotated", "Partially annotated", "NA"))
 g <- ggplot(data = IEDBData, aes(x=Event, fill = Category)) +
   theme_bw() +
