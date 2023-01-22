@@ -25,19 +25,19 @@ public class ParameterParser {
 				System.out.println("Usage");
 				System.out.println();
 				System.out.println("Mandatory Fields");
-				System.out.println("  -gtf                 : gtf file path. We recommand to use the same gtf corresponding to alignment.");
-				System.out.println("  -sam                 : sam file path. The sam file must be sorted by coordinate.");
-				System.out.println("  -psm                 : psm file path. It is expected that the psm file is derived from proteomics search by de novo or database search engine.");
+				System.out.println("  -gtf                 : GTF file path. We recommand to use the same gtf corresponding to alignment.");
+				System.out.println("  -sam                 : SAM file path. The sam file must be sorted by coordinate.");
+				System.out.println("  -psm                 : PSM file path. It is expected that the psm file is derived from proteomics search by de novo or database search engine.");
 				System.out.println("  -pept_col            : Peptide column index in the psm file. One-based!");
 				System.out.println("  -scan_cols           : Scan identifier indices in the psm file. Multiple columns are also possible because sometimes it is not enough to distinguish scan by only scan id.");
 				System.out.println("                         You can write multiple indices such like that: 1,2,5");
-				System.out.println("  -pept_col            : Peptide column index in the psm file. One-based!");
 				System.out.println("  -out                 : Output path of pXg.");
 				System.out.println();
 				System.out.println("Optional Fields");
 				System.out.println("  -sep                 : Specify the column separator. Possible values are csv or tsv. Default is csv");
-				System.out.println("  -pval                : p-value cutoff of randomly matched peptide-read pairs. Default is 0.05");
-				System.out.println("  -fdr                 : fdr cutoff to discard low-quality peptide-spectrum matches. Default is 0.05");
+				System.out.println("  -pval                : p-value cutoff of randomly matched peptide-read pairs. Default is 0.01");
+				System.out.println("  -fdr                 : FDR cutoff to discard low-quality peptide-spectrum matches. Default is 0.1");
+				System.out.println("  -ileq                : Controls whether pXg treats isoleucine (I) and leucine (L) as the same/equivalent with respect to a peptide identification. Default is true.");
 				System.out.println("  -length              : Range of peptide length to consider. Default is 8-15");
 				System.out.println("                         You can write in this way (min-max, both inclusive) : 8-13");
 				System.out.println("  -fasta               : Canonical sequence database to report conservative assignment of noncanonical PSMs");
@@ -109,8 +109,8 @@ public class ParameterParser {
 				// -out (mandatory)
 				else if(option.equalsIgnoreCase(Parameters.CMD_OUTPUT_PATH)) {
 					Parameters.outputFilePath = args[i+1];
-					Parameters.ngsStatFilePath = Parameters.outputFilePath +".pval.dist";
-					Parameters.psmStatFilePath = Parameters.outputFilePath +".fdr.dist";
+					Parameters.ngsStatFilePath = Parameters.outputFilePath +".read.dist";
+					Parameters.psmStatFilePath = Parameters.outputFilePath +".psm.dist";
 					Parameters.unmappedFilePath = Parameters.outputFilePath +".unmapped";
 					Parameters.exportGTFPath = Parameters.outputFilePath +".gtf";
 					Parameters.exportSAMPath = Parameters.outputFilePath +".sam";
@@ -127,6 +127,12 @@ public class ParameterParser {
 				// -fdr (optional)
 				else if(option.equalsIgnoreCase(Parameters.CMD_FDR)) {
 					Parameters.fdr = Double.parseDouble(args[i+1]);
+				}
+				// -ileq (optional)
+				else if(option.equalsIgnoreCase(Parameters.CMD_IL)) {
+					if(args[i+1].equalsIgnoreCase("false")) {
+						Parameters.leucineIsIsoleucine = false;
+					}
 				}
 				// -pept_col (mandatory)
 				else if(option.equalsIgnoreCase(Parameters.CMD_PEPTIDE_COLUMN_INDEX)) {

@@ -33,12 +33,14 @@ public class Parameters {
 	
 	// FDR estimation at PSM level
 	public static final String CMD_FDR				=	"-fdr".toLowerCase();
-	public static double fdr						=	0.05;
+	public static double fdr						=	0.1;
 	
 	// Peptide length
 	public static final String CMD_LENGTH			=	"-length".toLowerCase();
 	public static int minPeptLen					=	8;
 	public static int maxPeptLen					=	15;
+	
+	public static final String CMD_IL				=	"-ileq".toLowerCase();
 	public static boolean leucineIsIsoleucine		=	true;
 	
 	// Those options cannot be accessed by users.
