@@ -5,6 +5,9 @@
   - [Input format](#input-format)
   - [Output format](#output-format)
   - [Command-line interface](#command-line-interface)
+    - [List of parameters](#list-of-parameters)
+    - [Basic command](#basic-command)
+    - [Match-only command](#match-only-command)
 - [3rd-party application](#3rd-party-application)
   - [IGV viewer](#igv-viewer)
   - [Percolator](#percolator)
@@ -41,7 +44,7 @@ It was developed for the reliable identification of ncMAPs from de novo peptide 
 *Although the main output, pXg result contains PSM information with corresponding RNA-Seq counts, it is not suitable for visualization. <br>
  Two output files (matched reads and peptides) are available for direct use in IGV, making visualization easier.
 ### Command-line interface
-
+#### List of Parameters
 |Option    | Description    | Mandatory   |
 | :---:   | :---:       | :---:     |
 | gtf       | GTF file path. We recommand to use the same gtf corresponding to alignment |Yes   |
@@ -52,7 +55,8 @@ It was developed for the reliable identification of ncMAPs from de novo peptide 
 | out       | Output path of pXg |Yes   |
 | sep       | Specify the column separator. Possible values are csv or tsv. Default is csv |No   |
 | pval       | p-value cutoff of randomly matched peptide-read pairs. Default is 0.01 |No   |
-| fdr       | fdr cutoff to discard low-quality peptide-spectrum matches. Default is 0.1 |No   |
+| fdr       | FDR cutoff to discard low-quality peptide-spectrum matches. Default is 0.1 |No   |
+| ileq       | Controls whether pXg treats isoleucine (I) and leucine (L) as the same/equivalent with respect to a peptide identification. Default is true |No   |
 | length       | Range of peptide length to consider. Default is 8-15. You can write in this way (min-max, both inclusive) : 8-13 |No   |
 | fasta       | Canonical sequence database to report conservative assignment of noncanonical PSMs |No   |
 | rank       | How many candidates will be considered per a scan. Default is 100 (in other words, use all ranked candidates) |No   |
@@ -74,10 +78,20 @@ It was developed for the reliable identification of ncMAPs from de novo peptide 
 | sam_partition_size*       | The size of treating number of reads at once. Default is 1000000 |No   |
 
 *size parameters can effect memory usage and time. If your machine does not have enough memory, then decrease those values.
+
+#### Basic command
 ```bash
-java -Xmx64G -jar pXg.jar 
+java -Xmx30G -jar pXg.jar -gtf gencode.gtf -sam aligned.sorted.sam -psm peaks.result -fasta uniprot_contam.fasta -pept_col 4 -score_col 8 -scan_cols 1,2,5  -pval 0.01 -fdr 0.1 -out_canonical false -out peaks.pXg
 ```
+
+#### Match-only command
+If one wants to map the identified peptides to RNA-Seq reads, we recommand to use below command line.
+```bash
+java -Xmx30G -jar pXg.jar -gtf gencode.gtf -sam aligned.sorted.sam -psm peaks.result -fasta uniprot_contam.fasta -pept_col 4 -score_col 8 -scan_cols 1,2,5 -ileq false  -pval 0.01 -fdr 1 -out peaks.pXg
+```
+
 ## 3rd-party application
 ### IGV viewer
+
 ### Percolator
 
