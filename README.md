@@ -94,6 +94,8 @@ java -Xmx30G -jar pXg.jar -gtf gencode.gtf -sam aligned.sorted.sam -psm peaks.re
 
 ## 3rd-party application
 ### IGV viewer
+<img src="https://github.com/progistar/pXg/blob/main/img/igv1.png"/>
+As pXg is finished to identify peptides, the result GTF and SAM files can be directly used in IGV viewer.
 
 ### Percolator
 
