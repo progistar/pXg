@@ -1,4 +1,6 @@
 # pXg: proteomics X genomics
+<img src="https://github.com/progistar/pXg/blob/main/img/intro.png"/>
+
 ---
 - [About pXg](#about-pxg)
 - [Usage](#usage)
