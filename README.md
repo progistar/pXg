@@ -12,7 +12,6 @@
     - [Match-only command](#match-only-command)
 - [3rd-party application](#3rd-party-application)
   - [IGV viewer](#igv-viewer)
-  - [Percolator](#percolator)
 ---
 
 ## About pXg
@@ -96,6 +95,3 @@ java -Xmx30G -jar pXg.jar -gtf gencode.gtf -sam aligned.sorted.sam -psm peaks.re
 ### IGV viewer
 <img src="https://github.com/progistar/pXg/blob/main/img/igv1.png"/>
 When pXg finishes identifying peptides, the resulting GTF and SAM files are immediately available in the IGV viewer.
-
-### Percolator
-
