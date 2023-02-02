@@ -98,6 +98,8 @@ java -Xmx30G -jar pXg.jar -gtf gencode.gtf -sam aligned.sorted.sam -psm peaks.re
 This tutorial contains 1) running <a href="https://github.com/alexdobin/STAR" target="_blank">STAR2</a> aligner with 2-pass parameter, 2) preparing SAM file from the alignment and 3) running pXg.
 Note that it does not contain how to run de novo peptide sequencing engines such as PEAKS and pNovo3.
 Please visit <a href="https://www.bioinfor.com/peaks-studio/" target="_blank">PEAKS</a> or <a href="http://pfind.org/software/pNovo/index.html" target="_blank">pNovo3</a>.
+Plus, we provide a simple running example with full data sets in "tutorial" folder; however, DO NOT USE THE EXAMPLE FOR YOUR RESEARCH PURPOSE!
+Because we just make the tutorial folder to show you what you get from pXg.
 ### RNA-Seq alignment
 We recommand to align fastq files using STAR2 with The Cancer Genome Atlas (TCGA) <a href="https://docs.gdc.cancer.gov/Data/Bioinformatics_Pipelines/Expression_mRNA_Pipeline" target="_blank">two-pass alignment option</a>. 
 
