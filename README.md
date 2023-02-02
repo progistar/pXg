@@ -95,13 +95,32 @@ If one wants to map the identified peptides to RNA-Seq reads, we recommand to us
 java -Xmx30G -jar pXg.jar -gtf gencode.gtf -sam aligned.sorted.sam -psm peaks.result -fasta uniprot_contam.fasta -pept_col 4 -score_col 8 -scan_cols 1,2,5 -ileq false  -pval 0.01 -fdr 1 -out peaks.pXg
 ```
 ## Tutorial
+This tutorial contains 1) running <a href="https://github.com/alexdobin/STAR">STAR2</a> aligner with 2-pass parameter, 2) preparing SAM file from the alignment and 3) running pXg.
+Note that it does not contain how to run de novo peptide sequencing engines such as PEAKS and pNovo3.
+Please visit <a href="https://www.bioinfor.com/peaks-studio/">PEAKS</a> or <a href="http://pfind.org/software/pNovo/index.html">pNovo3</a>.
 ### RNA-Seq alignment
-https://docs.gdc.cancer.gov/Data/Bioinformatics_Pipelines/Expression_mRNA_Pipeline![image](https://user-images.githubusercontent.com/5820609/216395993-d9d50b28-8d27-41b9-b05a-912aec1a3291.png)
+We recommand to align fastq files using STAR2 with The Cancer Genome Atlas (TCGA) <a href="https://docs.gdc.cancer.gov/Data/Bioinformatics_Pipelines/Expression_mRNA_Pipeline">two-pass alignment option</a>. 
 
 ### SAM preparation
+Once you get the aligned BAM or SAM file, you MUST sort the file by chromosomal coordinates and convert to SAM.
+Currently, pXg only supports SAM file.
 
+We provide a code for preprocessing SMA file below:
+```bash
+samtools view -h -q 255 aligned.out.sam > aligned.unique.sam -@ 32
+samtools view -h -f 4 aligned.out.sam > aligned.unmapped.sam -@ 32
+samtools merge aligned.unique_unmapped.sam aligned.unique.sam aligned.unmapped.sam -@ 32
+
+samtools sort -o aligned.unique_unmapped.sorted.sam aligned.unique_unmapped.sam -@ 32
+```
 
 ### Run pXg
+In the "tutorial" folder, we provide a simple running example with data sets (PEAKS result, SAM, GTF and pXg command bash file).
+However, do not use the example for your research purpose. Rather, we recommand below:
+```bash
+java -Xmx50G -jar pXg.jar -gtf gencode.gtf -sam aligned.unique_unmapped.sorted.sam -psm peaks.result -fasta uniprot_contam.fasta -pept_col 4 -score_col 8 -scan_cols 1,2,5  -pval 0.01 -fdr 0.1 -out peaks.pXg
+```
+Note that the memory option "-Xmx50G" depends on the size of SMA file. In our experience, "-Xmx30G" is enough to deal with ~20G file. 
 
 ## 3rd-party application
 ### IGV viewer
