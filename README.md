@@ -9,7 +9,11 @@
   - [Command-line interface](#command-line-interface)
     - [List of parameters](#list-of-parameters)
     - [Basic command](#basic-command)
-    - [Match-only command](#match-only-command)
+    - [Peptide mapping command](#peptide-mapping-command)
+- [Tutorial](#tutorial)
+  - [RNA-Seq alignment](#rna-seq-alignment)
+  - [SAM preparation](#sam-preparation)
+  - [Run pXg](#run-pxg)
 - [3rd-party application](#3rd-party-application)
   - [IGV viewer](#igv-viewer)
 ---
@@ -85,11 +89,19 @@ It was developed for the reliable identification of ncMAPs from de novo peptide 
 java -Xmx30G -jar pXg.jar -gtf gencode.gtf -sam aligned.sorted.sam -psm peaks.result -fasta uniprot_contam.fasta -pept_col 4 -score_col 8 -scan_cols 1,2,5  -pval 0.01 -fdr 0.1 -out_canonical false -out peaks.pXg
 ```
 
-#### Match-only command
+#### Peptide mapping command
 If one wants to map the identified peptides to RNA-Seq reads, we recommand to use below command line.
 ```bash
 java -Xmx30G -jar pXg.jar -gtf gencode.gtf -sam aligned.sorted.sam -psm peaks.result -fasta uniprot_contam.fasta -pept_col 4 -score_col 8 -scan_cols 1,2,5 -ileq false  -pval 0.01 -fdr 1 -out peaks.pXg
 ```
+## Tutorial
+### RNA-Seq alignment
+https://docs.gdc.cancer.gov/Data/Bioinformatics_Pipelines/Expression_mRNA_Pipeline![image](https://user-images.githubusercontent.com/5820609/216395993-d9d50b28-8d27-41b9-b05a-912aec1a3291.png)
+
+### SAM preparation
+
+
+### Run pXg
 
 ## 3rd-party application
 ### IGV viewer
