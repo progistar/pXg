@@ -108,7 +108,7 @@ public class ParameterParser {
 						args[i+1] = sixFT;
 					}
 					
-					Parameters.translationMethod = Byte.parseByte(args[i+1]);
+					Parameters.translationMethod = Integer.parseInt(args[i+1]);
 				}
 				// -fasta (optional)
 				else if(option.equalsIgnoreCase(Parameters.CMD_PROTEIN_SEQUENCE_PATH)) {

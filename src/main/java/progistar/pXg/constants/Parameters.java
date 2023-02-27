@@ -126,5 +126,5 @@ public class Parameters {
 	public static final String CMD_TRANSLATION		=	"-translation";
 
 	// Three or Six frame translation
-	public static byte translationMethod			=	Constants.SIX_FRAME;
+	public static int translationMethod				=	Constants.SIX_FRAME;
 }

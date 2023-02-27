@@ -11,8 +11,8 @@ public class Constants {
 	public static final String INTRODUCE = "Seunghyuk Choi and Eunok Paek in the Department of Computer Science at Hanyang University in Seoul, South Korea. ";
 	
 	// Translation method
-	public static final byte THREE_FRAME	=	0;
-	public static final byte SIX_FRAME	=	1;
+	public static final int THREE_FRAME	=	0;
+	public static final int SIX_FRAME	=	1;
 	
 	// Decoy prefix
 	public static final String DECOY_PREFIX	=	"Decoy@";
