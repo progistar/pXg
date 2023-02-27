@@ -87,9 +87,6 @@ public class Parameters {
 	
 	public static int maxProteinOut					=	10;
 	
-	// Three or Six frame translation
-	public static byte translationMethod			=	Constants.SIX_FRAME;
-	
 	// Penalty
 	public static final String CMD_PENALTY_MUTATION	=	"-pMut".toLowerCase();
 	public static final String CMD_PENALTY_AS		=	"-pAS".toLowerCase();
@@ -125,4 +122,9 @@ public class Parameters {
 	public static int nThreads						=	1;
 	
 	public static boolean isDecoyOut 				=	true;
+	
+	public static final String CMD_TRANSLATION		=	"-translation";
+
+	// Three or Six frame translation
+	public static byte translationMethod			=	Constants.SIX_FRAME;
 }

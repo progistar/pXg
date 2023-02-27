@@ -9,10 +9,10 @@ import java.io.IOException;
 public class App_pXg {
 
 	public static void main(String[] args) {
-		int tPeptideIndex = 20;
+		int tPeptideIndex = 3;
 		
-		String pXgOutputFileName = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/pXg_nocut/S4.pXg";
-		NetMHCpanResult netMHCpanResult = NetMHCpanParser.parseNetMHCpan("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/NetMHCpan/S4_nocut.xls");
+		String pXgOutputFileName = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/9.Unmodified_10ppm/pXg_Unmatched/S4.RAW.PEAKS.csv.top1.unided";
+		NetMHCpanResult netMHCpanResult = NetMHCpanParser.parseNetMHCpan("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/9.Unmodified_10ppm/pXg_Unmatched/S4_NetMHCpan.xls");
 		
 		try {
 			BufferedReader BR = new BufferedReader(new FileReader(pXgOutputFileName));
@@ -20,15 +20,19 @@ public class App_pXg {
 			String line = BR.readLine() +"\t"+netMHCpanResult.getHeader(); // header;
 			
 			// append header
-			BW.append(line);
+			BW.append(line.replaceAll("\\,", "\t"));
 			BW.newLine();
 			
 			while((line = BR.readLine()) != null) {
+				line = line.replaceAll("\\,", "\t");
 				String[] fields = line.split("\t");
 				String peptide = fields[tPeptideIndex];
 				
-				BW.append(line).append("\t").append(netMHCpanResult.getHLATyping(peptide));
-				BW.newLine();
+				if(peptide.length() >7 && peptide.length() < 16) {
+					BW.append(line).append("\t").append(netMHCpanResult.getHLATyping(peptide));
+					BW.newLine();
+				}
+				
 			}
 			
 			BW.close();

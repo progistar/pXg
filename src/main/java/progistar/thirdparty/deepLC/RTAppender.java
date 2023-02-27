@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,8 +20,8 @@ public class RTAppender {
 	public static String CYSTEINLY = "Cysteinyl";
 	
 	public static void main(String[] args) throws IOException {
-		String pXgFileName = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/7.Unmodified/pXg/S4.UNMOD.PEAKS.pxg.BA.fdr";
-		String deeplcFolder = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/RT/S4_deeplc_predictions.csv";
+		String pXgFileName = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/deepLC/S4.RAW.PEAKS.csv.top1.unided.peptideLevel.BA.pept85.tsv";
+		String deeplcFolder = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/deepLC/S4.unmatched_deeplc_predictions.csv";
 		
 		File file = new File(deeplcFolder);
 		// key
@@ -36,7 +37,6 @@ public class RTAppender {
 		while((line = BR.readLine()) != null) {
 			String[] fields = line.split("\\,");
 			String key = fields[1]+"_"+fields[2]+"_"+Double.parseDouble(fields[3]);
-			
 			RTMapper.put(key, fields[4]);
 		}
 		BR.close();
@@ -51,16 +51,20 @@ public class RTAppender {
 		
 		int peaksPeptideIndex = 3;
 		int rtIndex = 11;
-		int peptideIndex = 20;
+		int peptideIndex = 3;
 		
 		BR = new BufferedReader(new FileReader(pXgFileName));
 		
 		// header
 		System.out.println(BR.readLine()+"\tdeeplcRT");
 		
-		
+		ArrayList<String[]> pXgRecords = new ArrayList<String[]>();
 		while((line = BR.readLine()) != null) {
-			String[] fields = line.split("\t");
+			pXgRecords.add(line.split("\t"));
+		}
+		
+		for(int i=0; i<pXgRecords.size(); i++) {
+			String[] fields = pXgRecords.get(i);
 			String modifications = "";
 			if(fields[peaksPeptideIndex].contains("+") || fields[peaksPeptideIndex].contains("-")) {
 				Matcher matcher = MODREG.matcher(fields[peaksPeptideIndex]);
@@ -81,7 +85,12 @@ public class RTAppender {
 				// multiple genomic loci with ambiguous I/L
 				System.out.println(line+"\t-");
 			} else {
-				System.out.println(line+"\t"+pRT);
+				StringBuilder sb = new StringBuilder();
+				sb.append(pXgRecords.get(i)[0]);
+				for(int j=1; j<pXgRecords.get(i).length; j++) {
+					sb.append("\t").append(pXgRecords.get(i)[j]);
+				}
+				System.out.println(sb.toString()+"\t"+pRT);
 			}
 		}
 		

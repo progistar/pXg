@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -54,23 +55,67 @@ public class pXg2DeepLCInput {
 		int rtIndex = 11;
 		int fractionIndex = 1;
 		int scanIndex = 4;
-		int peptideIndex = 20;
+		int peptideIndex = 3;
 		int peaksScoreIndex = 7;
 		
-		String fileName = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/7.Unmodified/pXg/S4.UNMOD.PEAKS.pxg.BA.fdr";
+		String fileName = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/deepLC/S4.RAW.PEAKS.csv.top1.unided.peptideLevel.BA.tsv";
+		String line = null;
 		File file = new File(fileName);
 		BufferedReader BR = new BufferedReader(new FileReader(file));
+		BufferedWriter BWpXgNew = new BufferedWriter(new FileWriter(fileName.replace(".tsv", ".pept85.tsv")));
 		
-		String line = null;
 		
-		
-		BR.readLine(); // skip header
+		BWpXgNew.append(BR.readLine());
+		BWpXgNew.newLine();
 		Hashtable<String, String> rmDuplications = new Hashtable<String, String>();
+		Hashtable<String, String> rmDuplicatedPeptides = new Hashtable<String, String>();
 		Hashtable<String, ArrayList<DeepLCData>> fractions = new Hashtable<String, ArrayList<DeepLCData>>();
 		
-		
+		ArrayList<String[]> pXgRecords = new ArrayList<String[]>();
 		while((line = BR.readLine()) != null) {
-			String[] fields = line.split("\t");
+			pXgRecords.add(line.split("\t"));
+		}
+		
+		pXgRecords.sort(new Comparator<String[]>() {
+
+			@Override
+			public int compare(String[] o1, String[] o2) {
+				double score1 = Double.parseDouble(o1[peaksScoreIndex]);
+				double score2 = Double.parseDouble(o2[peaksScoreIndex]);
+				
+				if(score1 < score2) {
+					return 1;
+				} else if(score1 > score2) {
+					return -1;
+				}
+				
+				return 0;
+			}
+			
+		});
+		
+		for(int i=0; i<pXgRecords.size(); i++) {
+			String peptide = pXgRecords.get(i)[peptideIndex];
+			if(rmDuplicatedPeptides.get(peptide) != null) {
+				pXgRecords.remove(i--);
+			} else {
+				rmDuplicatedPeptides.put(peptide, "");
+				StringBuilder sb = new StringBuilder();
+				sb.append(pXgRecords.get(i)[0]);
+				for(int j=1; j<pXgRecords.get(i).length; j++) {
+					sb.append("\t").append(pXgRecords.get(i)[j]);
+				}
+				BWpXgNew.append(sb.toString());
+				BWpXgNew.newLine();
+			}
+		}
+		
+		BWpXgNew.close();
+		
+		
+		
+		for(int i=0; i<pXgRecords.size(); i++) {
+			String[] fields = pXgRecords.get(i);
 			String modifications = "";
 			if(fields[peaksPeptideIndex].contains("+") || fields[peaksPeptideIndex].contains("-")) {
 				Matcher matcher = MODREG.matcher(fields[peaksPeptideIndex]);
@@ -83,14 +128,16 @@ public class pXg2DeepLCInput {
 				modifications = modifications.substring(0, modifications.length()-1);
 			}
 			//
-			String fractionName = file.getName().split("\\.")[0];
+			String fractionName ="1";//file.getName().split("\\.")[0];
 			ArrayList<DeepLCData> fraction = fractions.get(fractionName);
 			if(fraction == null) {
 				fraction = new ArrayList<DeepLCData>();
 				fractions.put(fractionName, fraction);
 			}
 			
-			if(rmDuplications.get(fields[fractionIndex]+"_"+fields[scanIndex]+"_"+fields[peptideIndex]) == null) {
+			String fileKey = fields[fractionIndex]+"_"+fields[scanIndex]+"_"+fields[peptideIndex];
+			
+			if(rmDuplications.get(fileKey) == null) {
 				DeepLCData data = new DeepLCData();
 				String key = fields[peptideIndex]+","+modifications+","+fields[rtIndex];
 				
@@ -99,7 +146,7 @@ public class pXg2DeepLCInput {
 				data.rt = Double.parseDouble(fields[rtIndex]);
 				
 				fraction.add(data);
-				rmDuplications.put(fields[fractionIndex]+"_"+fields[scanIndex]+"_"+fields[peptideIndex], "");
+				rmDuplications.put(fileKey, "");
 			}
 		}
 		
@@ -119,9 +166,11 @@ public class pXg2DeepLCInput {
 				int cnt = 0;
 				while(cnt < calSize) {
 					for(DeepLCData data : fraction) {
-						BW.append(data.content);
-						BW.newLine();
-						cnt++;
+						if(data.score >= 85) {
+							BW.append(data.content);
+							BW.newLine();
+							cnt++;
+						}
 					}
 				}
 				System.out.println("data size: "+cnt);
@@ -137,21 +186,39 @@ public class pXg2DeepLCInput {
 				double intervalRT = (maxRT-minRT)/calSize;
 				System.out.println("RT range: "+minRT+"-"+maxRT);
 				System.out.println("RT Interval: "+intervalRT);
+				
+				
+				ArrayList<DeepLCData> calData = new ArrayList<DeepLCData>();
+				for(int j=0; j<fraction.size(); j++) {
+					DeepLCData data = fraction.get(j);
+					if(data.score >= 95) {
+						calData.add(data);
+					}
+				}
+				
+				for(DeepLCData data : calData) {
+					BWCal.append(data.content);
+					BWCal.newLine();
+				}
+				
+				System.out.println("CalData: "+calData.size());
+				/*
 				for(int i=0; i<calSize; i++) {
 					double startRT = minRT + i * intervalRT;
 					double endRT = minRT + (i+1) * intervalRT;
 					
 					ArrayList<DeepLCData> calData = new ArrayList<DeepLCData>();
+					
 					// max top 10
 					while(calData.size() == 0) {
 						// select top 10 peptides
 						for(int j=0; j<fraction.size(); j++) {
 							DeepLCData data = fraction.get(j);
-							if(data.rt >= startRT && data.rt <= endRT) {
+							if(data.rt >= startRT && data.rt <= endRT ) {
 								calData.add(data);
 							}
 							
-							if(calData.size() == 10) {
+							if(calData.size() == 20) {
 								break;
 							}
 						}
@@ -166,7 +233,7 @@ public class pXg2DeepLCInput {
 						BWCal.newLine();
 					}
 				}
-				
+				*/
 				BW.close();
 				BWCal.close();
 				

@@ -35,6 +35,7 @@ public class ParameterParser {
 				System.out.println();
 				System.out.println("Optional Fields");
 				System.out.println("  -sep                 : Specify the column separator. Possible values are csv or tsv. Default is csv");
+				System.out.println("  -translation         : Specify the method of translation nucleotides. 0 for three-frame and 1 for six-frame. Default is 1");
 				System.out.println("  -pval                : p-value cutoff of randomly matched peptide-read pairs. Default is 0.01");
 				System.out.println("  -fdr                 : FDR cutoff to discard low-quality peptide-spectrum matches. Default is 0.1");
 				System.out.println("  -ileq                : Controls whether pXg treats isoleucine (I) and leucine (L) as the same/equivalent with respect to a peptide identification. Default is true.");
@@ -97,6 +98,17 @@ public class ParameterParser {
 				// -sep (optional)
 				else if(option.equalsIgnoreCase(Parameters.SEP_TYPE)) {
 					Parameters.sepType = args[i+1];
+				}
+				// -translation (optional)
+				else if(option.equalsIgnoreCase(Parameters.CMD_TRANSLATION)) {
+					String sixFT= String.valueOf(Constants.SIX_FRAME);
+					String threeFT= String.valueOf(Constants.THREE_FRAME);
+					if(!args[i+1].equalsIgnoreCase(sixFT) && !args[i+1].equalsIgnoreCase(threeFT)) {
+						System.out.println(args[i+1] +" is wrong value. Enforce to six-frame translation.");
+						args[i+1] = sixFT;
+					}
+					
+					Parameters.translationMethod = Byte.parseByte(args[i+1]);
 				}
 				// -fasta (optional)
 				else if(option.equalsIgnoreCase(Parameters.CMD_PROTEIN_SEQUENCE_PATH)) {
@@ -297,6 +309,14 @@ public class ParameterParser {
 		System.out.println("  GTF_PARTITION_SIZE: "+Parameters.partitionSize);
 		System.out.println(" SAM: "+Parameters.sequenceFilePath);
 		System.out.println("  SAM_PARTITION_SIZE: "+Parameters.readSize);
+		
+		String translation = "NA";
+		if(Parameters.translationMethod == Constants.THREE_FRAME) {
+			translation = "three-frame translation";
+		} else if(Parameters.translationMethod == Constants.SIX_FRAME) {
+			translation = "six-frame translation";
+		}
+		System.out.println("  TRANSLATION_METHOD: "+Parameters.translationMethod +" ("+translation+")");
 		System.out.println("  READ_CUTOFF_P_VALUE: "+Parameters.pvalue);
 		System.out.println(" PSM: "+Parameters.peptideFilePath);
 		System.out.println("  PEPT_COL: "+Parameters.peptideColumnIndex);
