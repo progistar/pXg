@@ -59,6 +59,7 @@ It was developed for the reliable identification of ncMAPs from de novo peptide 
 | scan_cols       | Scan identifier indices in the psm file. Multiple columns are also possible because sometimes it is not enough to distinguish scan by only scan id. You can write multiple indices such like that: 1,2,5 |Yes   |
 | out       | Output path of pXg |Yes   |
 | sep       | Specify the column separator. Possible values are csv or tsv. Default is csv |No   |
+| translation       | Specify the method of translation nucleotides. 0 for three-frame and 1 for six-frame. Default is 1 |No   |
 | pval       | p-value cutoff of randomly matched peptide-read pairs. Default is 0.01 |No   |
 | fdr       | FDR cutoff to discard low-quality peptide-spectrum matches. Default is 0.1 |No   |
 | ileq       | Controls whether pXg treats isoleucine (I) and leucine (L) as the same/equivalent with respect to a peptide identification. Default is true |No   |
