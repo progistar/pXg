@@ -362,6 +362,8 @@ public class ParameterParser {
 		Logger.newLine();
 		Logger.append("  SAM_PARTITION_SIZE: "+Parameters.readSize);
 		Logger.newLine();
+		Logger.append("  TRANSLATION_METHOD: "+Parameters.translationMethod +" ("+translation+")");
+		Logger.newLine();
 		Logger.append("  READ_CUTOFF_P_VALUE: "+Parameters.pvalue);
 		Logger.newLine();
 		Logger.append(" PSM: "+Parameters.peptideFilePath);
