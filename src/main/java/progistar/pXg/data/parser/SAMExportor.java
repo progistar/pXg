@@ -16,10 +16,10 @@ public class SAMExportor {
 	
 	public static void putSequenceID (XBlock xBlock) {
 		
-		sequenceIDChecker.put(xBlock.sequenceID.split("\\_")[0], "");
+		sequenceIDChecker.put(xBlock.sequenceID.split("\\@")[0], "");
 		
 		xBlock.siblingXBlocks.forEach((sxBlock) -> {
-			sequenceIDChecker.put(sxBlock.sequenceID.split("\\_")[0], "");
+			sequenceIDChecker.put(sxBlock.sequenceID.split("\\@")[0], "");
 		});
 		
 	}

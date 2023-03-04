@@ -114,7 +114,7 @@ public class Worker extends Thread {
 	 */
 	public void writeTmpOutput (BufferedWriter BW, ArrayList<Output> outputs, GenomicSequence gSeq, String prefixID) {
 		try {
-			BW.append(Constants.OUTPUT_G_UNIQUE_ID+"\t"+prefixID+gSeq.uniqueID+"_"+gSeq.getLocus());
+			BW.append(Constants.OUTPUT_G_UNIQUE_ID+"\t"+prefixID+gSeq.uniqueID+"@"+gSeq.getLocus());
 			BW.newLine();
 			
 
