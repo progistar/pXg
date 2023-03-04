@@ -102,57 +102,55 @@ public class PeptideAnnotation {
 		}
 		
 		// reverse complement translation
-		if(Parameters.translationMethod == Constants.SIX_FRAME) {
-			for(int i=0; i<3; i++) {
-				decoySequence.setLength(0);
-				String target = gSeq.getReverseStrandTranslation(i);
-				String decoy = decoySequence.append(target).reverse().toString();
-				int targetLen = target.length();
-				int decoyLen = decoy.length();
-				
+		for(int i=0; i<3; i++) {
+			decoySequence.setLength(0);
+			String target = gSeq.getReverseStrandTranslation(i);
+			String decoy = decoySequence.append(target).reverse().toString();
+			int targetLen = target.length();
+			int decoyLen = decoy.length();
+			
 //				RunInfo.countTDPeptide(target, decoy);
+			
+			for(int j=0; j<targetLen; j++) {
+				RunInfo.targetAAFreqs[target.charAt(j)-'A']++;
+			}
+			for(int j=0; j<decoyLen; j++) {
+				RunInfo.decoyAAFreqs[decoy.charAt(j)-'A']++;
+			}
+			
+			// for target
+			Collection<Emit> emits = trie.parseText(target);
+			for(Emit emit : emits) {
+				// convert peptide index to nucleotide index
+				int start = emit.getStart() * 3 + i;
+				int end = (emit.getEnd()+1) * 3 + i - 1;
+			
+				// convert reverse index to forward index
+				int tmp = start;
+				start = ntLen - end - 1;
+				end = ntLen - tmp - 1;
 				
-				for(int j=0; j<targetLen; j++) {
-					RunInfo.targetAAFreqs[target.charAt(j)-'A']++;
-				}
-				for(int j=0; j<decoyLen; j++) {
-					RunInfo.decoyAAFreqs[decoy.charAt(j)-'A']++;
-				}
+				Output output = new Output(gSeq, peptideIndexer.get(emit.getKeyword()), start, end, false, true);
+				outputs.add(output);
+			}
+			
+			// for decoy
+			emits = trie.parseText(decoy);
+			for(Emit emit : emits) {
+				// convert peptide index to nucleotide index
+				int tmpStart = ((decoyLen - 1) - emit.getEnd());
+				int tmpEnd = ((decoyLen-1) - emit.getStart());
 				
-				// for target
-				Collection<Emit> emits = trie.parseText(target);
-				for(Emit emit : emits) {
-					// convert peptide index to nucleotide index
-					int start = emit.getStart() * 3 + i;
-					int end = (emit.getEnd()+1) * 3 + i - 1;
+				int start = tmpStart * 3 + i;
+				int end = (tmpEnd+1) * 3 + i - 1;
+			
+				// convert reverse index to forward index
+				int tmp = start;
+				start = ntLen - end - 1;
+				end = ntLen - tmp - 1;
 				
-					// convert reverse index to forward index
-					int tmp = start;
-					start = ntLen - end - 1;
-					end = ntLen - tmp - 1;
-					
-					Output output = new Output(gSeq, peptideIndexer.get(emit.getKeyword()), start, end, false, true);
-					outputs.add(output);
-				}
-				
-				// for decoy
-				emits = trie.parseText(decoy);
-				for(Emit emit : emits) {
-					// convert peptide index to nucleotide index
-					int tmpStart = ((decoyLen - 1) - emit.getEnd());
-					int tmpEnd = ((decoyLen-1) - emit.getStart());
-					
-					int start = tmpStart * 3 + i;
-					int end = (tmpEnd+1) * 3 + i - 1;
-				
-					// convert reverse index to forward index
-					int tmp = start;
-					start = ntLen - end - 1;
-					end = ntLen - tmp - 1;
-					
-					Output output = new Output(gSeq, peptideIndexer.get(emit.getKeyword()), start, end, false, false);
-					outputs.add(output);
-				}
+				Output output = new Output(gSeq, peptideIndexer.get(emit.getKeyword()), start, end, false, false);
+				outputs.add(output);
 			}
 		}
 		

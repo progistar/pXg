@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import progistar.pXg.assemble.Assembler;
 import progistar.pXg.constants.Constants;
+import progistar.pXg.constants.Parameters;
 import progistar.pXg.data.GenomicSequence;
 import progistar.pXg.data.PxGAnnotation;
 import progistar.pXg.data.XBlock;
@@ -48,39 +49,71 @@ public class ResultParser {
 						fullReads = field[1];
 					} else if(field[0].equalsIgnoreCase(Constants.OUTPUT_G_PEPTIDE)) {
 						
-						String pSeq = field[1]; // peptide sequence without I/L consideration
-						XBlock xBlock = new XBlock();
-						xBlock.genomicLocus = field[2];
-						xBlock.strand = field[3].charAt(0);
-						xBlock.genomicSequence = field[4];
-						xBlock.mutations = field[5];
-						xBlock.tAnnotations = field[6];
-						xBlock.fullReadSequence = fullReads;
-						// If unmapped reads, merging xBlocks and making a single contig xBlock.
-						
-						if(xBlock.strand == '+') {
-							xBlock.peptideSequence = GenomicSequence.translation(xBlock.genomicSequence, 0);
-						} else {
-							xBlock.peptideSequence = GenomicSequence.reverseComplementTranslation(xBlock.genomicSequence, 0);
-						}
-						
-						if(isDecoy) {
-							xBlock.mockReadCount++;
-						} else {
-							xBlock.targetReadCount++;
-						}
-						
-						xBlock.sequenceID = uniqueID;
-						if(fullReads == null) {
-							// put xBlock
-							annotation.putXBlock(pSeq, xBlock);
-						} else {
-							// those xBlocks are needed to merge into contig.
-							xBlock.genomicLocus = "-";
-							annotation.putXBlock(pSeq, xBlock);
+						try {
+							String pSeq = field[1]; // peptide sequence without I/L consideration
+							XBlock xBlock = new XBlock();
+							xBlock.genomicLocus = field[2];
+							xBlock.strand = field[3].charAt(0);
+							xBlock.genomicSequence = field[4];
+							xBlock.mutations = field[5];
+							xBlock.tAnnotations = field[6];
+							xBlock.fullReadSequence = fullReads;
+							// If unmapped reads, merging xBlocks and making a single contig xBlock.
 							
-							// TODO: assembly?
-							Assembler.addXBlock(pSeq, xBlock);
+							// antisense checker if three-frame
+							/**
+							 * Antisense event is not allowed.
+							 * TODO: More events can be added in future.
+							 */
+							if(Parameters.translationMethod == Constants.THREE_FRAME) {
+								StringBuilder transcriptsWithOutBANlist = new StringBuilder();
+								String[] transcripts = field[6].split("\\|");
+								for(String transcript : transcripts) {
+									if(!transcript.contains(";antisense;")) {
+										if(transcriptsWithOutBANlist.length() != 0) {
+											transcriptsWithOutBANlist.append("|");
+										}
+										transcriptsWithOutBANlist.append(transcript);
+									}
+								}
+								
+								// skip! there is no available event.
+								if(transcriptsWithOutBANlist.length() == 0) {
+									// discard the ID result
+									continue;
+								} else {
+									xBlock.tAnnotations = transcriptsWithOutBANlist.toString();
+								}
+							}
+							
+							
+							if(xBlock.strand == '+') {
+								xBlock.peptideSequence = GenomicSequence.translation(xBlock.genomicSequence, 0);
+							} else {
+								xBlock.peptideSequence = GenomicSequence.reverseComplementTranslation(xBlock.genomicSequence, 0);
+							}
+							
+							if(isDecoy) {
+								xBlock.mockReadCount++;
+							} else {
+								xBlock.targetReadCount++;
+							}
+							
+							xBlock.sequenceID = uniqueID;
+							if(fullReads == null) {
+								// put xBlock
+								annotation.putXBlock(pSeq, xBlock);
+							} else {
+								// those xBlocks are needed to merge into contig.
+								xBlock.genomicLocus = "-";
+								annotation.putXBlock(pSeq, xBlock);
+								
+								// TODO: assembly?
+								Assembler.addXBlock(pSeq, xBlock);
+							}
+						}catch(Exception e) {
+							e.printStackTrace();
+							System.out.println(line);
 						}
 					}
 				}

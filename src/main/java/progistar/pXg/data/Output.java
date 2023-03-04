@@ -28,13 +28,13 @@ public class Output {
 	
 	public boolean isTarget = true;
 	
-	public Output (GenomicSequence gSeq, int peptideIndex, int startPos, int endPos, boolean strand, boolean isDecoy) {
+	public Output (GenomicSequence gSeq, int peptideIndex, int startPos, int endPos, boolean strand, boolean isTarget) {
 		this.gSeq = gSeq;
 		this.peptideIndex = peptideIndex;
 		this.startPosInNGS = startPos;
 		this.endPosInNGS = endPos;
 		this.strand = strand;
-		this.isTarget = isDecoy;
+		this.isTarget = isTarget;
 	}
 	
 	public String getPeptide () {
@@ -226,7 +226,6 @@ public class Output {
 		int startGenomicPosition = -1;
 		int endGenomicPosition = -1;
 		for(Cigar cigar : gSeq.cigars) {
-
 			// if the cigar operation is N,
 			// there is a junction in the NGS-read.
 			if(cigar.operation == 'N') {
