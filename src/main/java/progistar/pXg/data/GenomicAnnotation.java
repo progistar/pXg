@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Hashtable;
 
 import progistar.pXg.utils.ENSTMapper;
+import progistar.pXg.utils.IndexConvertor;
 
 public class GenomicAnnotation {
 	
@@ -89,7 +90,7 @@ public class GenomicAnnotation {
 	 * @return
 	 */
 	public int[][] getIndexingBlocks (int chrIndex, int start, int end) {
-		System.out.print("Get indexing tBlocks from the annotation... ("+start+"-"+end+")");
+		System.out.print("Get indexing tBlocks from the annotation... ("+IndexConvertor.indexToChr(chrIndex)+":"+start+"-"+end+")");
 		long startTime = System.currentTimeMillis();
 		
 		int size = end - start + 1;

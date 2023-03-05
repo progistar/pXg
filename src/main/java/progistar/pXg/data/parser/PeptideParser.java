@@ -92,8 +92,6 @@ public class PeptideParser {
 		}
 		
 
-		long endTime = System.currentTimeMillis();
-		
 		// determine rank
 		PeptideAnnotation.assignRank();
 		
@@ -117,6 +115,7 @@ public class PeptideParser {
 			RunInfo.totalRankPSMs[pBlock.rank]++;
 		}
 		
+		long endTime = System.currentTimeMillis();
 		System.out.println("\tElapsed time: "+((endTime-startTime)/1000) + " sec");
 
 		

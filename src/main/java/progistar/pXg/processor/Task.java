@@ -8,7 +8,7 @@ import progistar.pXg.data.GenomicSequence;
 public class Task {
 	protected int[][] genomicAnnotationIndex;
 	protected GenomicAnnotation genomicAnnotation;
-	protected ArrayList<GenomicSequence> genomicSequences = new ArrayList<GenomicSequence>();
+	protected ArrayList<String> samReads = new ArrayList<String>();
 	protected int gIndexStart;
 	protected boolean isAssigned = false;
 	protected int taskID;
@@ -23,11 +23,11 @@ public class Task {
 	public Task() {}
 	
 	public Task(int[][] genomicAnnotationIndex, GenomicAnnotation genomicAnnotation,
-			ArrayList<GenomicSequence> genomicSequences, int start, int taskID, int taskType) {
+			ArrayList<String> samReads, int start, int taskID, int taskType) {
 		super();
 		this.genomicAnnotationIndex = genomicAnnotationIndex;
 		this.genomicAnnotation = genomicAnnotation;
-		this.genomicSequences = genomicSequences;
+		this.samReads = samReads;
 		this.gIndexStart = start;
 		this.taskID = taskID;
 		this.taskType = taskType;
@@ -42,6 +42,6 @@ public class Task {
 	}
 	
 	public String description () {
-		return "task " + this.taskID +": " + this.genomicSequences.size() +" sequences";
+		return "task " + this.taskID +": " + this.samReads.size() +" sequences";
 	}
 }

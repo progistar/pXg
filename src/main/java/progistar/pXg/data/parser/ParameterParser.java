@@ -349,7 +349,7 @@ public class ParameterParser {
 		System.out.println(" pIGR: "+Parameters.PENALTY_IGR);
 		System.out.println(" pasRNA: "+Parameters.PENALTY_asRNA);
 		System.out.println(" punmap: "+Parameters.PENALTY_UNMAP);
-		//System.out.println(" THREADS: "+Parameters.nThreads);
+		System.out.println(" THREADS: "+Parameters.nThreads);
 		
 		// append to logger
 		Logger.append("Running info");
@@ -416,8 +416,8 @@ public class ParameterParser {
 		Logger.newLine();
 		Logger.append(" punmap: "+Parameters.PENALTY_UNMAP);
 		Logger.newLine();
-		//Logger.append(" THREADS: "+Parameters.nThreads);
-		//Logger.newLine();
+		Logger.append(" THREADS: "+Parameters.nThreads);
+		Logger.newLine();
 	}
 	
 	private static boolean isMandatoryOkay () {

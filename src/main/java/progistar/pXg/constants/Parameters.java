@@ -56,10 +56,13 @@ public class Parameters {
 	
 	// GTF partition size
 	public static final String CMD_GENOMIC_ANNOTATION_PARTITION_SIZE		=	"-gtf_partition_size".toLowerCase();
-	public static int partitionSize					=	5000000; // 5 * 10^6 * 10 * 8 = 0.4 G
+	public static int partitionSize					=	10000000; // 10^7 * 10 * 8 = 0.8 G
 	
 	public static final String CMD_GENOMIC_SEQUENCE_PARTITION_SIZE			=	"-sam_partition_size".toLowerCase();
 	public static int readSize						=	1000000; // 1 * 10^6
+	
+	// maxJunctionSize MUST not exceed partitionSize in GTF
+	public static int maxJunctionSize				=	1000000; // 1 * 10^6
 	
 	// Peptide file
 	// for user-friendly purpose, peptideColumnIndex is taken one-based and converted to zero-based.

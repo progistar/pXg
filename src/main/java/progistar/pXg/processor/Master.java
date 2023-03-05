@@ -1,7 +1,11 @@
 package progistar.pXg.processor;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -9,21 +13,26 @@ import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
 import progistar.pXg.constants.RunInfo;
 import progistar.pXg.data.GenomicAnnotation;
-import progistar.pXg.data.GenomicSequence;
 import progistar.pXg.data.PeptideAnnotation;
 import progistar.pXg.data.PxGAnnotation;
 import progistar.pXg.data.parser.GTFParser;
 import progistar.pXg.data.parser.PeptideParser;
 import progistar.pXg.data.parser.ResultParser;
 import progistar.pXg.data.parser.SamParser;
-import progistar.pXg.mock.Mock;
 import progistar.pXg.utils.Codon;
+import progistar.pXg.utils.IndexConvertor;
 
 public class Master {
 
 	private static GenomicAnnotation genomicAnnotation = null;
 	private static int taskCount = 0;
 	private static Hashtable<String, String> tmpOutputFilePaths = null;
+	private static BufferedReader SAM_BR = null;
+	private static File SAM_FILE = null;
+	private static boolean isEndOfSAMFile = false;
+	private static int[] chrIndices = null;
+	private static int[] startPositions = null;
+	private static boolean[] assignedArray = null;
 	
 	private Master() {}
 	
@@ -42,10 +51,73 @@ public class Master {
 				
 		// TODO:
 		// Make available to BAM file.
-		SamParser.ready(sequenceFilePath);
+		try {
+			SAM_FILE = new File(sequenceFilePath);
+			SAM_BR = new BufferedReader(new FileReader(SAM_FILE));
+		}catch(IOException ioe) {
+			
+		}
+		
+		// for SAM - GTF associated task assignment
+		// TASK-related variables
+		chrIndices = new int[Parameters.readSize];
+		startPositions = new int[Parameters.readSize];
+		assignedArray = new boolean[Parameters.readSize];
 		
 		// loading Codon.
 		Codon.mapping();
+	}
+	
+	private static ArrayList<String> readSAM () {
+		assert SAM_BR != null;
+		long startTime = System.currentTimeMillis();
+		long readPartitionSize = Parameters.readSize;
+		
+		ArrayList<String> reads = new ArrayList<String>();
+		
+		String line = null;
+		
+		System.out.print("reading "+SAM_FILE.getName()+"... ("+(RunInfo.totalProcessedReads+1)+"-"+(RunInfo.totalProcessedReads+readPartitionSize)+")");
+		try {
+			int readCount = 0;
+			while((line = SAM_BR.readLine()) != null) {
+				if(line.startsWith("@")) continue; // skip meta
+				if(line.length() == 0) continue;
+				
+				reads.add(line);
+
+				String[] fields = line.split("\\s");
+				String chr = fields[SamParser.CHR_IDX];
+				Integer startPosition = Integer.parseInt(fields[SamParser.START_POS_IDX]);
+				
+				// the index for that chr is automatically assigned by auto-increment key.
+				IndexConvertor.putChrIndexer(chr);
+				int chrIndex_ = IndexConvertor.chrToIndex(chr);
+				
+				// check all chromosomes are well preocessed.
+				RunInfo.processedChromosomes.put(chr, chrIndex_);
+				
+				// store chr and start positions
+				chrIndices[readCount] = chrIndex_;
+				startPositions[readCount] = startPosition;
+				
+				readCount ++;
+				if(readCount == readPartitionSize) break;
+			}
+			
+			RunInfo.totalProcessedReads += readCount;
+			
+			if(line == null) {
+				isEndOfSAMFile = true;
+			}
+		}catch(IOException ioe) {
+			
+		}
+		
+		long endTime = System.currentTimeMillis();
+		System.out.println("\tElapsed time: "+((endTime-startTime)/1000) + " sec");
+		
+		return reads;
 	}
 	
 	/**
@@ -61,17 +133,17 @@ public class Master {
 			RunInfo.workerProcessedReads = new long[Parameters.nThreads+1];
 			Worker[] workers = new Worker[Parameters.nThreads];
 			
-			ArrayList<GenomicSequence> genomicSequences = null;
 			Vector<Task> taskQueue = new Vector<Task>(); // for synchronized
 			Task[] tasks = null;
 			
-			while(!SamParser.isEndOfFile()) {
-				genomicSequences = SamParser.parseSam(Parameters.readSize);
+			while(!isEndOfSAMFile) {
+				
+				ArrayList<String> reads = readSAM();
 				// the array is initialized as "false"
-				boolean[] assignedArray = new boolean[genomicSequences.size()];
+				Arrays.fill(assignedArray, false);
 				
 				while(true) {
-					tasks = getTasks(genomicSequences, assignedArray);
+					tasks = getTasks(reads, assignedArray);
 					boolean isEmpty = true;
 					for(int i=0; i<tasks.length; i++) {
 						if(tasks[i].isAssigned) {
@@ -105,7 +177,8 @@ public class Master {
 				}
 			}
 			
-			SamParser.finish();
+			// end of sam reader
+			SAM_BR.close();
 			
 			// wait for finishing all tasks from workers
 			waitUntilAllWorkersDone(workers);
@@ -189,19 +262,19 @@ public class Master {
 	 * @param assignedArray
 	 * @return
 	 */
-	private static Task[] getTasks (ArrayList<GenomicSequence> gSeqs, boolean[] assignedArray) {
+	private static Task[] getTasks (ArrayList<String> reads, boolean[] assignedArray) {
 		
-		assert gSeqs.size() != 0;
+		assert reads.size() != 0;
 		
 		
-		Task[] tasks = new Task[Parameters.nThreads * 2];
+		Task[] tasks = new Task[Parameters.nThreads];
 		
 		// Task class contains "isAssigned" feature.
 		// The default value of the feature is "false"
 		// The value becomes "true" when task has something to do.
 		for(int i=0; i<tasks.length; i++) tasks[i] = new Task();
 		
-		int gSeqSize	=	gSeqs.size();
+		int gSeqSize	=	reads.size();
 		int chrIndex	=	0;
 		int start		=	0;
 		int end			=	0;
@@ -210,48 +283,44 @@ public class Master {
 		for(int i=0; i<gSeqSize; i++) {
 			// start position of NOT treated sequence
 			if(!assignedArray[i]) {
-				chrIndex	=	gSeqs.get(i).chrIndex;
-				start		=	gSeqs.get(i).startPosition;
+				chrIndex	=	chrIndices[i];
+				start		=	startPositions[i];
 				end			=	start + Parameters.partitionSize - 1;
 				
 				break;
 			}
 		}
 		
-		ArrayList<GenomicSequence> gSeqPartitionIn = new ArrayList<GenomicSequence>();
+		ArrayList<String> readPartition = new ArrayList<String>();
 		
 		for(int i=0; i<gSeqSize; i++) {
 			// already treated sequence
 			if(assignedArray[i]) continue;
 			
-			GenomicSequence gSeq = gSeqs.get(i);
-			
-			if(gSeq.chrIndex == chrIndex) {
-				if(gSeq.startPosition >= start && gSeq.endPosition <= end) {
+			if(chrIndices[i] == chrIndex) {
+				if(startPositions[i] >= start && startPositions[i] + Parameters.maxJunctionSize <= end) {
 					assignedArray[i] = true;
-					gSeqPartitionIn.add(gSeq);
+					readPartition.add(reads.get(i));
 				}
 			}
 			
 		}
 		
 		// have a task at least one.
-		int partitionInSize = gSeqPartitionIn.size();
+		int partitionInSize = readPartition.size();
 		if(partitionInSize != 0) {
 			// Annotation index
 			int[][] gIndex = genomicAnnotation.getIndexingBlocks(chrIndex, start, end);
 			int taskIndex = 0;
 			for(int i=0; i<partitionInSize; i++) {
-				GenomicSequence gSeq = gSeqPartitionIn.get(i);
-				
 				// target NGS-read
-				tasks[taskIndex].genomicSequences.add(gSeq);
+				tasks[taskIndex].samReads.add(readPartition.get(i));
 				taskIndex++;
 				if(taskIndex == tasks.length) taskIndex = 0;
 			}
 			
 			for(int i=0; i<tasks.length; i++) {
-				if(tasks[i].genomicSequences.size() != 0) {
+				if(tasks[i].samReads.size() != 0) {
 					tasks[i].isAssigned = true;
 					tasks[i].genomicAnnotationIndex = gIndex;
 					tasks[i].genomicAnnotation = genomicAnnotation;

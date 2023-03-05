@@ -25,49 +25,15 @@ import progistar.pXg.utils.IndexConvertor;
 public class SamParser {
 	
 	private static final Pattern EACH_CIGAR_REGEX = Pattern.compile("([0-9]+)([MINDSHPX=])");
-	private static File file = null;
-	private static BufferedReader BR = null;
-	private static long totalReadCount = 0;
-	private static boolean isEndOfFile = false;
+	
+	private static int QNAME_IDX 		= 0;
+	public static int CHR_IDX 			= 2;
+	public static int START_POS_IDX 	= 3;
+	private static int CIGAR_IDX 		= 5;
+	private static int SEQUENCE_IDX 	= 9;
 	
 	// prevent to generate constructor
 	private SamParser () {}
-	
-	private enum FieldIndex {
-		QNAME(0), CHR(2), START_POS(3), CIGAR(5), SEQUENCE(9);
-
-		private int value;
-
-		FieldIndex(int value) {
-			this.value = value;
-		}
-	}
-	
-	/**
-	 * Create BufferedReader for "samFilePath" <br>
-	 * 
-	 * @param samFilePath
-	 */
-	public static void ready (String samFilePath) {
-		try {
-			file = new File(samFilePath);
-			BR = new BufferedReader(new FileReader(file));
-		}catch(IOException ioe) {
-			
-		}
-	}
-	
-	public static void finish () {
-		try {
-			if(BR != null) BR.close();
-		}catch(IOException ioe) {
-			
-		}
-	}
-	
-	public static boolean isEndOfFile () {
-		return isEndOfFile;
-	}
 	
 	/**
 	 * Read SAM file upto readNum. <br>
@@ -75,84 +41,42 @@ public class SamParser {
 	 * @param readNum
 	 * @return
 	 */
-	public static ArrayList<GenomicSequence> parseSam (long readNum) {
-		assert BR != null;
+	public static GenomicSequence parseSam (String samRead) {
+
 		
-		long startTime = System.currentTimeMillis();
+		String[] fields = samRead.split("\\s");
+		// TODO: unmapped reads cannot have genomic position information.
+		// In case of unmapped read,  must consider it! 
+		String qName = fields[QNAME_IDX];
+		String chr = fields[CHR_IDX];
+		Integer startPosition = Integer.parseInt(fields[START_POS_IDX]);
+		String cigarString = fields[CIGAR_IDX];
+		String nucleotides = fields[SEQUENCE_IDX];
 		
-		ArrayList<GenomicSequence> gSeqs = new ArrayList<GenomicSequence>();
+		// Note that
+		// Chr of unmapped reads are marked as *
+		// From this, we can recognize unmapped reads
 		
-		System.out.print("reading "+file.getName()+"... ("+(totalReadCount+1)+"-"+(totalReadCount+readNum)+")");
-		String line = null;
-		try {
-			
-			
-			long readCount = 0;
-			while((line = BR.readLine()) != null) {
-				if(line.startsWith("@")) continue; // skip meta
-				if(line.length() == 0) continue;
-				
-				String[] fields = line.split("\\s");
-				// TODO: unmapped reads cannot have genomic position information.
-				// In case of unmapped read,  must consider it! 
-				String qName = fields[FieldIndex.QNAME.value];
-				String chr = fields[FieldIndex.CHR.value];
-				Integer startPosition = Integer.parseInt(fields[FieldIndex.START_POS.value]);
-				String cigarString = fields[FieldIndex.CIGAR.value];
-				String nucleotides = fields[FieldIndex.SEQUENCE.value];
-				
-				// Note that
-				// Chr of unmapped reads are marked as *
-				// From this, we can recognize unmapped reads
-				
-				// Cigar has nucleotides and relative positions to the start position.
-				ArrayList<Cigar> cigars = parseCigarString(cigarString, nucleotides);
-				
-				// find MD string
-				String mdStr = null;
-				for(int i=FieldIndex.SEQUENCE.value; i<fields.length; i++) {
-					if(fields[i].startsWith("MD:Z:")) {
-						mdStr = fields[i].replace("MD:Z:", "");
-						break;
-					}
-				}
-				
-				if(mdStr == null) {
-					//System.out.println(line);
-				}
-				
-				// the index for that chr is automatically assigned by auto-increment key.
-				IndexConvertor.putChrIndexer(chr);
-				int chrIndex = IndexConvertor.chrToIndex(chr);
-				
-				// check all chromosomes are well preocessed.
-				RunInfo.processedChromosomes.put(chr, chrIndex);
-				
-				// Genomic Sequence
-				GenomicSequence gSeq = new GenomicSequence(qName, chrIndex, startPosition, cigars, mdStr);
-				gSeqs.add(gSeq);
-				
-				readCount ++;
-				if(readCount == readNum) break;
+		// Cigar has nucleotides and relative positions to the start position.
+		ArrayList<Cigar> cigars = parseCigarString(cigarString, nucleotides);
+		
+		// find MD string
+		String mdStr = null;
+		for(int i=SEQUENCE_IDX; i<fields.length; i++) {
+			if(fields[i].startsWith("MD:Z:")) {
+				mdStr = fields[i].replace("MD:Z:", "");
+				break;
 			}
-			
-			totalReadCount += readCount;
-			
-			// record porcessed reads
-			RunInfo.totalProcessedReads += readCount;
-			
-			// is end of file
-			if(line == null) {
-				isEndOfFile = true;
-			}
-		}catch(IOException ioe) {
-			
 		}
 		
-		long endTime = System.currentTimeMillis();
-		System.out.println("\tElapsed time: "+((endTime-startTime)/1000) + " sec");
+		if(mdStr == null) {
+			//System.out.println(line);
+		}
+
+		int chrIndex = IndexConvertor.chrToIndex(chr);
 		
-		return gSeqs;
+		// Genomic Sequence
+		return new GenomicSequence(qName, chrIndex, startPosition, cigars, mdStr);
 		
 	}
 	
@@ -191,10 +115,6 @@ public class SamParser {
 	    	char op = cigar.operation;
 	    	
 	    	switch (op) {
-	    	case 'S': // soft clip
-	    		ntIndex += cigar.markerSize;
-	    		break;
-	    		
 	    	case 'M': // match or mismatch
 	    		cigar.nucleotides = nucleotides.substring(ntIndex, ntIndex + cigar.markerSize);
 	    		ntIndex += cigar.markerSize;
@@ -206,6 +126,10 @@ public class SamParser {
 	    		
 	    		cigar.relativePositions = relativePositions;
 	    		filterResults.add(cigar);
+	    		break;
+	    		
+	    	case 'S': // soft clip
+	    		ntIndex += cigar.markerSize;
 	    		break;
 	    		
 	    	case 'I': // insertion

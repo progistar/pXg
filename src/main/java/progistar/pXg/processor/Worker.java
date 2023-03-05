@@ -13,6 +13,7 @@ import progistar.pXg.data.GenomicSequence;
 import progistar.pXg.data.Mutation;
 import progistar.pXg.data.Output;
 import progistar.pXg.data.PeptideAnnotation;
+import progistar.pXg.data.parser.SamParser;
 import progistar.pXg.utils.Logger;
 
 public class Worker extends Thread {
@@ -54,8 +55,10 @@ public class Worker extends Thread {
 			BufferedWriter BW = new BufferedWriter(new FileWriter(this.tmpOutput, true));
 			// task for mapping genomic annotation
 			if(this.task.taskType == Constants.TASK_G_MAP) {
-				for(GenomicSequence genomicSequence : this.task.genomicSequences) {
+				for(String samRead : this.task.samReads) {
 					RunInfo.workerProcessedReads[this.workerID] ++; // increase a number of processed reads
+					
+					GenomicSequence genomicSequence = SamParser.parseSam(samRead);
 					ArrayList<Output> matches = PeptideAnnotation.find(genomicSequence);
 					
 					/**
@@ -94,7 +97,7 @@ public class Worker extends Thread {
 					}
 				}
 				
-				this.task.genomicSequences.clear();
+				this.task.samReads.clear();
 			}
 			BW.close();
 		}catch(IOException ioe) {
@@ -103,7 +106,7 @@ public class Worker extends Thread {
 		 
 		
 		long endTime = System.currentTimeMillis();
-		//System.out.println("Worker "+this.workerID+" was done with task"+task.taskID +"\tElapsed time: "+((endTime-startTime)/1000)+" sec");
+		System.out.println("Worker "+this.workerID+" was done with task"+task.taskID +"\tElapsed time: "+((endTime-startTime)/1000)+" sec");
 	}
 	/**
 	 * Write temporary output file. <br>
