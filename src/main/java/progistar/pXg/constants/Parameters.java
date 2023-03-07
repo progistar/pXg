@@ -122,7 +122,7 @@ public class Parameters {
 	
 	// System Parameters
 	public static final String CMD_THREADS			=	"-threads".toLowerCase();
-	public static int nThreads						=	1;
+	public static int nThreads						=	4;
 	
 	public static boolean isDecoyOut 				=	true;
 	
@@ -130,4 +130,7 @@ public class Parameters {
 
 	// Three or Six frame translation
 	public static int translationMethod				=	Constants.SIX_FRAME;
+	
+	// Third-party path
+	public static String netMHCpanPath				=	"/Users/gistar/tools/netMHCpan4.1/netMHCpan-4.1/netMHCpan";
 }

@@ -57,9 +57,9 @@ public class ParameterParser {
 				System.out.println("  -pIGR                : Penalty for intergenic region. Default is 30.");
 				System.out.println("  -pasRNA              : Penalty for antisense RNA. Default is 30.");
 				System.out.println("  -punmap              : Penalty for unmapped reads. Default is 100.");
-				System.out.println("  -gtf_partition_size  : The size of treating genomic region at once. Default is 5000000");
+				System.out.println("  -gtf_partition_size  : The size of treating genomic region at once. Default is 10000000");
 				System.out.println("  -sam_partition_size  : The size of treating number of reads at once. Default is 1000000");
-				//System.out.println("  -threads             : The number of threads. Default is 4");
+				System.out.println("  -threads             : The number of threads. Default is 4");
 				System.out.println();
 				System.out.println("Example1");
 				System.out.println("java -Xmx30G -jar pXg.jar -gtf gencode.gtf -sam aligned.sorted.sam -psm peaks.result -pept_col 4 -score_col 8 -scan_cols 1,2,5  -pval 0.01 -fdr 0.1 -out_canonical false -out peaks.pXg");
