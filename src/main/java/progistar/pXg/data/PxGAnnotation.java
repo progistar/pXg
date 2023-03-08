@@ -364,7 +364,7 @@ public class PxGAnnotation {
 			}
 			
 			ArrayList<PBlock> pBlocks = PeptideAnnotation.pBlocks;
-			
+			BW.append("UniqueID").append("\t");
 			BW.append("Label").append("\t");
 			BW.append(PeptideAnnotation.toFields()).append("\t");
 			BW.append("Rank").append("\t");
@@ -485,7 +485,7 @@ public class PxGAnnotation {
 		
 		// aggregate pBlocks by scanID
 		pBlocks.forEach(pBlock -> {
-			String scanID = pBlock.getScanID();
+			String scanID = pBlock.getUniqueID();
 			ArrayList<PBlock> scanPBlocks = pBlocksByScan.get(scanID);
 			if(scanPBlocks == null) {
 				scanPBlocks = new ArrayList<PBlock>();
@@ -554,13 +554,13 @@ public class PxGAnnotation {
 	 * Marking target PSM <br>
 	 * 
 	 */
-	public void markTargetPSMs () {
+	public void assignXBlocks () {
 		long startTime = System.currentTimeMillis();
 		
 		ArrayList<PBlock> pBlocks = PeptideAnnotation.pBlocks;
 		
 		// update pBlocks!
-		for(int i=pBlocks.size()-1; i>=0; i--) {
+		for(int i=0; i<pBlocks.size(); i++) {
 			PBlock pBlock = pBlocks.get(i);
 			// peptide sequence without I/L consideration
 			String key = pBlock.getPeptideSequence();
@@ -576,6 +576,7 @@ public class PxGAnnotation {
 					if(xBlock.targetReadCount >= RunInfo.cutoffReads[key.length()]) {
 						pBlock.psmStatus = Constants.PSM_STATUS_TARGET;
 						pBlock.isCannonical |= xBlock.isCannonical();
+						pBlock.targetXBlocks.put(xBlock.getKey(), xBlock);
 						expAndMocks[0] = true;
 					} 
 				});
@@ -593,9 +594,15 @@ public class PxGAnnotation {
 							pBlock.psmStatus = Constants.PSM_STATUS_DECOY;
 							pBlock.isCannonical |= xBlock.isCannonical();
 						}
+						pBlock.decoyXBlocks.put(xBlock.getKey(), xBlock);
 						expAndMocks[1] = true;
 					}
 				});
+			}
+			
+			// remove unassigned pBlock
+			if(!expAndMocks[0] && !expAndMocks[1]) {
+				pBlocks.remove(i--);
 			}
 			
 		}
@@ -604,202 +611,6 @@ public class PxGAnnotation {
 		System.out.println("\tElapsed time: "+((endTime-startTime)/1000) + " sec");
 		
 	}
-	
-	/**
-	 * 
-	 * 
-	 */
-	public void fdrEstimation () {
-		// if decoy mode is on, report all PSMs regardless of target and decoy status.
-		
-		double cTargetCount = 0;
-		double ncTargetCount = 0;
-		double cDecoyCount = 0;
-		double ncDecoyCount = 0;
-		int cFDRCutoffIndex = 0;
-		int ncFDRCutoffIndex = 0;
-		
-		// Assume that, single PSM per scan.
-		// This is because topScoreFiler only selects single PSM per scan.
-		ArrayList<PBlock> pBlocks = PeptideAnnotation.pBlocks;
-		
-		// sort pBlocks by descending order.
-		class decoyFirstOrder implements Comparator<PBlock> {
-			  @Override
-			  public int compare(PBlock p1, PBlock p2) {
-				  if(p1.score > p2.score) {
-						return -1;
-					} else if(p1.score < p2.score) {
-						return 1;
-					} else if (p1.psmStatus > p2.psmStatus){
-						return 1;
-					} else if (p1.psmStatus < p2.psmStatus) {
-						return -1;
-					}
-					return 0;
-			  }
-		}
-		Collections.sort(pBlocks, new decoyFirstOrder());
-		
-		int size = pBlocks.size();
-		
-		try {
-			ArrayList<Double> scores = new ArrayList<Double>();
-			Hashtable<Double, Boolean> isScored = new Hashtable<Double, Boolean>(); // to print score at once.
-			Hashtable<Double, Double> cTargetCounts = new Hashtable<Double, Double>();
-			Hashtable<Double, Double> cDecoyCounts = new Hashtable<Double, Double>();
-			Hashtable<Double, Double> ncTargetCounts = new Hashtable<Double, Double>();
-			Hashtable<Double, Double> ncDecoyCounts = new Hashtable<Double, Double>();
-			
-			for(int i=0; i<size; i++) {
-				double fdrRate = 1.0;
-				
-				PBlock pBlock = pBlocks.get(i);
-				
-				byte case_ = pBlock.psmStatus;
-				
-				if(case_ == Constants.PSM_STATUS_UNDEF || case_ == Constants.PSM_STATUS_BOTH) {
-					continue;
-				}
-				
-				double score = pBlock.score;
-				
-				if(case_ == Constants.PSM_STATUS_TARGET) {
-					Double count = .0;
-					if(pBlock.isCannonical) {
-						cTargetCount++;
-						count = cTargetCounts.get(score);
-					} else {
-						ncTargetCount++;
-						count = ncTargetCounts.get(score);
-					}
-					if(count == null) {
-						count = 0.0;
-					}
-					count++;
-					
-					if(pBlock.isCannonical) {
-						cTargetCounts.put(score, count);
-					} else {
-						ncTargetCounts.put(score, count);
-					}
-					
-				}
-				else if(case_ == Constants.PSM_STATUS_DECOY) {
-					Double count = .0;
-					if(pBlock.isCannonical) {
-						cDecoyCount++;
-						count = cDecoyCounts.get(score);
-					} else {
-						ncDecoyCount++;
-						count = ncDecoyCounts.get(score);
-					}
-					if(count == null) {
-						count = 0.0;
-					}
-					count++;
-					
-					if(pBlock.isCannonical) {
-						cDecoyCounts.put(score, count);
-					} else {
-						ncDecoyCounts.put(score, count);
-					}
-				}
-				
-				if(case_ == Constants.PSM_STATUS_TARGET) {
-					if(pBlock.isCannonical) {
-						// for canonical cutoff
-						if(cTargetCount != 0) {
-							fdrRate = cDecoyCount/cTargetCount;
-						}
-						if(fdrRate < Parameters.fdr) {
-							cFDRCutoffIndex = i;
-							RunInfo.cPSMScoreTreshold = pBlock.score;
-						}
-					} else {
-						// for noncanonical cutoff
-						if(ncTargetCount != 0) {
-							fdrRate = ncDecoyCount/ncTargetCount;
-						}
-						if(fdrRate < Parameters.fdr) {
-							ncFDRCutoffIndex = i;
-							RunInfo.ncPSMScoreTreshold = pBlock.score;
-						}
-					}
-					
-					pBlock.fdrRate = fdrRate;
-				}
-				
-				
-				if(isScored.get(score) == null) {
-					scores.add(score);
-					isScored.put(score, true);
-				}
-			}
-			
-			BufferedWriter BW = new BufferedWriter(new FileWriter(Parameters.psmStatFilePath));
-			BW.append("Score\tcTargetCount\tcDecoyCount\tncTargetCount\tncDecoyCount");
-			BW.newLine();
-			
-			for(int i=0; i<scores.size(); i++) {
-				Double score = scores.get(i);
-				Double ctCount = cTargetCounts.get(score);
-				Double cdCount = cDecoyCounts.get(score);
-				Double nctCount = ncTargetCounts.get(score);
-				Double ncdCount = ncDecoyCounts.get(score);
-				
-				
-				if(ctCount == null) {
-					ctCount = 0.0;
-				}
-				if(cdCount == null) {
-					cdCount = 0.0;
-				}
-				if(nctCount == null) {
-					nctCount = 0.0;
-				}
-				if(ncdCount == null) {
-					ncdCount = 0.0;
-				}
-				
-				BW.append(score+"\t").append(ctCount+"\t").append(cdCount+"\t").append(nctCount+"\t").append(ncdCount+"");
-				BW.newLine();
-			}
-			
-			BW.close();
-		}catch(IOException ioe) {
-			
-		}
-		
-		System.out.println("cFDR cutoff idx: "+cFDRCutoffIndex);
-		System.out.println("ncFDR cutoff idx: "+ncFDRCutoffIndex);
-		System.out.println("cTarget counts: "+cTargetCount);
-		System.out.println("cDecoy counts: "+cDecoyCount);
-		System.out.println("ncTarget counts: "+ncTargetCount);
-		System.out.println("ncDecoy counts: "+ncDecoyCount);
-		
-		// remove below than FDR cutoff
-		ArrayList<PBlock> cutoffedPBlocks = new ArrayList<PBlock>();
-		for(int i=0; i<pBlocks.size(); i++) {
-			PBlock pBlock = pBlocks.get(i);
-			
-			if(pBlock.psmStatus == Constants.PSM_STATUS_TARGET || pBlock.psmStatus == Constants.PSM_STATUS_BOTH || Parameters.isDecoyOut) {
-				if(pBlock.isCannonical) {
-					if(pBlock.score >= RunInfo.cPSMScoreTreshold) {
-						cutoffedPBlocks.add(pBlock);
-					}
-				} else {
-					if(pBlock.score >= RunInfo.ncPSMScoreTreshold) {
-						cutoffedPBlocks.add(pBlock);
-					}
-				}
-			}
-		}
-		
-		// update
-		PeptideAnnotation.pBlocks = cutoffedPBlocks;
-	}
-	
 	/**
 	 * This method expects that: <br>
 	 * 1) following estimatePvalueTreshold.<br>

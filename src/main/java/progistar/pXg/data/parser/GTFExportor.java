@@ -23,7 +23,7 @@ public class GTFExportor {
 		String[] genomicLoci = xBlock.genomicLocus.split("\\|");
 		char strand = xBlock.strand;
 		String score = pBlock.score+"";
-		String scanID = pBlock.getScanID();
+		String uniqueID = pBlock.getUniqueID();
 		String rank = pBlock.rank+"";
 		String mutation = xBlock.mutations;
 		String events = xBlock.toEvents().get("key");
@@ -51,7 +51,7 @@ public class GTFExportor {
 		BW.append(".").append("\t"); // frame
 		BW.append("gene_id \"").append(peptide+"("+xBlock.genomicLocus+")").append("\";"); // attributes: gene_id
 		BW.append(" gene_name \"").append(peptide+"("+events+")").append("\";"); // attributes: gene_name
-		BW.append(" transcript_id \"").append(scanID).append("\";"); // attributes: transcript_id
+		BW.append(" transcript_id \"").append(uniqueID).append("\";"); // attributes: transcript_id
 		BW.append(" event \"").append(events).append("\";"); // attributes: event
 		BW.append(" mutation \"").append(mutation).append("\";"); // attributes: mutation
 		BW.append(" nucleotide \"").append(nucleotide).append("\";"); // attributes: nucleotide
@@ -87,7 +87,7 @@ public class GTFExportor {
 			BW.append(".").append("\t"); // frame
 			BW.append("gene_id \"").append(peptide+"("+xBlock.genomicLocus+")").append("\";"); // attributes: gene_id
 			BW.append(" gene_name \"").append(peptide+"("+events+")").append("\";"); // attributes: gene_name
-			BW.append(" transcript_id \"").append(scanID).append("\";"); // attributes: transcript_id
+			BW.append(" transcript_id \"").append(uniqueID).append("\";"); // attributes: transcript_id
 			BW.append(" exon_id \"").append((i+1)+"").append("\";"); // attributes: exon_id
 			BW.newLine();
 		}

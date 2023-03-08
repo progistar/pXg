@@ -20,7 +20,9 @@ public class PBlock implements Comparable<PBlock> {
 	// key: peptide with I!=L
 	public int rank = -1;
 	
-	public Hashtable<String, XBlock> xBlocks = new Hashtable<String, XBlock>();
+	// pBlock stores both target and decoy xBlocks above the RNA threshold.
+	public Hashtable<String, XBlock> targetXBlocks = new Hashtable<String, XBlock>();
+	public Hashtable<String, XBlock> decoyXBlocks = new Hashtable<String, XBlock>();
 	
 	public PBlock (String[] record, String pSeq) {
 		this.record = record;
@@ -41,13 +43,9 @@ public class PBlock implements Comparable<PBlock> {
 		} else return this.pSeq;
 	}
 	
-	public String getScanID () {
-		String scanID = "";
-		for(int i=0; i<Parameters.scanColumnIndices.length; i++) {
-			if(i!=0) scanID += "|";
-			scanID += record[Parameters.scanColumnIndices[i]];
-		}
-		return scanID;
+	public String getUniqueID () {
+		String uniqueID = record[Parameters.fileColumnIndex] +"|"+record[Parameters.scanColumnIndex]+"|"+record[Parameters.chargeColumnIndex];
+		return uniqueID;
 	}
 	
 	/**
@@ -57,6 +55,10 @@ public class PBlock implements Comparable<PBlock> {
 	public String toString () {
 		StringBuilder recordLine = new StringBuilder();
 		
+		// add unique ID
+		recordLine.append(this.getUniqueID()).append("\t");
+		
+		// TD labeling
 		if(this.psmStatus == Constants.PSM_STATUS_DECOY) {
 			recordLine.append("-1");
 		} else {

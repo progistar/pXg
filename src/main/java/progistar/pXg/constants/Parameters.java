@@ -19,8 +19,8 @@ public class Parameters {
 	// Output file path
 	public static final String CMD_OUTPUT_PATH				=	"-out".toLowerCase();
 	public static String outputFilePath					=	null;
+	public static String pinFilePath					=	null;
 	public static String ngsStatFilePath				=	null;
-	public static String psmStatFilePath				=	null;
 	public static String unmappedFilePath				=	null;
 	public static String exportGTFPath					=	null;
 	public static String exportSAMPath					=	null;
@@ -69,11 +69,20 @@ public class Parameters {
 	public static final String CMD_PEPTIDE_COLUMN_INDEX	=	"-pept_col".toLowerCase();
 	public static int peptideColumnIndex			=	-1; // user-specific peptide index
 	
-	public static final String CMD_SCAN_COLUMN_INDICES	=	"-scan_cols".toLowerCase();
-	public static int[] scanColumnIndices			=	null; // user-specific scan index
+	public static final String CMD_SCAN_COLUMN_INDEX	=	"-scan_col".toLowerCase();
+	public static int scanColumnIndex			=	-1; // user-specific scan index
+	
+	public static final String CMD_FILE_COLUMN_INDEX	=	"-file_col".toLowerCase();
+	public static int fileColumnIndex						=	-1;
 	
 	public static final String CMD_SCORE_COLUMN_INDEX	=	"-score_col".toLowerCase();
 	public static int scoreColumnIndex				=	-1;
+	
+	public static final String CMD_CHARGE_COLUMN_INDEX	=	"-charge_col".toLowerCase();
+	public static int chargeColumnIndex				=	-1;
+	
+	public static final String CMD_ADD_FEAT_COLUMN_INDICES	=	"-add_feat_cols".toLowerCase();
+	public static int[] additionalFeatureIndices				=	null;
 	
 	public static final String CMD_CANDIDATE_RANK	=	"-rank".toLowerCase();
 	public static int psmRank						=	100;

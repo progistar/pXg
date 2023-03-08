@@ -29,11 +29,15 @@ public class ParameterParser {
 				System.out.println("  -sam                 : SAM file path. The sam file must be sorted by coordinate.");
 				System.out.println("  -psm                 : PSM file path. It is expected that the psm file is derived from proteomics search by de novo or database search engine.");
 				System.out.println("  -pept_col            : Peptide column index in the psm file. One-based!");
-				System.out.println("  -scan_cols           : Scan identifier indices in the psm file. Multiple columns are also possible because sometimes it is not enough to distinguish scan by only scan id.");
-				System.out.println("                         You can write multiple indices such like that: 1,2,5");
+				System.out.println("  -scan_col            : Scan number index (the value is expected as integer > 0). One-based!");
+				System.out.println("  -score_col           : Main score index. One-based!");
+				System.out.println("  -file_col            : File name index. One-based!");
+				System.out.println("  -charge_col          : Charge state index. One-based!");
 				System.out.println("  -out                 : Output path of pXg.");
 				System.out.println();
 				System.out.println("Optional Fields");
+				System.out.println("  -add_feat_cols       : Specify the indices for additional features to generate PIN file. One-based!");
+				System.out.println("                         Several features can be added by comma separator. ex> 5,6,7");
 				System.out.println("  -sep                 : Specify the column separator. Possible values are csv or tsv. Default is csv");
 				System.out.println("  -translation         : Specify the method of translation nucleotides. 0 for three-frame and 1 for six-frame. Default is 1");
 				System.out.println("  -pval                : p-value cutoff of randomly matched peptide-read pairs. Default is 0.01");
@@ -122,7 +126,7 @@ public class ParameterParser {
 				else if(option.equalsIgnoreCase(Parameters.CMD_OUTPUT_PATH)) {
 					Parameters.outputFilePath = args[i+1];
 					Parameters.ngsStatFilePath = Parameters.outputFilePath +".read.dist";
-					Parameters.psmStatFilePath = Parameters.outputFilePath +".psm.dist";
+					Parameters.pinFilePath = Parameters.outputFilePath +".pin";
 					Parameters.unmappedFilePath = Parameters.outputFilePath +".unmapped";
 					Parameters.exportGTFPath = Parameters.outputFilePath +".gtf";
 					Parameters.exportSAMPath = Parameters.outputFilePath +".sam";
@@ -150,12 +154,24 @@ public class ParameterParser {
 				else if(option.equalsIgnoreCase(Parameters.CMD_PEPTIDE_COLUMN_INDEX)) {
 					Parameters.peptideColumnIndex = Integer.parseInt(args[i+1]);
 				}
-				// -scan_cols (mandatory)
-				else if(option.equalsIgnoreCase(Parameters.CMD_SCAN_COLUMN_INDICES)) {
+				// -scan_col (mandatory)
+				else if(option.equalsIgnoreCase(Parameters.CMD_SCAN_COLUMN_INDEX)) {
+					Parameters.scanColumnIndex = Integer.parseInt(args[i+1]);
+				}
+				// -file_col (mandatory)
+				else if(option.equalsIgnoreCase(Parameters.CMD_FILE_COLUMN_INDEX)) {
+					Parameters.fileColumnIndex = Integer.parseInt(args[i+1]);
+				}
+				// -charge_col (mandatory)
+				else if(option.equalsIgnoreCase(Parameters.CMD_CHARGE_COLUMN_INDEX)) {
+					Parameters.chargeColumnIndex = Integer.parseInt(args[i+1]);
+				}
+				// -add_feat_cols (mandatory)
+				else if(option.equalsIgnoreCase(Parameters.CMD_ADD_FEAT_COLUMN_INDICES)) {
 					String[] indicies = args[i+1].split("\\,");
-					Parameters.scanColumnIndices = new int[indicies.length];
+					Parameters.additionalFeatureIndices = new int[indicies.length];
 					for(int idx=0; idx<indicies.length; idx++) {
-						Parameters.scanColumnIndices[idx] = Integer.parseInt(indicies[idx]);
+						Parameters.additionalFeatureIndices[idx] = Integer.parseInt(indicies[idx]);
 					}
 				}
 				// -score_col (mandatory)
@@ -279,8 +295,11 @@ public class ParameterParser {
 		// change one-based to zero-based
 		Parameters.peptideColumnIndex--;
 		Parameters.scoreColumnIndex--;
-		for(int i=0; i<Parameters.scanColumnIndices.length; i++) {
-			Parameters.scanColumnIndices[i]--;
+		Parameters.scanColumnIndex--;
+		Parameters.chargeColumnIndex--;
+		Parameters.fileColumnIndex--;
+		for(int i=0; i<Parameters.additionalFeatureIndices.length; i++) {
+			Parameters.additionalFeatureIndices[i]--;
 		}
 		
 		return 0;
@@ -321,19 +340,25 @@ public class ParameterParser {
 		System.out.println(" PSM: "+Parameters.peptideFilePath);
 		System.out.println("  PEPT_COL: "+Parameters.peptideColumnIndex);
 		System.out.println("  SCORE_COL: "+Parameters.scoreColumnIndex);
-		
+		System.out.println("  SCAN_COL: "+Parameters.scanColumnIndex);
+		System.out.println("  FILE_COL: "+Parameters.fileColumnIndex);
+		System.out.println("  CHARGE_COL: "+Parameters.chargeColumnIndex);
 		// to display array
-		String scanCols = "";
-		for(int i=0; i<Parameters.scanColumnIndices.length; i++) {
-			scanCols += "," + Parameters.scanColumnIndices[i];
+		String addFeatCols = "NA";
+		if(Parameters.additionalFeatureIndices != null) {
+			addFeatCols = "";
+			for(int i=0; i<Parameters.additionalFeatureIndices.length; i++) {
+				addFeatCols += "," + Parameters.additionalFeatureIndices[i];
+			}
+			addFeatCols = addFeatCols.substring(1);
 		}
-		System.out.println("  SCAN_COLS: "+scanCols.substring(1));
+		System.out.println("  SCAN_COLS: "+addFeatCols);
 		System.out.println("  RANK TO CONSIDER: "+Parameters.psmRank);
 		System.out.println("  PEPTIDE_LENGTH: "+Parameters.minPeptLen+"-"+Parameters.maxPeptLen);
 		System.out.println("  PSM_FDR: "+Parameters.fdr);
 		System.out.println(" OUT_RESULT: "+Parameters.outputFilePath);
 		System.out.println("  OUT_READ_DIST.: "+Parameters.ngsStatFilePath);
-		System.out.println("  OUT_PSM_DIST.: "+Parameters.psmStatFilePath);
+		System.out.println("  OUT_PIN.: "+Parameters.pinFilePath);
 		System.out.println("  OUT_UNMAPPED: "+Parameters.unmappedFilePath);
 		System.out.println("  OUT_SAM: "+Parameters.EXPORT_SAM);
 		System.out.println("  OUT_GTF: "+Parameters.EXPORT_GTF);
@@ -372,7 +397,7 @@ public class ParameterParser {
 		Logger.newLine();
 		Logger.append("  SCORE_COL: "+Parameters.scoreColumnIndex);
 		Logger.newLine();
-		Logger.append("  SCAN_COLS: "+scanCols.substring(1));
+		Logger.append("  SCAN_COLS: "+addFeatCols.substring(1));
 		Logger.newLine();
 		Logger.append("  RANK TO CONSIDER: "+Parameters.psmRank);
 		Logger.newLine();
@@ -384,7 +409,7 @@ public class ParameterParser {
 		Logger.newLine();
 		Logger.append("  OUT_READ_DIST.: "+Parameters.ngsStatFilePath);
 		Logger.newLine();
-		Logger.append("  OUT_PSM_DIST.: "+Parameters.psmStatFilePath);
+		Logger.append("  OUT_PIN: "+Parameters.pinFilePath);
 		Logger.newLine();
 		Logger.append("  OUT_UNMAPPED: "+Parameters.unmappedFilePath);
 		Logger.newLine();
@@ -425,37 +450,47 @@ public class ParameterParser {
 		
 		// -gtf
 		if(Parameters.genomicAnnotationFilePath == null) {
-			System.out.println("mandatory option -gtf is blank...");
+			System.out.println("mandatory option -gtf is missing...");
 			pass = false;
 		}
 		// -sam
 		if(Parameters.sequenceFilePath == null) {
-			System.out.println("mandatory option -sam is blank...");
+			System.out.println("mandatory option -sam is missing...");
 			pass = false;
 		}
 		// -psm
 		if(Parameters.peptideFilePath == null) {
-			System.out.println("mandatory option -psm is blank...");
+			System.out.println("mandatory option -psm is missing...");
 			pass = false;
 		}
 		// -out
 		if(Parameters.outputFilePath == null) {
-			System.out.println("mandatory option -out is blank...");
+			System.out.println("mandatory option -out is missing...");
 			pass = false;
 		}
 		// -pept_col
 		if(Parameters.peptideColumnIndex == -1) {
-			System.out.println("mandatory option -pept_col is blank...");
+			System.out.println("mandatory option -pept_col is missing...");
 			pass = false;
 		}
 		// -score_col
 		if(Parameters.scoreColumnIndex == -1) {
-			System.out.println("mandatory option -score_col is blank...");
+			System.out.println("mandatory option -score_col is missing...");
 			pass = false;
 		}
-		// -sacn_cols
-		if(Parameters.scanColumnIndices == null) {
-			System.out.println("mandatory option -scan_cols is blank...");
+		// -scan_col
+		if(Parameters.scanColumnIndex == -1) {
+			System.out.println("mandatory option -scan_col is missing...");
+			pass = false;
+		}
+		// -file_col
+		if(Parameters.fileColumnIndex == -1) {
+			System.out.println("mandatory option -file_col is missing...");
+			pass = false;
+		}
+		// -charge_col
+		if(Parameters.chargeColumnIndex == -1) {
+			System.out.println("mandatory option -charge_col is missing...");
 			pass = false;
 		}
 		

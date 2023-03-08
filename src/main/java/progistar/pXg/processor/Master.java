@@ -13,6 +13,7 @@ import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
 import progistar.pXg.constants.RunInfo;
 import progistar.pXg.data.GenomicAnnotation;
+import progistar.pXg.data.PIN;
 import progistar.pXg.data.PeptideAnnotation;
 import progistar.pXg.data.PxGAnnotation;
 import progistar.pXg.data.parser.GTFParser;
@@ -218,16 +219,16 @@ public class Master {
 			// to distinguish ambiguous interpretation 
 			pXgA.markFasta();
 			// marking target PSMs
-			pXgA.markTargetPSMs();
+			pXgA.assignXBlocks();
 			// among them, use highest-scored PSM
-			pXgA.topScoreFilter();
+			//pXgA.topScoreFilter();
 			
 			// count peptides and scans after region filter
 			RunInfo.topscoreFilterPeptideNum6 = PeptideAnnotation.getPeptideSizeWithXBlocks(pXgA.getXBlockMapper());
 			RunInfo.topscoreFilterScanNum6 = PeptideAnnotation.getScanSizeWithXBlocks(pXgA.getXBlockMapper());
 			
 			// fdr estimation
-			pXgA.fdrEstimation();
+			//pXgA.fdrEstimation();
 			
 			// count peptides and scans after fdr estimation
 			RunInfo.fdrFilterPeptideNum7 = PeptideAnnotation.getPeptideSizeWithXBlocks(pXgA.getXBlockMapper());
@@ -236,6 +237,8 @@ public class Master {
 			
 			pXgA.write(Parameters.outputFilePath);
 			
+			// parser to PIN
+			PIN.parseOutput();
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
