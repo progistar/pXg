@@ -14,9 +14,9 @@ import progistar.pXg.constants.Parameters;
 
 public class PIN {
 
-	private static String PIN_HEADER = "SpecId\tLabel\tScanNr\tMainScore\tLog2Reads\tDeltaScore";
+	private static String PIN_HEADER = "SpecId\tLabel\tScanNr\tMainScore\tLog2Reads";
 	private static String[] pXgADDED_HEADERS = {"UniqueID", "Label"};
-	private static String[] pXg_DEFAULT_FEATURES = {"Mutations","Events","IsCanonical","Reads", "Rank", "InferredPeptide"};
+	private static String[] pXg_DEFAULT_FEATURES = {"Mutations","Events","IsCanonical","DeltaScore","Reads", "Rank", "InferredPeptide"};
 	
 	private PIN() {};
 	
@@ -47,9 +47,10 @@ public class PIN {
 			int mutationIdx = pXgDefaultFeatIdices[0];
 			int eventIdx = pXgDefaultFeatIdices[1];
 			int isCanonicalIdx = pXgDefaultFeatIdices[2];
-			int readIdx = pXgDefaultFeatIdices[3];
-			int rankIdx = pXgDefaultFeatIdices[4];
-			int infPeptIdx = pXgDefaultFeatIdices[5];
+			int deltaScoreIdx = pXgDefaultFeatIdices[3];
+			int readIdx = pXgDefaultFeatIdices[4];
+			int rankIdx = pXgDefaultFeatIdices[5];
+			int infPeptIdx = pXgDefaultFeatIdices[6];
 			
 			// to adjust index caused by appending "UniqueID" and "Label" to the original input,
 			// the original index must be shifted by 2.
@@ -121,7 +122,7 @@ public class PIN {
 			}
 			
 			// last header
-			PIN_HEADER += "\tLength\tRank\tPeptide\tProteins";
+			PIN_HEADER += "\tDeltaScore\tLength\tRank\tPeptide\tProteins";
 			
 			BW.append(PIN_HEADER);
 			BW.newLine();
@@ -165,6 +166,7 @@ public class PIN {
 				String[] events = fields[eventIdx].split("\\|");
 				String rank = fields[rankIdx];
 				String peptide = fields[infPeptIdx];
+				String deltaScore = fields[deltaScoreIdx];
 				int length = peptide.length();
 				
 				/// mutation
@@ -203,6 +205,7 @@ public class PIN {
 					pinOutput.append("\t-1");
 				}
 				
+				pinOutput.append("\t").append(deltaScore);
 				pinOutput.append("\t").append(length);
 				pinOutput.append("\t").append(rank);
 				pinOutput.append("\t").append(peptide);
