@@ -122,7 +122,7 @@ public class PIN {
 			}
 			
 			// last header
-			PIN_HEADER += "\tDeltaScore\tLength\tRank\tPeptide\tProteins";
+			PIN_HEADER += "\tIsCanonical\tDeltaScore\tLength\tRank\tPeptide\tProteins";
 			
 			BW.append(PIN_HEADER);
 			BW.newLine();
