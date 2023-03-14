@@ -367,6 +367,7 @@ public class PxGAnnotation {
 			BW.append("UniqueID").append("\t");
 			BW.append("Label").append("\t");
 			BW.append(PeptideAnnotation.toFields()).append("\t");
+			BW.append("DeltaScore").append("\t");
 			BW.append("Rank").append("\t");
 			BW.append("GenomicLociCount").append("\t");
 			BW.append("InferredPeptide").append("\t");
@@ -418,7 +419,7 @@ public class PxGAnnotation {
 							}
 							
 							// TSV writer
-							BW.append(pBlock.toString()).append("\t").append(pBlock.rank+"\t").append(gLociCount+"\t").append(xBlock.toString(pBlock.psmStatus)).append("\t"+pBlock.isCannonical);
+							BW.append(pBlock.toString()).append("\t").append(pBlock.deltaScore+"\t").append(pBlock.rank+"\t").append(gLociCount+"\t").append(xBlock.toString(pBlock.psmStatus)).append("\t"+pBlock.isCannonical);
 							BW.newLine();
 							
 							// if this is unmapped, then store.

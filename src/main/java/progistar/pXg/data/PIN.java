@@ -7,14 +7,16 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Hashtable;
 
+import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
 
 public class PIN {
 
-	private static String PIN_HEADER = "SpecID\tLabel\tScanNr\tMainScore\tLog2Reads";
+	private static String PIN_HEADER = "SpecId\tLabel\tScanNr\tMainScore\tLog2Reads\tDeltaScore";
 	private static String[] pXgADDED_HEADERS = {"UniqueID", "Label"};
-	private static String[] pXg_DEFAULT_FEATURES = {"Reads", "Rank", "InferredPeptide"};
+	private static String[] pXg_DEFAULT_FEATURES = {"Mutations","Events","IsCanonical","Reads", "Rank", "InferredPeptide"};
 	
 	private PIN() {};
 	
@@ -24,25 +26,11 @@ public class PIN {
 			
 			BufferedReader BR = new BufferedReader(new FileReader(pXgOutput));
 			BufferedWriter BW = new BufferedWriter(new FileWriter(Parameters.pinFilePath));
+			Hashtable<String, Integer> specIDtoScanIdx = new Hashtable<String, Integer>();
 			ArrayList<String> records = new ArrayList<String>();
 			String[] headerFields = BR.readLine().split("\t");
-			int indexShiftSize = pXgADDED_HEADERS.length;
 			
-			// find min-max charge
-			String line = null;
-			int minCharge = 100;
-			int maxCharge = 0;
-			while((line = BR.readLine()) != null) {
-				String[] fields = line.split("\t");
-				int charge = Integer.parseInt(fields[Parameters.chargeColumnIndex + indexShiftSize]);
-				minCharge = Math.min(minCharge, charge);
-				maxCharge = Math.max(maxCharge, charge);
-				records.add(line);
-			}
-			
-			BR.close();
-			
-
+			/// Find pXg default features
 			// find InferredPeptide index
 			// find Rank index
 			// find Reads
@@ -56,11 +44,63 @@ public class PIN {
 				}
 			}
 			
+			int mutationIdx = pXgDefaultFeatIdices[0];
+			int eventIdx = pXgDefaultFeatIdices[1];
+			int isCanonicalIdx = pXgDefaultFeatIdices[2];
+			int readIdx = pXgDefaultFeatIdices[3];
+			int rankIdx = pXgDefaultFeatIdices[4];
+			int infPeptIdx = pXgDefaultFeatIdices[5];
+			
+			// to adjust index caused by appending "UniqueID" and "Label" to the original input,
+			// the original index must be shifted by 2.
+			int indexShiftSize = pXgADDED_HEADERS.length;
+			
+			// find min-max charge
+			String line = null;
+			int minCharge = 100;
+			int maxCharge = 0;
+			ArrayList<String> eventSegments = new ArrayList<String>();
+			Hashtable<String, String> eventSegmentCheck = new Hashtable<String, String>();
+			while((line = BR.readLine()) != null) {
+				String[] fields = line.split("\t");
+				int charge = Integer.parseInt(fields[Parameters.chargeColumnIndex + indexShiftSize]);
+				minCharge = Math.min(minCharge, charge);
+				maxCharge = Math.max(maxCharge, charge);
+				records.add(line);
+				
+				// scan idx gen
+				String specID = fields[0];
+				if(specIDtoScanIdx.get(specID) == null) {
+					specIDtoScanIdx.put(specID, specIDtoScanIdx.size()+1);
+				}
+				
+				// figure out event segments
+				// such as AS, sense, PC etc...
+				String[] events = fields[eventIdx].split("\\|");
+				for(String event : events) {
+					String[] segments = event.split("\\;");
+					
+					for(String segment : segments) {
+						if(eventSegmentCheck.get(segment) == null) {
+							eventSegmentCheck.put(segment, "");
+							
+							// ban event
+							// sense is duplicated information to asRNA
+							if(!segment.equalsIgnoreCase(Constants.EVENT_SENSE)) {
+								eventSegments.add(segment);
+							}
+						}
+					}
+				}
+			}
+			
+			BR.close();
+			
+			/******************8 HEADER maker 8*******************/
 			// add charge header
 			for(int charge=minCharge; charge<=maxCharge; charge++) {
 				PIN_HEADER += "\tCharge"+charge;
 			}
-			
 
 			// find additional feature index
 			if(Parameters.additionalFeatureIndices != null) {
@@ -71,11 +111,22 @@ public class PIN {
 				PIN_HEADER += additionalFeatureHeader.toString();
 			}
 			
+			// mutation header
+			// # of SNV and INDEL
+			PIN_HEADER += "\tSNV\tINDEL";
+			
+			// event segment
+			for(String eventSegment : eventSegments) {
+				PIN_HEADER += "\t"+eventSegment;
+			}
+			
 			// last header
 			PIN_HEADER += "\tLength\tRank\tPeptide\tProteins";
 			
 			BW.append(PIN_HEADER);
 			BW.newLine();
+			
+			/******************8 Gen PIN 8*******************/
 			
 			StringBuilder pinOutput = new StringBuilder();
 			for(String record : records) {
@@ -86,9 +137,10 @@ public class PIN {
 				
 				String specId = fields[0];
 				String label = fields[1];
-				String scanNr = fields[Parameters.scanColumnIndex + indexShiftSize];
+				//String scanNr = fields[Parameters.scanColumnIndex + indexShiftSize];
+				String scanNr = specIDtoScanIdx.get(specId)+"";
 				String mainScore = fields[Parameters.scoreColumnIndex + indexShiftSize];
-				String log2Reads = "" + Math.log(Double.parseDouble(fields[pXgDefaultFeatIdices[0]])+1)/Math.log(2);
+				String log2Reads = "" + Math.log(Double.parseDouble(fields[readIdx])+1)/Math.log(2);
 				int charge = Integer.parseInt(fields[Parameters.chargeColumnIndex + indexShiftSize]);
 				
 				pinOutput.append(specId+"\t"+label+"\t"+scanNr+"\t"+mainScore+"\t"+log2Reads);
@@ -101,9 +153,55 @@ public class PIN {
 					}
 				}
 				
-				String rank = fields[pXgDefaultFeatIdices[1]];
-				String peptide = fields[pXgDefaultFeatIdices[2]];
+				// additional features
+				if(Parameters.additionalFeatureIndices != null) {
+					for(int i=0; i<Parameters.additionalFeatureIndices.length; i++) {
+						pinOutput.append("\t").append(fields[Parameters.additionalFeatureIndices[i] + indexShiftSize]);
+					}
+				}
+				
+				// pXg default features
+				String[] mutations = fields[mutationIdx].split("\\|");
+				String[] events = fields[eventIdx].split("\\|");
+				String rank = fields[rankIdx];
+				String peptide = fields[infPeptIdx];
 				int length = peptide.length();
+				
+				/// mutation
+				int snvCnt = 0;
+				int indelCnt = 0;
+				for(String mutation : mutations) {
+					if(mutation.contains(">")) {
+						snvCnt++;
+					} else if(mutation.contains("del") || mutation.contains("ins")) {
+						indelCnt++;
+					}
+				}
+				pinOutput.append("\t").append(snvCnt);
+				pinOutput.append("\t").append(indelCnt);
+				
+				// event
+				Hashtable<String, String> thisEventSegments = new Hashtable<String, String>();
+				for(String event : events) {
+					String[] segments = event.split("\\;");
+					for(String segment : segments) {
+						thisEventSegments.put(segment, "");
+					}
+				}
+				for(String eventSegment : eventSegments) {
+					if(thisEventSegments.get(eventSegment) == null) {
+						pinOutput.append("\t").append(0);
+					} else {
+						pinOutput.append("\t").append(1);
+					}
+				}
+				
+				// isCanonical
+				if(fields[isCanonicalIdx].equalsIgnoreCase("TRUE")) {
+					pinOutput.append("\t1");
+				} else {
+					pinOutput.append("\t-1");
+				}
 				
 				pinOutput.append("\t").append(length);
 				pinOutput.append("\t").append(rank);
@@ -112,7 +210,7 @@ public class PIN {
 				if(label.equalsIgnoreCase("1")) {
 					pinOutput.append("\tTarget");
 				} else {
-					pinOutput.append("\tXXX_Decoy");
+					pinOutput.append("\trandom_Decoy");
 				}
 				
 				BW.append(pinOutput.toString());

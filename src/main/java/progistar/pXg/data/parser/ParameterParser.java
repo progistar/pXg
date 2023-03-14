@@ -140,10 +140,6 @@ public class ParameterParser {
 				else if(option.equalsIgnoreCase(Parameters.CMD_P_VALUE)) {
 					Parameters.pvalue = Double.parseDouble(args[i+1]);
 				}
-				// -fdr (optional)
-				else if(option.equalsIgnoreCase(Parameters.CMD_FDR)) {
-					Parameters.fdr = Double.parseDouble(args[i+1]);
-				}
 				// -ileq (optional)
 				else if(option.equalsIgnoreCase(Parameters.CMD_IL)) {
 					if(args[i+1].equalsIgnoreCase("false")) {
@@ -166,7 +162,7 @@ public class ParameterParser {
 				else if(option.equalsIgnoreCase(Parameters.CMD_CHARGE_COLUMN_INDEX)) {
 					Parameters.chargeColumnIndex = Integer.parseInt(args[i+1]);
 				}
-				// -add_feat_cols (mandatory)
+				// -add_feat_cols (optional)
 				else if(option.equalsIgnoreCase(Parameters.CMD_ADD_FEAT_COLUMN_INDICES)) {
 					String[] indicies = args[i+1].split("\\,");
 					Parameters.additionalFeatureIndices = new int[indicies.length];
@@ -355,7 +351,6 @@ public class ParameterParser {
 		System.out.println("  SCAN_COLS: "+addFeatCols);
 		System.out.println("  RANK TO CONSIDER: "+Parameters.psmRank);
 		System.out.println("  PEPTIDE_LENGTH: "+Parameters.minPeptLen+"-"+Parameters.maxPeptLen);
-		System.out.println("  PSM_FDR: "+Parameters.fdr);
 		System.out.println(" OUT_RESULT: "+Parameters.outputFilePath);
 		System.out.println("  OUT_READ_DIST.: "+Parameters.ngsStatFilePath);
 		System.out.println("  OUT_PIN.: "+Parameters.pinFilePath);
@@ -402,8 +397,6 @@ public class ParameterParser {
 		Logger.append("  RANK TO CONSIDER: "+Parameters.psmRank);
 		Logger.newLine();
 		Logger.append("  PEPTIDE_LENGTH: "+Parameters.minPeptLen+"-"+Parameters.maxPeptLen);
-		Logger.newLine();
-		Logger.append("  PSM_FDR: "+Parameters.fdr);
 		Logger.newLine();
 		Logger.append(" OUT_RESULT: "+Parameters.outputFilePath);
 		Logger.newLine();

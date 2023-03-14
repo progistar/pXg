@@ -200,17 +200,12 @@ public class PeptideAnnotation {
 			
 			// cutoff
 			int size = scanPBlocks.size();
-			double prevScore = -1;
+			double topScore = scanPBlocks.get(0).score;
 			int rank = 0;
 			for(int i=0; i<size; i++) {
 				PBlock pBlock = scanPBlocks.get(i);
-				/*
-				if(pBlock.score != prevScore) {
-					rank++;
-					prevScore = pBlock.score;
-				}
-				*/
 				pBlock.rank = ++rank;
+				pBlock.deltaScore = topScore - pBlock.score; 
 			}
 		});
 	}

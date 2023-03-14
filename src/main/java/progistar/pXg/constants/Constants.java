@@ -7,7 +7,7 @@ public class Constants {
 	// minor: critical bug fix, change in results something like that.
 	// patch: tiny bug fix, typo, and change code styles something like that.
 	public static final String VERSION = "pXg v2.0.0a";
-	public static final String RELEASE = "(release 2023-03-05)";
+	public static final String RELEASE = "(release 2023-03-14)";
 	public static final String INTRODUCE = "Seunghyuk Choi and Eunok Paek in the Department of Computer Science at Hanyang University in Seoul, South Korea. ";
 	
 	// Translation method

@@ -1,37 +1,36 @@
 package progistar.pXg.tset;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import progistar.thirdparty.netMHCpan.NetMHCpanParser;
+import progistar.thirdparty.netMHCpan.NetMHCpanResult;
+
 public class _HighScoreDecoy {
 
-	public static void analysis() throws IOException {
-		File pXgResFile = new File("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/PEAKS_MHC_I_M009T.pxg");
+	public static void analysisTD(String fileName) throws IOException {
+		File pXgResFile = new File(fileName);
 		
 		BufferedReader BR = new BufferedReader(new FileReader(pXgResFile));
 		String line = null;
 		
 		BR.readLine(); //skip header
 		Hashtable<String, ArrayList<String>> collects = new Hashtable<String, ArrayList<String>>();
-		Hashtable<String, Boolean> isDuplicated = new Hashtable<String, Boolean>();
 		while((line = BR.readLine()) != null ) {
 			String[] fields = line.split("\t");
-			String fileName = fields[2]+"_"+fields[5];
-			String uniqueKey = fileName+"_"+fields[19];
-			if(isDuplicated.get(uniqueKey) != null) {
-				continue;
-			}
-			isDuplicated.put(uniqueKey, true);
-			ArrayList<String> collector = collects.get(fileName);
+			String uniqueKey = fields[0];
+			ArrayList<String> collector = collects.get(uniqueKey);
 			if(collector == null) {
 				collector = new ArrayList<String>();
 			}
 			collector.add(line);
-			collects.put(fileName, collector);
+			collects.put(uniqueKey, collector);
 		}
 		
 		BR.close();
@@ -42,42 +41,55 @@ public class _HighScoreDecoy {
 		collects.forEach((key, list)->{
 			double maxTargetScore = 0;
 			double maxDecoyScore = 0;
-			double pXgTargetScore = 0;
-			double pXgDecoyScore = 0;
+			double targetRNA = 0;
+			double decoyRNA = 0;
 			
-			int targetCount = 0;
-			int decoyCount = 0;
 			for(String record : list) {
 				String[] fields = record.split("\t");
-				String label = fields[0];
-				double score = Double.parseDouble(fields[8]);
-				double rna = Math.log(Double.parseDouble(fields[36])+1)/Math.log(2);
+				String label = fields[1];
+				double score = Double.parseDouble(fields[9]);
+				double rna = Math.log(Double.parseDouble(fields[37])+1)/Math.log(2);
 				if(label.equalsIgnoreCase("1")) {
 					maxTargetScore = Math.max(maxTargetScore, score);
 					if(maxTargetScore == score) {
-						pXgTargetScore = rna * score;
+						targetRNA = Math.max(targetRNA, rna);
 					}
-					targetCount++;
 				} else {
 					maxDecoyScore = Math.max(maxDecoyScore, score);
 					if(maxDecoyScore == score) {
-						pXgDecoyScore = rna * score;
+						decoyRNA = Math.max(decoyRNA, rna);
 					}
-					decoyCount++;
+				}
+			}
+			String category = "";
+			if(maxTargetScore >= maxDecoyScore) {
+				if(maxDecoyScore == 0) {
+					category = "Target only";
+				} else {
+					category = "Both but target win";
+				}
+			} else {
+				if(maxTargetScore == 0) {
+					category = "Decoy only";
+				} else {
+					category = "Both but decoy win";
 				}
 			}
 			
-			outputs.add(list.get(0).split("\t")[5]+"\t"+maxTargetScore+"\t"+maxDecoyScore+"\t"+pXgTargetScore+"\t"+pXgDecoyScore+"\t"+targetCount+"\t"+decoyCount);
+			outputs.add(key+"\t"+maxTargetScore+"\t"+maxDecoyScore+"\t"+targetRNA+"\t"+decoyRNA+"\t"+category);
 		});
 		
-		System.out.println("FileName\tMaxTargetScore\tMaxDecoyScore\tpXgTargetScore\tpXgDecoyScore\tTargetCount\tDecoyCount");
+		System.out.println("FileID\tMaxTargetScore\tMaxDecoyScore\tMaxTargetRNA\tMaxDecoyRNA\tCategory");
 		for(int i=0; i<outputs.size(); i++) {
 			System.out.println(outputs.get(i));
 		}
 	}
 	
 	public static void percolatorAnalysis () throws IOException {
-		BufferedReader BR = new BufferedReader(new FileReader("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/pNovo3_MHC_I_M009T.target.tsv"));
+		String sample = "4";
+		BufferedWriter BW = new BufferedWriter(new FileWriter("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/S"+sample+".RAW.PEAKS.target.BA"));
+		
+		BufferedReader BR = new BufferedReader(new FileReader("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/S"+sample+".RAW.PEAKS.target.tsv"));
 		Hashtable<String, String> percolatorRes = new Hashtable<String, String>();
 		String line = null;
 		BR.readLine(); // skip header
@@ -91,22 +103,33 @@ public class _HighScoreDecoy {
 		
 		BR.close();
 		
-		BR = new BufferedReader(new FileReader("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/PEAKS_MHC_I_M009T.pxg"));
-		System.out.println(BR.readLine()+"\tPSMId\tscore\tq-value\tpep\tpPept");
+		NetMHCpanResult netMHCpanResult = NetMHCpanParser.parseNetMHCpan("/Users/gistar/tools/netMHCpan4.1/netMHCpan-4.1/nocut/peptide"+sample+".xls");
+		
+		BR = new BufferedReader(new FileReader("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/S"+sample+".RAW.PEAKS.nocut.pxg"));
+		BW.append(BR.readLine()+"\tpercolator_score\tq-value\tpep\t"+netMHCpanResult.getHeader());
+		BW.newLine();
 		
 		while((line = BR.readLine()) != null) {
 			String[] fields = line.split("\t");
-			String key = fields[2]+fields[5]+"_"+fields[21];
+			String psmId = fields[0];
+			String peptide = fields[22];
+			String key = psmId+"_"+peptide;
 			String pRecord = percolatorRes.get(key);
+			
 			if(pRecord != null) {
-				System.out.println(line+"\t"+pRecord);
+				fields = pRecord.split("\t");
+				pRecord = fields[1]+"\t"+fields[2]+"\t"+fields[3];
+				BW.append(line).append("\t").append(pRecord).append("\t").append(netMHCpanResult.getHLATyping(peptide));
+				BW.newLine();
 			}
 		}
 		
 		BR.close();
+		BW.close();
 	}
 	
 	public static void main(String[] args) throws IOException {
+		//analysisTD("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/S4.RAW.PEAKS.nocut.pxg");
 		percolatorAnalysis();
 	}
 }

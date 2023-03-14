@@ -31,10 +31,6 @@ public class Parameters {
 	public static final String CMD_P_VALUE			=	"-pval".toLowerCase();
 	public static double pvalue						=	0.01;
 	
-	// FDR estimation at PSM level
-	public static final String CMD_FDR				=	"-fdr".toLowerCase();
-	public static double fdr						=	0.1;
-	
 	// Peptide length
 	public static final String CMD_LENGTH			=	"-length".toLowerCase();
 	public static int minPeptLen					=	8;

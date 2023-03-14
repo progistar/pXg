@@ -35,5 +35,8 @@ public class Starter
     	Logger.append("\tTotal Elapsed time: "+((endTime-startTime)/1000) + " sec with "+RunInfo.totalProcessedPeptides +" peptides and " +RunInfo.totalProcessedReads+" reads");
     	Logger.newLine();
     	Logger.close();
+    	
+    	// third-party runner
+    	
     }
 }
