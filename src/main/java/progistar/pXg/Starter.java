@@ -27,7 +27,6 @@ public class Starter
     	long endTime = System.currentTimeMillis();
     	
     	RunInfo.printProcessedChromosomes();
-    	RunInfo.printPSMCutoff();
     	RunInfo.printFilterStat();
     	RunInfo.printRankPSM();
     	System.out.println("\tTotal Elapsed time: "+((endTime-startTime)/1000) + " sec with "+RunInfo.totalProcessedPeptides +" peptides and " +RunInfo.totalProcessedReads+" reads");
@@ -36,7 +35,7 @@ public class Starter
     	Logger.newLine();
     	Logger.close();
     	
-    	// third-party runner
+    	// TODO: third-party runner
     	
     }
 }

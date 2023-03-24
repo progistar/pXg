@@ -32,7 +32,7 @@ public class NetMHCpanParser {
 
 			int peptideIndex = 1;
 			int elRankBaseIndex = 6;
-			int elRankIndexInteravl = 6;
+			int elRankIndexInteravl = 4;
 			
 			String line = BR.readLine(); // skip header
 			

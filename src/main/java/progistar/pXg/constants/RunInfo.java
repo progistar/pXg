@@ -138,6 +138,11 @@ public class RunInfo {
 		Logger.newLine();
 	}
 	
+	/**
+	 * @deprecated
+	 * Do not use after v2.0.0
+	 * 
+	 */
 	public static void printPSMCutoff () {
 		System.out.println("Minimum PSM score threshold to accept as canonical PSMs: "+cPSMScoreTreshold);
 		System.out.println("Minimum PSM score threshold to accept as noncanonical PSMs: "+ncPSMScoreTreshold);
@@ -168,10 +173,10 @@ public class RunInfo {
 		System.out.println("Length Filter\t"+lengthFilterScanNum2+"\t"+lengthFilterPeptideNum2);
 		
 		System.out.println("Mapped Candidates\t"+mappingFilterScanNum3+"\t"+mappingFilterPeptideNum3);
-		System.out.println("Significantly Mapped\t"+pvalueFilterScanNum4+"\t"+pvalueFilterPeptideNum4);
-		System.out.println("Region Decision\t"+regionFilterScanNum5+"\t"+regionFilterPeptideNum5);
-		System.out.println("PSM Decision\t"+topscoreFilterScanNum6+"\t"+topscoreFilterPeptideNum6);
-		System.out.println("FDR Estimation\t"+fdrFilterScanNum7+"\t"+fdrFilterPeptideNum7);
+		if(Parameters.pvalue < 1.00) {
+			System.out.println("Significantly Mapped\t"+pvalueFilterScanNum4+"\t"+pvalueFilterPeptideNum4);
+		}
+		
 		
 		// append to logger
 		Logger.append("Step\tScans\tPeptides");
@@ -184,14 +189,10 @@ public class RunInfo {
 		Logger.newLine();
 		Logger.append("Mapped Candidates\t"+mappingFilterScanNum3+"\t"+mappingFilterPeptideNum3);
 		Logger.newLine();
-		Logger.append("Significantly Mapped\t"+pvalueFilterScanNum4+"\t"+pvalueFilterPeptideNum4);
-		Logger.newLine();
-		Logger.append("Region Decision\t"+regionFilterScanNum5+"\t"+regionFilterPeptideNum5);
-		Logger.newLine();
-		Logger.append("PSM Decision\t"+topscoreFilterScanNum6+"\t"+topscoreFilterPeptideNum6);
-		Logger.newLine();
-		Logger.append("FDR Estimation\t"+fdrFilterScanNum7+"\t"+fdrFilterPeptideNum7);
-		Logger.newLine();
+		if(Parameters.pvalue < 1.00) {
+			Logger.append("Significantly Mapped\t"+pvalueFilterScanNum4+"\t"+pvalueFilterPeptideNum4);
+			Logger.newLine();
+		}
 	}
 	
 }

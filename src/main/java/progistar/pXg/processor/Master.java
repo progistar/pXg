@@ -14,6 +14,7 @@ import progistar.pXg.constants.Parameters;
 import progistar.pXg.constants.RunInfo;
 import progistar.pXg.data.GenomicAnnotation;
 import progistar.pXg.data.PIN;
+import progistar.pXg.data.PINAdvanced;
 import progistar.pXg.data.PeptideAnnotation;
 import progistar.pXg.data.PxGAnnotation;
 import progistar.pXg.data.parser.GTFParser;

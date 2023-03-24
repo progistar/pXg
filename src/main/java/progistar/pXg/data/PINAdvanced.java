@@ -12,17 +12,13 @@ import java.util.Hashtable;
 import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
 
-public class PIN {
+public class PINAdvanced {
 
-	/**
-	 * 
-	 * ScanNr is actually acting as scan index
-	 */
 	private static String PIN_HEADER = "SpecId\tLabel\tScanNr\tMainScore\tLog2Reads";
 	private static String[] pXgADDED_HEADERS = {"UniqueID", "Label"};
-	private static String[] pXg_DEFAULT_FEATURES = {"DeltaScore","Reads", "InferredPeptide"};
+	private static String[] pXg_DEFAULT_FEATURES = {"Mutations","Events","IsCanonical","DeltaScore","Reads", "Rank", "InferredPeptide"};
 	
-	private PIN() {};
+	private PINAdvanced() {};
 	
 	/**
 	 * Further analysis for group-specific characterization,
@@ -30,7 +26,7 @@ public class PIN {
 	 * 
 	 * @param isStableMethod
 	 */
-	public static void parseOutput () {
+	public static void parseOutput (boolean isStableMethod) {
 		try {
 			File pXgOutput = new File(Parameters.outputFilePath);
 			ArrayList<String> pinRecords = new ArrayList<String>();
@@ -54,9 +50,13 @@ public class PIN {
 				}
 			}
 			
-			int deltaScoreIdx = pXgDefaultFeatIdices[0];
-			int readIdx = pXgDefaultFeatIdices[1];
-			int infPeptIdx = pXgDefaultFeatIdices[2];
+			int mutationIdx = pXgDefaultFeatIdices[0];
+			int eventIdx = pXgDefaultFeatIdices[1];
+			int isCanonicalIdx = pXgDefaultFeatIdices[2];
+			int deltaScoreIdx = pXgDefaultFeatIdices[3];
+			int readIdx = pXgDefaultFeatIdices[4];
+			int rankIdx = pXgDefaultFeatIdices[5];
+			int infPeptIdx = pXgDefaultFeatIdices[6];
 			
 			// to adjust index caused by appending "UniqueID" and "Label" to the original input,
 			// the original index must be shifted by 2.
@@ -66,7 +66,8 @@ public class PIN {
 			String line = null;
 			int minCharge = 100;
 			int maxCharge = 0;
-			
+			ArrayList<String> eventSegments = new ArrayList<String>();
+			Hashtable<String, String> eventSegmentCheck = new Hashtable<String, String>();
 			while((line = BR.readLine()) != null) {
 				String[] fields = line.split("\t");
 				int charge = Integer.parseInt(fields[Parameters.chargeColumnIndex + indexShiftSize]);
@@ -78,6 +79,25 @@ public class PIN {
 				String specID = fields[0];
 				if(specIDtoScanIdx.get(specID) == null) {
 					specIDtoScanIdx.put(specID, specIDtoScanIdx.size()+1);
+				}
+				
+				// figure out event segments
+				// such as AS, sense, PC etc...
+				String[] events = fields[eventIdx].split("\\|");
+				for(String event : events) {
+					String[] segments = event.split("\\;");
+					
+					for(String segment : segments) {
+						if(eventSegmentCheck.get(segment) == null) {
+							eventSegmentCheck.put(segment, "");
+							
+							// ban event
+							// sense is duplicated information to asRNA
+							if(!segment.equalsIgnoreCase(Constants.EVENT_SENSE)) {
+								eventSegments.add(segment);
+							}
+						}
+					}
 				}
 			}
 			
@@ -98,8 +118,17 @@ public class PIN {
 				PIN_HEADER += additionalFeatureHeader.toString();
 			}
 			
+			// mutation header
+			// # of SNV and INDEL
+			PIN_HEADER += "\tSNV\tINDEL";
+			
+			// event segment
+			for(String eventSegment : eventSegments) {
+				PIN_HEADER += "\t"+eventSegment;
+			}
+			
 			// last header
-			PIN_HEADER += "\tDeltaScore\tPeptide\tProteins";
+			PIN_HEADER += "\tIsCanonical\tDeltaScore\tLength\tRank\tPeptide\tProteins";
 			
 			pinRecords.add(PIN_HEADER);
 			/******************8 Gen PIN 8*******************/
@@ -136,10 +165,52 @@ public class PIN {
 				}
 				
 				// pXg default features
-				String deltaScore = fields[deltaScoreIdx];
+				String[] mutations = fields[mutationIdx].split("\\|");
+				String[] events = fields[eventIdx].split("\\|");
+				String rank = fields[rankIdx];
 				String peptide = fields[infPeptIdx];
+				String deltaScore = fields[deltaScoreIdx];
+				int length = peptide.length();
+				
+				/// mutation
+				int snvCnt = 0;
+				int indelCnt = 0;
+				for(String mutation : mutations) {
+					if(mutation.contains(">")) {
+						snvCnt++;
+					} else if(mutation.contains("del") || mutation.contains("ins")) {
+						indelCnt++;
+					}
+				}
+				pinOutput.append("\t").append(snvCnt);
+				pinOutput.append("\t").append(indelCnt);
+				
+				// event
+				Hashtable<String, String> thisEventSegments = new Hashtable<String, String>();
+				for(String event : events) {
+					String[] segments = event.split("\\;");
+					for(String segment : segments) {
+						thisEventSegments.put(segment, "");
+					}
+				}
+				for(String eventSegment : eventSegments) {
+					if(thisEventSegments.get(eventSegment) == null) {
+						pinOutput.append("\t").append(0);
+					} else {
+						pinOutput.append("\t").append(1);
+					}
+				}
+				
+				// isCanonical
+				if(fields[isCanonicalIdx].equalsIgnoreCase("TRUE")) {
+					pinOutput.append("\t1");
+				} else {
+					pinOutput.append("\t-1");
+				}
 				
 				pinOutput.append("\t").append(deltaScore);
+				pinOutput.append("\t").append(length);
+				pinOutput.append("\t").append(rank);
 				pinOutput.append("\t").append(peptide);
 				// target or decoy
 				if(label.equalsIgnoreCase("1")) {

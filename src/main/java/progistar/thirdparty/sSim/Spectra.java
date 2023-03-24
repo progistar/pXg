@@ -17,10 +17,11 @@ public class Spectra {
 
 	public static final int FILE_TYPE_MZXML = 0;
 	public static final int FILE_TYPE_MGF = 1;
+	public static final int FILE_TYPE_MSP = 2;
 	
 	private ArrayList<Spectrum> spectra = null;
 	private TreeMap<Double, Spectrum> sortedRTSpectra = null;
-	private Hashtable<Integer, Spectrum> scanIndexer = null;
+	private Hashtable<String, Spectrum> scanIndexer = null;
 	private double minRT = Double.MAX_VALUE;
 	private double maxRT = 0;
 	
@@ -52,82 +53,132 @@ public class Spectra {
 		
 		spectra = new ArrayList<Spectrum>();
 		sortedRTSpectra = new TreeMap<Double, Spectrum>();
-		scanIndexer = new Hashtable<Integer, Spectrum>();
-		
-		try {
-			BufferedReader BR = new BufferedReader(new FileReader(fileName));
-			String line = null;
-			int index = -1;
-			double pepMass = 0;
-			double precursorInt = 0;
-			int charge = 0;
-			double rt = 0;
-			String title = null;
-			int scanNum = -1;
-			String peptide = null;
-			
-			ArrayList<double[]> peaks = null;
-			
-			Pattern peakPattern = Pattern.compile("^[0-9]");
-			Pattern scanPattern = Pattern.compile("[\\.]+[0-9]+[\\.]+");
-			
-			while((line = BR.readLine()) != null) {
-				if(line.startsWith("BEGIN")) {
-					peaks = new ArrayList<double[]>();
-					index ++;
-				}else if(line.startsWith("TITLE")) {
-					title = line.split("\\=")[1];
-					Matcher matcher = scanPattern.matcher(title);
-					if(matcher.find()) {
-						scanNum = Integer.parseInt(matcher.group().replace(".", ""));
+		scanIndexer = new Hashtable<String, Spectrum>();
+		if(this.fileType == FILE_TYPE_MGF) {
+			try {
+				BufferedReader BR = new BufferedReader(new FileReader(fileName));
+				String line = null;
+				int index = -1;
+				double pepMass = 0;
+				double precursorInt = 0;
+				int charge = 0;
+				double rt = 0;
+				String title = null;
+				int scanNum = -1;
+				String peptide = null;
+				
+				ArrayList<double[]> peaks = null;
+				
+				Pattern peakPattern = Pattern.compile("^[0-9]");
+				Pattern scanPattern = Pattern.compile("[\\.]+[0-9]+[\\.]+");
+				
+				while((line = BR.readLine()) != null) {
+					if(line.startsWith("BEGIN")) {
+						peaks = new ArrayList<double[]>();
+						index ++;
+					}else if(line.startsWith("TITLE")) {
+						title = line.split("\\=")[1];
+						Matcher matcher = scanPattern.matcher(title);
+						if(matcher.find()) {
+							scanNum = Integer.parseInt(matcher.group().replace(".", ""));
+						}
+					}else if(line.startsWith("RTIN")) {
+						rt = Double.parseDouble(line.split("\\=")[1]);
+					}else if(line.startsWith("PEPTIDE")) {
+						peptide = line.split("\\=")[1];
+					}else if(line.startsWith("PEPMASS")) {
+						pepMass = Double.parseDouble(line.split("\\s")[0].split("\\=")[1]);
+						try {
+							precursorInt = Double.parseDouble(line.split("\\s")[1]);
+						}catch(Exception e) {
+							System.out.println(line+"");
+							e.printStackTrace();
+						}
+					}else if(line.startsWith("CHARGE")){
+						charge = Integer.parseInt(line.split("\\=")[1].replace("+", ""));
+					}else if(peakPattern.matcher(line).find()) {
+						double[] peak = new double[2];
+						String[] peakStr = line.split("\\s");
+						peak[0] = Double.parseDouble(peakStr[0]);
+						peak[1] = Double.parseDouble(peakStr[1]);
+						peaks.add(peak);
+					}else if(line.startsWith("END")) {
+						Spectrum spectrum = new Spectrum(scanNum, charge, 2, pepMass, peaks, rt, index);
+						spectrum.setPrecursorInt(precursorInt);
+						spectrum.setTitle(title);
+						spectrum.setPeptide(peptide);
+						spectra.add(spectrum);
+						
+						// if scanNum is -1, then it is missing value.
+						if(title != null) scanIndexer.put(title, spectrum);
 					}
-				}else if(line.startsWith("RTIN")) {
-					rt = Double.parseDouble(line.split("\\=")[1]);
-				}else if(line.startsWith("PEPTIDE")) {
-					peptide = line.split("\\=")[1];
-				}else if(line.startsWith("PEPMASS")) {
-					pepMass = Double.parseDouble(line.split("\\s")[0].split("\\=")[1]);
-					try {
-						precursorInt = Double.parseDouble(line.split("\\s")[1]);
-					}catch(Exception e) {
-						System.out.println(line+"");
-						e.printStackTrace();
-					}
-				}else if(line.startsWith("CHARGE")){
-					charge = Integer.parseInt(line.split("\\=")[1].replace("+", ""));
-				}else if(peakPattern.matcher(line).find()) {
-					double[] peak = new double[2];
-					String[] peakStr = line.split("\\s");
-					peak[0] = Double.parseDouble(peakStr[0]);
-					peak[1] = Double.parseDouble(peakStr[1]);
-					peaks.add(peak);
-				}else if(line.startsWith("END")) {
-					Spectrum spectrum = new Spectrum(scanNum, charge, 2, pepMass, peaks, rt, index);
-					spectrum.setPrecursorInt(precursorInt);
-					spectrum.setTitle(title);
-					spectrum.setPeptide(peptide);
-					spectra.add(spectrum);
-					if(sortedRTSpectra.get(rt) != null) System.err.println("Duplicated RT was observed!");
-					sortedRTSpectra.put(rt, spectrum);
-					
-					maxRT = maxRT < rt ? rt : maxRT;
-					minRT = minRT > rt ? rt : minRT;
-					
-					// if scanNum is -1, then it is missing value.
-					if(scanNum != -1) scanIndexer.put(scanNum, spectrum);
 				}
+				
+				BR.close();
+			}catch(IOException ioe) {
+				
 			}
-			
-			BR.close();
-		}catch(IOException ioe) {
-			
+		}else if(this.fileType == FILE_TYPE_MSP) {
+			try {
+				BufferedReader BR = new BufferedReader(new FileReader(fileName));
+				String line = null;
+				int index = -1;
+				int charge = 0;
+				String title = null;
+				String peptide = null;
+				
+				ArrayList<double[]> peaks = null;
+				
+				Pattern peakPattern = Pattern.compile("^[0-9]");
+				
+				Hashtable<Double, String> peakDupCheck = new Hashtable<Double, String>();
+				int peakMax =-1;
+				while((line = BR.readLine()) != null) {
+					if(line.startsWith("Num peaks:")) {
+						peakMax = Integer.parseInt(line.split("\\:")[1].trim());
+						peaks = new ArrayList<double[]>();
+						peakDupCheck = new Hashtable<Double, String>();
+						index ++;
+					}else if(line.startsWith("Name:")) {
+						title = line.split("\\s")[1].trim();
+						peptide = title.split("\\/")[0];
+						charge = Integer.parseInt(title.split("\\/")[1]);
+					}else if(peakPattern.matcher(line).find()) {
+						double[] peak = new double[2];
+						String[] peakStr = line.split("\\s");
+						peak[0] = Double.parseDouble(peakStr[0]);
+						peak[1] = 100 * Double.parseDouble(peakStr[1]);
+						if(peakDupCheck.get(peak[0]) == null){
+							peakDupCheck.put(peak[0],"");
+							peaks.add(peak);
+						}
+						peakMax--;
+					}
+					
+					if(peakMax == 0) {
+						Spectrum spectrum = new Spectrum(-1, charge, 2, -1, peaks, -1, index);
+						spectrum.setTitle(title);
+						spectrum.setPeptide(peptide);
+						spectra.add(spectrum);
+						
+						// if scanNum is -1, then it is missing value.
+						// title is peptide/charge
+						if(title != null) scanIndexer.put(title, spectrum);
+					}
+				}
+				
+				BR.close();
+			}catch(IOException ioe) {
+				
+			}
 		}
+		
 	}
 	//TODO: READ MGF
 	private void readMGF (String fileName, ArrayList<Integer> selectiveScans) {
 		spectra = new ArrayList<Spectrum>();
 		sortedRTSpectra = new TreeMap<Double, Spectrum>();
-		scanIndexer = new Hashtable<Integer, Spectrum>();
+		scanIndexer = new Hashtable<String, Spectrum>();
 		
 		try {
 			BufferedReader BR = new BufferedReader(new FileReader(fileName));
@@ -189,7 +240,7 @@ public class Spectra {
 					minRT = minRT > rt ? rt : minRT;
 					
 					// if scanNum is -1, then it is missing value.
-					if(scanNum != -1) scanIndexer.put(scanNum, spectrum);
+					if(title != null) scanIndexer.put(title, spectrum);
 				}
 			}
 			
@@ -239,7 +290,7 @@ public class Spectra {
 	 * @param scanNum
 	 * @return
 	 */
-	public Spectrum getSpectrumByScanNum (int scanNum) {
+	public Spectrum getSpectrumByScanNum (String scanNum) {
 		Spectrum spectrum = this.scanIndexer.get(scanNum);
 		if(spectrum == null) System.err.println("getSpectrumByScanNum: wrong scanNum! " + scanNum);
 		return spectrum;

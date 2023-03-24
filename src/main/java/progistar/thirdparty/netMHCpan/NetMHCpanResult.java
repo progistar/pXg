@@ -82,4 +82,6 @@ public class NetMHCpanResult {
 		
 		return str.toString();
 	}
+	
+
 }

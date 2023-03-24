@@ -40,8 +40,7 @@ public class ParameterParser {
 				System.out.println("                         Several features can be added by comma separator. ex> 5,6,7");
 				System.out.println("  -sep                 : Specify the column separator. Possible values are csv or tsv. Default is csv");
 				System.out.println("  -translation         : Specify the method of translation nucleotides. 0 for three-frame and 1 for six-frame. Default is 1");
-				System.out.println("  -pval                : p-value cutoff of randomly matched peptide-read pairs. Default is 0.01");
-				System.out.println("  -fdr                 : FDR cutoff to discard low-quality peptide-spectrum matches. Default is 0.1");
+				System.out.println("  -pval                : p-value cutoff of randomly matched peptide-read pairs. Default is 1.00, which means that do not use p-value cutoff");
 				System.out.println("  -ileq                : Controls whether pXg treats isoleucine (I) and leucine (L) as the same/equivalent with respect to a peptide identification. Default is true.");
 				System.out.println("  -length              : Range of peptide length to consider. Default is 8-15");
 				System.out.println("                         You can write in this way (min-max, both inclusive) : 8-13");
@@ -66,9 +65,9 @@ public class ParameterParser {
 				System.out.println("  -threads             : The number of threads. Default is 4");
 				System.out.println();
 				System.out.println("Example1");
-				System.out.println("java -Xmx30G -jar pXg.jar -gtf gencode.gtf -sam aligned.sorted.sam -psm peaks.result -pept_col 4 -score_col 8 -scan_cols 1,2,5  -pval 0.01 -fdr 0.1 -out_canonical false -out peaks.pXg");
+				System.out.println("java -Xmx30G -jar pXg.jar -gtf gencode.gtf -sam aligned.sorted.sam -psm peaks.result -scan_col 5 -file_col 2 -pept_col 4 -charge_col 11 -score_col 8 -add_feat_cols 14,15  -out_canonical false -out peaks.pXg");
 				System.out.println("Example2");
-				System.out.println("java -Xmx30G -jar pXg.jar -gtf gencode.gtf -sam aligned.sorted.sam -psm peaks.result -pept_col 4 -score_col 8 -scan_cols 1,2,5  -pval 0.01 -fdr 0.1 -length 8-13 -out peaks.pXg");
+				System.out.println("java -Xmx30G -jar pXg.jar -gtf gencode.gtf -sam aligned.sorted.sam -psm peaks.result -scan_col 5 -file_col 2 -pept_col 4 -charge_col 11 -score_col 8 -add_feat_cols 14,15 -length 8-11 -out peaks.pXg");
 				return -1;
 			}
 			
@@ -332,7 +331,12 @@ public class ParameterParser {
 			translation = "six-frame translation";
 		}
 		System.out.println("  TRANSLATION_METHOD: "+Parameters.translationMethod +" ("+translation+")");
-		System.out.println("  READ_CUTOFF_P_VALUE: "+Parameters.pvalue);
+		if(Parameters.pvalue < 1.00) {
+			System.out.println("  READ_CUTOFF_P_VALUE: "+Parameters.pvalue);
+		}
+		if(Parameters.proteinFastaPath != null) {
+			System.out.println(" PROTEIN_DB: "+Parameters.proteinFastaPath);
+		}
 		System.out.println(" PSM: "+Parameters.peptideFilePath);
 		System.out.println("  PEPT_COL: "+Parameters.peptideColumnIndex);
 		System.out.println("  SCORE_COL: "+Parameters.scoreColumnIndex);
@@ -348,7 +352,7 @@ public class ParameterParser {
 			}
 			addFeatCols = addFeatCols.substring(1);
 		}
-		System.out.println("  SCAN_COLS: "+addFeatCols);
+		System.out.println("  ADDITIONAL_FEATURE_COLS: "+addFeatCols);
 		System.out.println("  RANK TO CONSIDER: "+Parameters.psmRank);
 		System.out.println("  PEPTIDE_LENGTH: "+Parameters.minPeptLen+"-"+Parameters.maxPeptLen);
 		System.out.println(" OUT_RESULT: "+Parameters.outputFilePath);
@@ -384,15 +388,21 @@ public class ParameterParser {
 		Logger.newLine();
 		Logger.append("  TRANSLATION_METHOD: "+Parameters.translationMethod +" ("+translation+")");
 		Logger.newLine();
-		Logger.append("  READ_CUTOFF_P_VALUE: "+Parameters.pvalue);
-		Logger.newLine();
+		if(Parameters.pvalue < 1.00) {
+			Logger.append("  READ_CUTOFF_P_VALUE: "+Parameters.pvalue);
+			Logger.newLine();
+		}
+		if(Parameters.proteinFastaPath != null) {
+			Logger.append(" PROTEIN_DB: "+Parameters.proteinFastaPath);
+			Logger.newLine();
+		}
 		Logger.append(" PSM: "+Parameters.peptideFilePath);
 		Logger.newLine();
 		Logger.append("  PEPT_COL: "+Parameters.peptideColumnIndex);
 		Logger.newLine();
 		Logger.append("  SCORE_COL: "+Parameters.scoreColumnIndex);
 		Logger.newLine();
-		Logger.append("  SCAN_COLS: "+addFeatCols.substring(1));
+		Logger.append("  ADDITIONAL_FEATURE_COLS: "+addFeatCols.substring(1));
 		Logger.newLine();
 		Logger.append("  RANK TO CONSIDER: "+Parameters.psmRank);
 		Logger.newLine();
