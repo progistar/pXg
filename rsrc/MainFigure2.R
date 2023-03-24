@@ -49,9 +49,10 @@ staticThemeRightBottom <- theme(text = element_text(size=25, color = "black")
                                 legend.box.background = element_rect(linetype = 1, size = 1))
 
 staticThemeRight <- theme(text = element_text(size=25, color = "black")
-                          , axis.text.x = element_text(size=20, color="black"), axis.text.y = element_text(size=20, color="black"),
+                          , axis.text.x = element_text(size=20, color="black"), 
+                          axis.text.y = element_text(size=20, color="black"),
                           legend.justification = c("right"),
-                          legend.text = element_text(size=25, color = "black"))
+                          legend.text = element_text(size=20, color = "black"))
 
 
 staticThemeTop <- theme(text = element_text(size=25, color = "black")
@@ -74,7 +75,135 @@ staticThemeNone <- theme(text = element_text(size=25, color = "black")
 
 
 setwd("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/")
+## DeepLC
+rtUnmatched <- read_excel(path = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/pXgResults_p001_FDR.xlsx", sheet = "Unmatched_RT_85")
+rtMatched <- read_excel(path = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/pXgResults_p001_FDR.xlsx", sheet = "pFDR_RT")
 
+plotData <- rtMatched[rtMatched$IsCanonical == TRUE & rtMatched$`MHC-I` != "NB", c("RT", "deeplcRT")]
+plotData$Class <- "Canonical MAP"
+
+plotData1 <- rtMatched[rtMatched$IsCanonical == FALSE & rtMatched$`MHC-I` != "NB", c("RT", "deeplcRT")]
+plotData1$Class <- "Noncanonical MAP"
+
+plotData2 <- rtUnmatched[rtUnmatched$`ALC (%)` >= 85 & rtUnmatched$`MHC-I` != "NB", c("RT", "deeplcRT")]
+plotData2$Class <- "Unmatched MAP (ALC≥85)"
+
+plotData <- rbind(plotData, plotData1, plotData2)
+plotData$Class <- factor(plotData$Class, levels = c("Unmatched MAP (ALC≥85)", "Canonical MAP", "Noncanonical MAP"))
+
+nrow(plotData[plotData$Class == "Unmatched MAP (ALC≥85)", ])
+nrow(plotData[plotData$Class == "Noncanonical MAP", ])
+nrow(plotData[plotData$Class == "Canonical MAP", ])
+?lm
+summary(lm(deeplcRT~RT, plotData[plotData$Class == "Unmatched MAP (ALC≥85)",]))
+summary(lm(deeplcRT~RT, plotData[plotData$Class == "Noncanonical MAP",]))
+
+rtPlot <- ggplot(data = plotData, aes(x=RT, y=`deeplcRT`)) +
+  theme_bw() +
+  geom_point(size=1, alpha = 0.6) +
+  stat_smooth(method = "lm", se = T, size = 0.8) +
+  staticThemeRight +
+  theme(plot.margin = margin(0, 0.5, 0, 0, "in")) +
+  labs(y= "Predicted retention time", x = NULL) +
+  labs(x= "Observed retention time", x = NULL) +
+  facet_grid(cols = vars(`Class`), scales = "free")
+rtPlot
+ggsave("RT_Unmatched_85.png", plot = rtPlot, width = 15, height = 7, units = "in", dpi = 1200)
+
+
+
+## Peptide length
+lenData1 <- data.frame(matrix(ncol = 3, nrow = 0))
+lenData2 <- data.frame(matrix(ncol = 3, nrow = 0))
+lenData3 <- data.frame(matrix(ncol = 3, nrow = 0))
+colnames(lenData1) <- c("Length", "Count","Class")
+colnames(lenData2) <- c("Length", "Count","Class")
+colnames(lenData3) <- c("Length", "Count","Class")
+
+plotData1 <- rtMatched[rtMatched$IsCanonical == TRUE & rtMatched$`MHC-I` != "NA", c("Length")]
+plotData2 <- rtMatched[rtMatched$IsCanonical == FALSE & rtMatched$`MHC-I` != "NA", c("Length")]
+plotData3 <- rtUnmatched[rtUnmatched$`ALC (%)` >= 85 & rtUnmatched$`MHC-I` != "NA", c("Length")]
+
+plotSum1 <- 0
+plotSum2 <- 0
+plotSum3 <- 0
+for(idx in c(8,9,10,11,12,13,14,15)) {
+  lenData1[idx-7, ]$Length <- idx
+  lenData1[idx-7, ]$Count <- nrow(plotData1[plotData1$Length == idx, ])
+  lenData1[idx-7, ]$Class <- "Canonical"
+  plotSum1 <- lenData1[idx-7, ]$Count + plotSum1
+  
+  lenData2[idx-7, ]$Length <- idx
+  lenData2[idx-7, ]$Count <- nrow(plotData2[plotData2$Length == idx, ])
+  lenData2[idx-7, ]$Class <- "Noncanonical"
+  plotSum2 <- lenData2[idx-7, ]$Count + plotSum2
+  
+  lenData3[idx-7, ]$Length <- idx
+  lenData3[idx-7, ]$Count <- nrow(plotData3[plotData3$Length == idx, ])
+  lenData3[idx-7, ]$Class <- "Unmatched (ALC≥85)"
+  plotSum3 <- lenData3[idx-7, ]$Count + plotSum3
+}
+for(idx in c(8,9,10,11,12,13,14,15)) {
+  lenData1[idx-7, ]$Count <- lenData1[idx-7, ]$Count / plotSum1
+  lenData2[idx-7, ]$Count <- lenData2[idx-7, ]$Count / plotSum2
+  lenData3[idx-7, ]$Count <- lenData3[idx-7, ]$Count / plotSum3
+}
+
+lenData <- rbind(lenData1, lenData2)
+lenData$Class <- factor(lenData$Class, levels = c("Canonical", "Noncanonical"))
+
+#lenData$Length <- as.character(lenData$Length)
+classCa <- c(`Canonical` = blueC, `Noncanonical` = redC)
+
+lengthPlot <- ggplot(data = lenData, aes(x=Length, y=Count, fill = Class)) +
+  geom_bar(stat="identity", position = position_dodge2()) +
+  scale_x_continuous(breaks = c(8,9,10,11,12,13,14,15)) +
+  theme_bw() +
+  staticThemeTop +
+  labs(y= "MAP proportion", x = NULL) +
+  labs(x= "Length", x = NULL) +
+  scale_fill_manual(values = classCa)
+lengthPlot
+
+ggsave("length.png", plot = lengthPlot, width = 6, height = 7, units = "in", dpi = 300)
+
+
+## PPM error
+ppmUnmatched <- read_excel(path = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/pXgResults_p001_FDR.xlsx", sheet = "Unmatched_ppm")
+ppmMatched <- read_excel(path = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/pXgResults_p001_FDR.xlsx", sheet = "pFDR_ppm")
+
+ppmMatched$Class <- "Canonical MAP"
+ppmMatched[ppmMatched$IsCanonical == FALSE, ]$Class <- "Noncanonical MAP"
+ppmUnmatched$Class <- "Unmatched MAP (ALC≥85)"
+
+plotData <- ppmMatched[ppmMatched$`MHC-I` != "NB", c("ppm", "Class")]
+plotData <- rbind(plotData, ppmUnmatched[ppmUnmatched$`ALC (%)` >=85 & 
+                                           ppmUnmatched$`MHC-I` != "NB", 
+                                         c("ppm", "Class")])
+
+summary(plotData)
+
+plotData$Class <- factor(plotData$Class, labels = c("Canonical MAP", "Noncanonical MAP", "Unmatched MAP (ALC≥85)"))
+
+nrow(plotData[plotData$Class == "Unmatched MAP (ALC≥85)",])
+nrow(plotData[plotData$Class == "Noncanonical MAP",])
+nrow(plotData[plotData$Class == "Canonical MAP",])
+
+classCa <- c(`Canonical MAP` = blueC, `Noncanonical MAP` = redC, `Unmatched MAP (ALC≥85)` = grayC)
+
+ppmPlot <- ggplot(data = plotData, aes(x=ppm, color = Class)) +
+  geom_density() +
+  theme_bw() +
+  scale_color_manual(values = classCa) +
+  guides(color = guide_legend(nrow = 2, byrow = TRUE)) +
+  staticThemeTop +
+  labs(y= "PSM density", x = NULL) +
+  labs(x= "ppm error", x = NULL)
+  
+ppmPlot
+ggsave("ppm_Unmatched_85.png", plot = ppmPlot, width = 9, height = 8, units = "in", dpi = 1200)
+
+##
 tmp <- read_excel(path = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/pXgResults_nocut.xlsx", sheet = "Subject 4")
 tmp <- tmp[!duplicated(tmp$InferredPeptide), ]
 nrow(tmp[tmp$IsCanonical == "TRUE" & tmp$`MHC-I` != "NB", ])
@@ -343,7 +472,7 @@ nrow(peptideLevel[peptideLevel$Event == 3 & peptideLevel$`Observed subjects` > 1
 nrow(peptideLevel[peptideLevel$Event == 2 & peptideLevel$`Observed subjects` > 1, ])
 nrow(peptideLevel[peptideLevel$Event == 1 & peptideLevel$`Observed subjects` > 1, ])
 
-pdf(file = "Events.pdf", width = 8, height = 6)
+pdf(file = "Events.pdf", width = 12, height = 4.5)
 Heatmap(t(peptideLevel[, c("Event")]), width = 0.5, height = unit(0.3, "cm"), col = brewer.pal(n=8, name="Set1"),
         show_row_names = F, 
         cluster_columns = F, show_column_dend = F, heatmap_legend_param = list(
