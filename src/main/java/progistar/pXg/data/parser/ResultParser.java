@@ -29,6 +29,7 @@ public class ResultParser {
 				
 				String uniqueID = null;
 				boolean isDecoy = false;
+				double meanQScore = 0;
 				
 				// for unmapped reads
 				String fullReads = null;
@@ -45,6 +46,8 @@ public class ResultParser {
 						
 						fullReads = null;
 						
+					} else if(field[0].equalsIgnoreCase(Constants.OUTPUT_G_QSCORE)) {
+						meanQScore = Double.parseDouble(field[1]);
 					} else if(field[0].equalsIgnoreCase(Constants.OUTPUT_G_SEQUENCE)) {
 						fullReads = field[1];
 					} else if(field[0].equalsIgnoreCase(Constants.OUTPUT_G_PEPTIDE)) {
@@ -95,8 +98,10 @@ public class ResultParser {
 							
 							if(isDecoy) {
 								xBlock.mockReadCount++;
+								xBlock.decoyMeanQScore += meanQScore;
 							} else {
 								xBlock.targetReadCount++;
+								xBlock.targetMeanQScore += meanQScore;
 							}
 							
 							xBlock.sequenceID = uniqueID;

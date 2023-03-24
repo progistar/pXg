@@ -64,17 +64,8 @@ public class PeptideAnnotation {
 			decoySequence.setLength(0);
 			String target = gSeq.getForwardStrandTranslation(i);
 			String decoy = decoySequence.append(target).reverse().toString();
-			int targetLen = target.length();
 			int decoyLen = decoy.length();
 			
-//			RunInfo.countTDPeptide(target, decoy);
-			
-			for(int j=0; j<targetLen; j++) {
-				RunInfo.targetAAFreqs[target.charAt(j)-'A']++;
-			}
-			for(int j=0; j<decoyLen; j++) {
-				RunInfo.decoyAAFreqs[decoy.charAt(j)-'A']++;
-			}
 			
 			// for target
 			Collection<Emit> emits = trie.parseText(target);
@@ -106,17 +97,7 @@ public class PeptideAnnotation {
 			decoySequence.setLength(0);
 			String target = gSeq.getReverseStrandTranslation(i);
 			String decoy = decoySequence.append(target).reverse().toString();
-			int targetLen = target.length();
 			int decoyLen = decoy.length();
-			
-//				RunInfo.countTDPeptide(target, decoy);
-			
-			for(int j=0; j<targetLen; j++) {
-				RunInfo.targetAAFreqs[target.charAt(j)-'A']++;
-			}
-			for(int j=0; j<decoyLen; j++) {
-				RunInfo.decoyAAFreqs[decoy.charAt(j)-'A']++;
-			}
 			
 			// for target
 			Collection<Emit> emits = trie.parseText(target);

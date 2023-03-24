@@ -38,6 +38,7 @@ public class GenomicSequence {
 	public int endPosition;
 	public String mdString;
 	public ArrayList<Cigar> cigars;
+	public double meanQScore;
 	
 	
 	// annotation
@@ -73,13 +74,14 @@ public class GenomicSequence {
 	//public byte[] 	transFrames; // byte[sizeOfTranscripts]
 	// In case of intergenic (it implies that this sequence cannot be explained by annotations), transFrames = new byte[1].
 	
-	public GenomicSequence (String uniqueID, int chrIndex, int startPosition, ArrayList<Cigar> cigars, String mdStr) {
+	public GenomicSequence (String uniqueID, int chrIndex, int startPosition, ArrayList<Cigar> cigars, String mdStr, double meanQScore) {
 		this.uniqueID = uniqueID;
 		this.chrIndex = chrIndex;
 		this.startPosition = startPosition;
 		this.cigars = cigars;
 		this.mdString = mdStr;
 		this.endPosition = startPosition;
+		this.meanQScore = meanQScore;
 		
 		for(Cigar cigar : this.cigars) {
 			char op = cigar.operation;

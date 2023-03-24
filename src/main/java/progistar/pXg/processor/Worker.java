@@ -51,57 +51,52 @@ public class Worker extends Thread {
 	 */
 	public void run () {
 		
-		try {
-			BufferedWriter BW = new BufferedWriter(new FileWriter(this.tmpOutput, true));
-			// task for mapping genomic annotation
-			if(this.task.taskType == Constants.TASK_G_MAP) {
-				for(String samRead : this.task.samReads) {
-					RunInfo.workerProcessedReads[this.workerID] ++; // increase a number of processed reads
-					
-					GenomicSequence genomicSequence = SamParser.parseSam(samRead);
-					ArrayList<Output> matches = PeptideAnnotation.find(genomicSequence);
+		BufferedWriter BW = Master.getOutputBW(this.tmpOutput.getAbsolutePath());
+		// task for mapping genomic annotation
+		if(this.task.taskType == Constants.TASK_G_MAP) {
+			for(String samRead : this.task.samReads) {
+				RunInfo.workerProcessedReads[this.workerID] ++; // increase a number of processed reads
+				
+				GenomicSequence genomicSequence = SamParser.parseSam(samRead);
+				ArrayList<Output> matches = PeptideAnnotation.find(genomicSequence);
+				
+				/**
+				 * Only consider matched NGS-reads.
+				 * Because we are not interested in unmatched NGS-reads.
+				 * 
+				 */
+				
+				if(matches.size() > 0) {
+					Mapper.gMap(genomicSequence, task.gIndexStart, task.genomicAnnotationIndex, task.genomicAnnotation);
 					
 					/**
-					 * Only consider matched NGS-reads.
-					 * Because we are not interested in unmatched NGS-reads.
+					 * Mapping output result to genomic annotation.
 					 * 
 					 */
+					ArrayList<Output> targetMatches = new ArrayList<Output>();
+					ArrayList<Output> decoyMatches = new ArrayList<Output>();
 					
-					if(matches.size() > 0) {
-						Mapper.gMap(genomicSequence, task.gIndexStart, task.genomicAnnotationIndex, task.genomicAnnotation);
+					for(Output output : matches) {
+						output.mapGenomicAnnotation();
 						
-						/**
-						 * Mapping output result to genomic annotation.
-						 * 
-						 */
-						ArrayList<Output> targetMatches = new ArrayList<Output>();
-						ArrayList<Output> decoyMatches = new ArrayList<Output>();
-						
-						for(Output output : matches) {
-							output.mapGenomicAnnotation();
-							
-							if(output.isTarget) {
-								targetMatches.add(output);
-							} else {
-								decoyMatches.add(output);
-							}
-						}
-						
-						if(targetMatches.size() != 0) {
-							writeTmpOutput(BW, targetMatches, genomicSequence, "");
-						}
-						
-						if(decoyMatches.size() != 0) {
-							writeTmpOutput(BW, decoyMatches, genomicSequence, Constants.DECOY_PREFIX);
+						if(output.isTarget) {
+							targetMatches.add(output);
+						} else {
+							decoyMatches.add(output);
 						}
 					}
+					
+					if(targetMatches.size() != 0) {
+						writeTmpOutput(BW, targetMatches, genomicSequence, "");
+					}
+					
+					if(decoyMatches.size() != 0) {
+						writeTmpOutput(BW, decoyMatches, genomicSequence, Constants.DECOY_PREFIX);
+					}
 				}
-				
-				this.task.samReads.clear();
 			}
-			BW.close();
-		}catch(IOException ioe) {
 			
+			this.task.samReads.clear();
 		}
 		 
 		
@@ -126,6 +121,10 @@ public class Worker extends Thread {
 				BW.append(Constants.OUTPUT_G_SEQUENCE).append("\t").append(gSeq.getNucleotideString());
 				BW.newLine();
 			}
+			
+			// write average QScore.
+			BW.append(Constants.OUTPUT_G_QSCORE+"\t"+gSeq.meanQScore);
+			BW.newLine();
 			
 			/*
 			 * These information are needed to confirm.

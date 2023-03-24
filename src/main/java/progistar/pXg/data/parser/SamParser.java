@@ -31,6 +31,7 @@ public class SamParser {
 	public static int START_POS_IDX 	= 3;
 	private static int CIGAR_IDX 		= 5;
 	private static int SEQUENCE_IDX 	= 9;
+	private static int QUALITY_IDX 		= 10;
 	
 	// prevent to generate constructor
 	private SamParser () {}
@@ -52,6 +53,18 @@ public class SamParser {
 		Integer startPosition = Integer.parseInt(fields[START_POS_IDX]);
 		String cigarString = fields[CIGAR_IDX];
 		String nucleotides = fields[SEQUENCE_IDX];
+		String phred33 = fields[QUALITY_IDX];
+		
+		// average of phred33 QScore
+		int length = phred33.length();
+		double meanQScore = 0;
+		for(int i=0; i<length; i++) {
+			char qChar = phred33.charAt(i);
+			if(qChar != '*') {
+				meanQScore += (qChar-33);
+			}
+		}
+		meanQScore /= (double) length;
 		
 		// Note that
 		// Chr of unmapped reads are marked as *
@@ -76,7 +89,7 @@ public class SamParser {
 		int chrIndex = IndexConvertor.chrToIndex(chr);
 		
 		// Genomic Sequence
-		return new GenomicSequence(qName, chrIndex, startPosition, cigars, mdStr);
+		return new GenomicSequence(qName, chrIndex, startPosition, cigars, mdStr, meanQScore);
 		
 	}
 	

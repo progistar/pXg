@@ -7,22 +7,7 @@ import progistar.pXg.utils.Logger;
 public class RunInfo {
 	
 	// Count PSMs
-	// 0 for canonical
-	// 1 for noncanonical
-	public static long[][] targetRankPSMs = new long[2][101];
-	public static long[][] decoyRankPSMs = new long[2][101];
-	
-	// Count PSMs
 	public static long[] totalRankPSMs = new long[101];
-
-	// Count peptides
-	public static Hashtable[] targetPeptideHash		= new Hashtable[Parameters.maxPeptLen - Parameters.minPeptLen + 1];
-	public static Hashtable[] decoyPeptideHash		= new Hashtable[Parameters.maxPeptLen - Parameters.minPeptLen + 1];
-	public static Hashtable[] overlappedPeptideHash	= new Hashtable[Parameters.maxPeptLen - Parameters.minPeptLen + 1];
-	
-	// target decoy sequence statistics
-	public static long[] targetAAFreqs = new long [26];
-	public static long[] decoyAAFreqs = new long [26];
 	
 	public static long[] workerProcessedReads = null;
 	public static long totalProcessedReads = 0;
@@ -52,79 +37,6 @@ public class RunInfo {
 	public static int pvalueFilterScanNum4			= 0;
 	public static int pvalueFilterPeptideNum4		= 0;
 	
-	// step5: region filter
-	public static int regionFilterScanNum5			= 0;
-	public static int regionFilterPeptideNum5		= 0;
-	
-	// step6: top-score filter
-	public static int topscoreFilterScanNum6		= 0;
-	public static int topscoreFilterPeptideNum6		= 0;
-	
-	// step7: FDR
-	public static int fdrFilterScanNum7				= 0;
-	public static int fdrFilterPeptideNum7			= 0;
-	
-	public static void printRankPSM () {
-		Logger.append("Rank\tTargetCandidate\tDecoyCandidate\tIsCanonical");
-		Logger.newLine();
-		for(int i=0; i<RunInfo.targetRankPSMs[0].length; i++) {
-			if(RunInfo.targetRankPSMs[0][i] == 0 && RunInfo.decoyRankPSMs[0][i] == 0) {
-				continue;
-			} else {
-				Logger.append(i+"\t"+RunInfo.targetRankPSMs[0][i]+"\t"+RunInfo.decoyRankPSMs[0][i]+"\tTRUE");
-				Logger.newLine();
-			}
-		}
-		for(int i=0; i<RunInfo.targetRankPSMs[1].length; i++) {
-			if(RunInfo.targetRankPSMs[1][i] == 0 && RunInfo.decoyRankPSMs[1][i] == 0) {
-				continue;
-			} else {
-				Logger.append(i+"\t"+RunInfo.targetRankPSMs[1][i]+"\t"+RunInfo.decoyRankPSMs[1][i]+"\tFALSE");
-				Logger.newLine();
-			}
-		}
-	}
-	
-	public static void countTDPeptide (String target, String decoy) {
-		int targetLen = target.length();
-		
-		// count target and decoy peptide
-		for(int len=Parameters.minPeptLen; len<=Parameters.maxPeptLen; len++) {
-			int lenIdx = len - Parameters.minPeptLen;
-			if(RunInfo.targetPeptideHash[lenIdx] == null) {
-				RunInfo.targetPeptideHash[lenIdx] = new Hashtable<String, String>();
-			}
-			
-			if(RunInfo.decoyPeptideHash[lenIdx] == null) {
-				RunInfo.decoyPeptideHash[lenIdx] = new Hashtable<String, String>();
-			}
-			
-			if(RunInfo.overlappedPeptideHash[lenIdx] == null) {
-				RunInfo.overlappedPeptideHash[lenIdx] = new Hashtable<String, String>();
-			}
-			
-			for(int j=len; j<targetLen; j++) {
-				String subTarget = target.substring(j-len, j);
-				String subDecoy = decoy.substring(j-len, j);
-				
-				if(!subTarget.contains("X")) {
-					RunInfo.targetPeptideHash[lenIdx].put(subTarget, "");
-					if(RunInfo.decoyPeptideHash[lenIdx].get(subTarget) != null) {
-						RunInfo.overlappedPeptideHash[lenIdx].put(subTarget, "");
-					}
-				}
-				if(!subDecoy.contains("X")) {
-					RunInfo.decoyPeptideHash[lenIdx].put(subDecoy, "");
-					if(RunInfo.targetPeptideHash[lenIdx].get(subDecoy) != null) {
-						RunInfo.overlappedPeptideHash[lenIdx].put(subDecoy, "");
-					}
-				}
-				
-			}
-		}
-		
-	}
-	
 	public static void printProcessedChromosomes () {
 		StringBuilder chrList = new StringBuilder();
 		processedChromosomes.forEach((chr, value)->{
@@ -152,18 +64,6 @@ public class RunInfo {
 		Logger.newLine();
 		Logger.append("Minimum PSM score threshold to accept as noncanonical PSMs: "+ncPSMScoreTreshold);
 		Logger.newLine();
-	}
-	
-	public static void printAAStat () {
-		System.out.println("AA\tTargetAA\tDecoyAA");
-		Logger.append("AA\tTargetAA\tDecoyAA");
-		Logger.newLine();
-		for(int i=0; i<26; i++) {
-			char aa = Character.valueOf((char) ('A'+i));
-			System.out.println(aa+"\t"+RunInfo.targetAAFreqs[i]+"\t"+RunInfo.decoyAAFreqs[i]);
-			Logger.append(aa+"\t"+RunInfo.targetAAFreqs[i]+"\t"+RunInfo.decoyAAFreqs[i]);
-			Logger.newLine();
-		}
 	}
 	
 	public static void printFilterStat () {

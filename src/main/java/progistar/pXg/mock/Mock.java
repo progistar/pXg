@@ -17,6 +17,7 @@ public class Mock  {
 	private static final int PSD_REV_SIZE = 3;
 	
 	/**
+	 * @deprecated
 	 * Make gSeq with mock property.<br>
 	 * 
 	 * 
@@ -83,7 +84,7 @@ public class Mock  {
 		}
 		cigars.add(revCigar);
 		
-		GenomicSequence gMSeq = new GenomicSequence("XXX_"+gSeq.uniqueID, gSeq.chrIndex, gSeq.startPosition, cigars, null);
+		GenomicSequence gMSeq = new GenomicSequence("XXX_"+gSeq.uniqueID, gSeq.chrIndex, gSeq.startPosition, cigars, null, -1);
 		
 		return gMSeq;
 	}

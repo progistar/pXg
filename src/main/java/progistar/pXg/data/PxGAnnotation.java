@@ -58,6 +58,8 @@ public class PxGAnnotation {
 		} else {
 			thisXBlock.mockReadCount += xBlock.mockReadCount;
 			thisXBlock.targetReadCount += xBlock.targetReadCount;
+			thisXBlock.decoyMeanQScore += xBlock.decoyMeanQScore;
+			thisXBlock.targetMeanQScore += xBlock.targetMeanQScore;
 			thisXBlock.siblingXBlocks.add(xBlock); // 
 		}
 		
@@ -386,6 +388,7 @@ public class PxGAnnotation {
 			BW.append("FastaIDs").append("\t");
 			BW.append("FastaIDCount").append("\t");
 			BW.append("Reads").append("\t");
+			BW.append("MeanQScore").append("\t");
 			BW.append("IsCanonical");
 			BW.newLine();
 			
@@ -474,83 +477,6 @@ public class PxGAnnotation {
 		}
 	}
 	
-	
-	/**
-	 * select top-scored PSM only. <br>
-	 * 
-	 */
-	public void topScoreFilter () {
-		Hashtable<String, ArrayList<PBlock>> pBlocksByScan = new Hashtable<String, ArrayList<PBlock>>();
-		ArrayList<PBlock> pBlocks = PeptideAnnotation.pBlocks;
-		
-		
-		// aggregate pBlocks by scanID
-		pBlocks.forEach(pBlock -> {
-			String scanID = pBlock.getUniqueID();
-			ArrayList<PBlock> scanPBlocks = pBlocksByScan.get(scanID);
-			if(scanPBlocks == null) {
-				scanPBlocks = new ArrayList<PBlock>();
-				pBlocksByScan.put(scanID, scanPBlocks);
-			}
-			scanPBlocks.add(pBlock);
-		});
-		
-		// remove original pBlocks
-		pBlocks.clear();
-		
-		pBlocksByScan.forEach((scanID, scanPBlocks) -> {
-			// sort pBlocks by scores, decreasing order.
-			Collections.sort(scanPBlocks);
-			
-			// topScore is determined by target or decoy status
-			int bestTargetIndex = -1;
-			int bestDecoyIndex = -1;
-			
-			// logging rank PSMs
-			for(int i=0; i<scanPBlocks.size(); i++) {
-				
-				byte psmStatus = scanPBlocks.get(i).psmStatus;
-				int rank = scanPBlocks.get(i).rank;
-				
-				int isCanonical = scanPBlocks.get(i).isCannonical ? 0 : 1;
-				
-				if(psmStatus == Constants.PSM_STATUS_TARGET) {
-					RunInfo.targetRankPSMs[isCanonical][rank]++;
-				} else if(psmStatus == Constants.PSM_STATUS_DECOY) {
-					RunInfo.decoyRankPSMs[isCanonical][rank]++;
-				}
-			}
-			
-			// select top one
-			for(int i=0; i<scanPBlocks.size(); i++) {
-				
-				byte psmStatus = scanPBlocks.get(i).psmStatus;
-				
-				if(psmStatus == Constants.PSM_STATUS_TARGET || psmStatus == Constants.PSM_STATUS_BOTH) {
-					//select top score from targets
-					bestTargetIndex = i;
-					break;
-				} else if(psmStatus == Constants.PSM_STATUS_DECOY) {
-					if(bestDecoyIndex == -1) {
-						bestDecoyIndex = i;
-					}
-				}
-			}
-			
-			// top-scored PSMs have priority
-			if(bestTargetIndex != -1 && bestDecoyIndex != -1) {
-				if(scanPBlocks.get(bestTargetIndex).score >= scanPBlocks.get(bestDecoyIndex).score) {
-					pBlocks.add(scanPBlocks.get(bestTargetIndex));
-				} else {
-					pBlocks.add(scanPBlocks.get(bestDecoyIndex));
-				}
-			} else if(bestTargetIndex != -1) {
-				pBlocks.add(scanPBlocks.get(bestTargetIndex));
-			} else if(bestDecoyIndex != -1){
-				pBlocks.add(scanPBlocks.get(bestDecoyIndex));
-			}
-		});
-	}
 	/**
 	 * Marking target PSM <br>
 	 * 

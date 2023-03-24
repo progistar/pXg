@@ -1,8 +1,10 @@
 package progistar.pXg.processor;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +16,6 @@ import progistar.pXg.constants.Parameters;
 import progistar.pXg.constants.RunInfo;
 import progistar.pXg.data.GenomicAnnotation;
 import progistar.pXg.data.PIN;
-import progistar.pXg.data.PINAdvanced;
 import progistar.pXg.data.PeptideAnnotation;
 import progistar.pXg.data.PxGAnnotation;
 import progistar.pXg.data.parser.GTFParser;
@@ -28,7 +29,7 @@ public class Master {
 
 	private static GenomicAnnotation genomicAnnotation = null;
 	private static int taskCount = 0;
-	private static Hashtable<String, String> tmpOutputFilePaths = null;
+	private static Hashtable<String, BufferedWriter> tmpOutputFilePaths = null;
 	private static BufferedReader SAM_BR = null;
 	private static File SAM_FILE = null;
 	private static boolean isEndOfSAMFile = false;
@@ -49,7 +50,7 @@ public class Master {
 		// GTF parser and Peptide parser
 		genomicAnnotation = GTFParser.parseGTF(genomicAnnotationFilePath);
 		PeptideParser.parseResult(peptideFilePath); // static..!
-		tmpOutputFilePaths = new Hashtable<String, String>();
+		tmpOutputFilePaths = new Hashtable<String, BufferedWriter>();
 				
 		// TODO:
 		// Make available to BAM file.
@@ -187,16 +188,15 @@ public class Master {
 			
 			// read tmp output files
 			ArrayList<File> tmpOutputFiles = new ArrayList<File>();
-			tmpOutputFilePaths.forEach((path, value) ->{
+			tmpOutputFilePaths.forEach((path, tmpBW) ->{
 				tmpOutputFiles.add(new File(path));
+				Master.closeOutputBW(path);
 			});
 			
 			PxGAnnotation pXgA = ResultParser.parseResult(tmpOutputFiles);
 			
 			// removing tmpOutputFiles
 			tmpOutputFiles.forEach(file -> {file.delete();});
-			
-			RunInfo.printAAStat();
 			
 			// count peptides and scans matching to exp.reads
 			RunInfo.mappingFilterPeptideNum3 = PeptideAnnotation.getPeptideSizeWithXBlocks(pXgA.getXBlockMapper());
@@ -211,30 +211,11 @@ public class Master {
 			
 			// filter regions
 			pXgA.regionScoreFilter();
-			
-			// count peptides and scans after region filter
-			RunInfo.regionFilterPeptideNum5 = PeptideAnnotation.getPeptideSizeWithXBlocks(pXgA.getXBlockMapper());
-			RunInfo.regionFilterScanNum5 = PeptideAnnotation.getScanSizeWithXBlocks(pXgA.getXBlockMapper());
-			
 			// mark fasta result
 			// to distinguish ambiguous interpretation 
 			pXgA.markFasta();
 			// marking target PSMs
 			pXgA.assignXBlocks();
-			// among them, use highest-scored PSM
-			//pXgA.topScoreFilter();
-			
-			// count peptides and scans after region filter
-			RunInfo.topscoreFilterPeptideNum6 = PeptideAnnotation.getPeptideSizeWithXBlocks(pXgA.getXBlockMapper());
-			RunInfo.topscoreFilterScanNum6 = PeptideAnnotation.getScanSizeWithXBlocks(pXgA.getXBlockMapper());
-			
-			// fdr estimation
-			//pXgA.fdrEstimation();
-			
-			// count peptides and scans after fdr estimation
-			RunInfo.fdrFilterPeptideNum7 = PeptideAnnotation.getPeptideSizeWithXBlocks(pXgA.getXBlockMapper());
-			RunInfo.fdrFilterScanNum7 = PeptideAnnotation.getScanSizeWithXBlocks(pXgA.getXBlockMapper());
-			
 			
 			pXgA.write(Parameters.outputFilePath);
 			
@@ -347,6 +328,33 @@ public class Master {
 	 * @param outputFilePath
 	 */
 	public static void enrollTmpOutputFilePath (String outputFilePath) {
-		tmpOutputFilePaths.put(outputFilePath, "");
+		if(tmpOutputFilePaths.get(outputFilePath) == null) {
+			try {
+				tmpOutputFilePaths.put(outputFilePath, new BufferedWriter(new FileWriter(outputFilePath)));
+			}catch(IOException ioe) {
+				
+			}
+		}
+	}
+	
+	public static BufferedWriter getOutputBW (String outputFilePath) {
+		BufferedWriter BW = tmpOutputFilePaths.get(outputFilePath);
+		if(BW == null) {
+			enrollTmpOutputFilePath(outputFilePath);
+			BW = tmpOutputFilePaths.get(outputFilePath);
+		}
+		
+		return BW;
+	}
+	
+	public static void closeOutputBW (String outputFilePath) {
+		BufferedWriter BW = tmpOutputFilePaths.get(outputFilePath);
+		if(BW != null) {
+			try {
+				BW.close();
+			}catch(IOException ioe) {
+				
+			}
+		}
 	}
 }

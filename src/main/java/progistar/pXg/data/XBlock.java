@@ -25,6 +25,8 @@ public class XBlock {
 	public String[] fastaIDs		=	new String[0];
 	public String fullReadSequence	=	null; // for unmapped read
 	public double bestRegionPriority 	= 	Double.MAX_VALUE;
+	public double targetMeanQScore		=	0;
+	public double decoyMeanQScore		=	0;
 	
 	
 	// with the same key value block
@@ -89,7 +91,7 @@ public class XBlock {
 					+"\t"+geneNames.get("key")+"\t"+geneNames.get("count")
 					+"\t"+events.get("key")+"\t"+events.get("count")
 					+"\t"+fastaIDs.get("key")+"\t"+fastaIDs.get("count")
-					+"\t"+mockReadCount;
+					+"\t"+mockReadCount+"\t"+(this.decoyMeanQScore/((double)mockReadCount));
 		} else {
 			return peptideSequence +"\t"+genomicLocus+"\t"
 					+strand+"\t"+genomicSequence
@@ -99,7 +101,7 @@ public class XBlock {
 					+"\t"+geneNames.get("key")+"\t"+geneNames.get("count")
 					+"\t"+events.get("key")+"\t"+events.get("count")
 					+"\t"+fastaIDs.get("key")+"\t"+fastaIDs.get("count")
-					+"\t"+targetReadCount;
+					+"\t"+targetReadCount+"\t"+(this.targetMeanQScore/((double)targetReadCount));
 		}
 	}
 	

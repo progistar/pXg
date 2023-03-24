@@ -20,7 +20,7 @@ public class PIN {
 	 */
 	private static String PIN_HEADER = "SpecId\tLabel\tScanNr\tMainScore\tLog2Reads";
 	private static String[] pXgADDED_HEADERS = {"UniqueID", "Label"};
-	private static String[] pXg_DEFAULT_FEATURES = {"DeltaScore","Reads", "InferredPeptide"};
+	private static String[] pXg_DEFAULT_FEATURES = {"DeltaScore","Reads","MeanQScore", "InferredPeptide"};
 	
 	private PIN() {};
 	
@@ -56,7 +56,8 @@ public class PIN {
 			
 			int deltaScoreIdx = pXgDefaultFeatIdices[0];
 			int readIdx = pXgDefaultFeatIdices[1];
-			int infPeptIdx = pXgDefaultFeatIdices[2];
+			int meanQScoreIdx = pXgDefaultFeatIdices[2];
+			int infPeptIdx = pXgDefaultFeatIdices[3];
 			
 			// to adjust index caused by appending "UniqueID" and "Label" to the original input,
 			// the original index must be shifted by 2.
@@ -99,7 +100,7 @@ public class PIN {
 			}
 			
 			// last header
-			PIN_HEADER += "\tDeltaScore\tPeptide\tProteins";
+			PIN_HEADER += "\tDeltaScore\tMeanQScore\tPeptide\tProteins";
 			
 			pinRecords.add(PIN_HEADER);
 			/******************8 Gen PIN 8*******************/
@@ -116,6 +117,7 @@ public class PIN {
 				String scanNr = specIDtoScanIdx.get(specId)+"";
 				String mainScore = fields[Parameters.scoreColumnIndex + indexShiftSize];
 				String log2Reads = "" + Math.log(Double.parseDouble(fields[readIdx])+1)/Math.log(2);
+				
 				int charge = Integer.parseInt(fields[Parameters.chargeColumnIndex + indexShiftSize]);
 				
 				pinOutput.append(specId+"\t"+label+"\t"+scanNr+"\t"+mainScore+"\t"+log2Reads);
@@ -137,9 +139,11 @@ public class PIN {
 				
 				// pXg default features
 				String deltaScore = fields[deltaScoreIdx];
+				String meanQScore = fields[meanQScoreIdx];
 				String peptide = fields[infPeptIdx];
 				
 				pinOutput.append("\t").append(deltaScore);
+				pinOutput.append("\t").append(meanQScore);
 				pinOutput.append("\t").append(peptide);
 				// target or decoy
 				if(label.equalsIgnoreCase("1")) {

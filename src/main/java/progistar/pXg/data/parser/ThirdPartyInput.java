@@ -1,4 +1,4 @@
-package progistar.pXg.tset;
+package progistar.pXg.data.parser;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -8,9 +8,103 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Hashtable;
 
-public class _ToPrositFormat {
+import progistar.pXg.constants.Constants;
+import progistar.pXg.constants.Parameters;
 
+public class ThirdPartyInput {
+	
+	public static String CE = null;
+	
+	public static String pxgResultPath = null;
+	public static int rtIdx = -1;
+	public static int infPeptIdx = -1;
+	public static int isCanonicalIdx = -1;
+	public static int labelIdx = -1;
+	public static int chargeIdx = -1;
+	public static int scoreIdx = -1;
+
+	public static void printUsage() {
+		System.out.println("Usage");
+		System.out.println();
+		System.out.println("Mandatory Fields");
+		System.out.println("  -pxg                 : pXg result file path. We recommand to use the same gtf corresponding to alignment.");
+		System.out.println("  -rt_col              : Retention time column index in the pXg result. One-based!");
+		System.out.println("  -ipept_col           : Inffererd peptide column index in the pXg result. One-based!");
+		System.out.println("  -ic_col              : IsCanonical column index in the pXg result. One-based!");
+		System.out.println("  -label_col           : Label column index in the pXg result. One-based!");
+		System.out.println("  -charge_col          : Charge column index in the pXg result. One-based!");
+		System.out.println("  -score_col           : Score column index in the pXg result. One-based!");
+		System.out.println("  -ce                  : SAM file path. The sam file must be sorted by coordinate.");
+		
+		System.out.println("Example1");
+		System.out.println("java -Xmx30G -c pXg.jar progistar.pXg.data.parser.ThridPartyInput -pxg result.pxg -rt_col 13 -ipept_col 23 -ic_col 39 -label_col 1 -charge_col 12 -score_col 9 -ce 35");
+	}
+	
+	public static boolean checkInput(String[] args) {
+		// input check
+		System.out.println(Constants.VERSION+" "+Constants.RELEASE);
+		System.out.println(Constants.INTRODUCE);
+		System.out.println();
+		
+
+		
+		// print parameter description
+		if(args.length == 0) {
+			printUsage();
+			return false;
+		}
+		
+		for(int i=0; i<args.length; i+=2) {
+			String option = args[i].toLowerCase();
+			
+			// -gtf (mandatory)
+			if(option.equalsIgnoreCase("-pxg")) {
+				pxgResultPath = args[i+1];
+				
+			} else if(option.equalsIgnoreCase("-rt_col")) {
+				rtIdx = Integer.parseInt(args[i+1]);
+				
+			} else if(option.equalsIgnoreCase("-ipept_col")) {
+				infPeptIdx = Integer.parseInt(args[i+1]);
+				
+			} else if(option.equalsIgnoreCase("-ic_col")) {
+				isCanonicalIdx = Integer.parseInt(args[i+1]);
+				
+			} else if(option.equalsIgnoreCase("-label_col")) {
+				labelIdx = Integer.parseInt(args[i+1]);
+				
+			} else if(option.equalsIgnoreCase("-charge_col")) {
+				chargeIdx = Integer.parseInt(args[i+1]);
+				
+			} else if(option.equalsIgnoreCase("-score_col")) {
+				scoreIdx = Integer.parseInt(args[i+1]);
+				
+			} else if(option.equalsIgnoreCase("-ce")) {
+				CE = args[i+1];
+			}
+		}
+		
+		if(pxgResultPath != null &&
+				rtIdx != -1 &&
+				infPeptIdx != -1 &&
+				isCanonicalIdx != -1 &&
+				labelIdx != -1 &&
+				chargeIdx != -1 &&
+				scoreIdx != -1 &&
+				CE != null) {
+			return true;
+		}
+		printUsage();
+		return false;
+	}
+	
 	public static void main(String[] args) throws IOException {
+		
+		if(!checkInput(args)) {
+			return;
+		}
+		
+		
 		String[] pxgList = {
 				"PEAKS_BLCL1.p001.pxg",
 				"PEAKS_BLCL2.p001.pxg",
