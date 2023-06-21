@@ -28,9 +28,9 @@ It was developed for the reliable identification of ncMAPs from de novo peptide 
 ### Input format
 |Input    | Description    | Format    | Mandatory   |
 | :---:   | :---:       | :---:     | :---:       |
-| Searh result       | A list of PSMs identified from a search engine (e.g. PEAKS, pNovo3, Casanovo)     | TSV or CSV | Yes   |
-| Gene annotation    | It must be the same file used in the read alignment (e.g. Gencode, Ensembl)       | GTF        | Yes   |
-| RNA-Seq reads      | Mapped and unmapped RNA-Seq reads. The file must be sorted in order of coordinate | SAM        | Yes   |
+| Searh result       | A list of PSMs identified from a search engine (e.g. <a href="https://www.bioinfor.com/peaks-studio/" target="_blank">PEAKS</a>, <a href="http://pfind.org/software/pNovo/index.html" target="_blank">pNovo3</a>, <a href="https://github.com/Noble-Lab/casanovo" target="_blank">Casanovo</a>)     | TSV or CSV | Yes   |
+| Gene annotation    | It must be the same file used in the read alignment (e.g. <a href="https://www.gencodegenes.org/" target="_blank">Gencode</a>, <a href="https://ensemblgenomes.org/" target="_blank">Ensembl</a>)       | GTF        | Yes   |
+| RNA-Seq reads      | Mapped and unmapped RNA-Seq reads. The file must be sorted by coordinates | SAM        | Yes   |
 | Protein sequences  | Canonical and contaminant protein sequences (e.g. UniProt)                        | Fasta      | No    |
 
 *pXg is not applicable to the flat formatted output in pNovo3. A user must convert the flat format to CSV or TSV.<br>
@@ -38,13 +38,14 @@ It was developed for the reliable identification of ncMAPs from de novo peptide 
 ### Output format
 |Output    | Description    | Format   | Mandatory   |
 | :---:   | :---:       | :---:     | :---:       |
-| pXg result              | This is a main output file and contains a list of identification         | TSV         | Yes   |
-| Unknown sequences       | A list of unmapped reads matching to peptides                            | Flat        | Yes   |
-| Matched reads*          | Matched reads to peptides passing all filters                            | SAM         | No    |
-| Matched peptides*       | A list of peptides passing all filters                                   | GTF         | No    |
+| pXg result                | This is a main output file and contains a list of identification as TSV format         | TSV         | Yes   |
+| pXg result for Percolator | This is a main output file and contains a list of identification as PIN format         | PIN         | Yes   |
+| Unknown sequences          | A list of unmapped reads matching to peptides                            | Flat        | Yes   |
+| Matched reads*             | Matched reads to peptides passing all filters                            | SAM         | No    |
+| Matched peptides*          | A list of peptides passing all filters                                   | GTF         | No    |
 
 *Although the pXg result contains PSM information with corresponding RNA-Seq counts, it is not suitable for visualization. <br>
- Two output files (matched reads and peptides) are available for direct use in IGV, making visualization easier.
+ Two output files (matched reads and peptides) are available for direct use in <a href="https://software.broadinstitute.org/software/igv/" target="_blank">IGV</a>, making visualization easier.
 
 ### Command-line interface
 #### List of Parameters
@@ -85,24 +86,22 @@ It was developed for the reliable identification of ncMAPs from de novo peptide 
 
 #### Basic command
 ```bash
-java -Xmx30G -jar pXg.jar \<br>
---gtf_file gencode.gtf \<br>
---sam_file aligned.sorted.sam \<br>
---psm_file denovo_result.tsv \<br>
---fasta_file uniprot_contam.fasta \<br>
---pept_col [index of peptide column] \<br>
---score_col [index of search score column] \<br>
---scan_col [index of scan number column] \<br>
---out_canonical false \<br>
+java -Xmx30G -jar pXg.jar \
+--gtf_file [gene annotation file path] \
+--sam_file [sorted SAM file path] \
+--psm_file [de novo result file path] \
+--fasta_file [protein sequence fasta file paht] \
+--pept_col [index of peptide column] \
+--score_col [index of search score column] \
+--scan_col [index of scan number column] \
+--out_canonical false \
 --output [base output file name]
 ```
 
 ## Tutorial
-This tutorial contains 1) running <a href="https://github.com/alexdobin/STAR" target="_blank">STAR2</a> aligner with 2-pass parameter, 2) preparing SAM file from the alignment and 3) running pXg.
-Note that it does not contain how to run de novo peptide sequencing engines such as PEAKS and pNovo3.
-Please visit <a href="https://www.bioinfor.com/peaks-studio/" target="_blank">PEAKS</a> or <a href="http://pfind.org/software/pNovo/index.html" target="_blank">pNovo3</a>.
-Plus, we provide a simple running example with full data sets in "tutorial" folder; however, DO NOT USE THE EXAMPLE FOR YOUR RESEARCH PURPOSE!
-Because we just make the tutorial folder to show you what you get from pXg.
+This tutorial aims to understand how to run pXg and estimate FDR from the result. It contains 1) running <a href="https://github.com/alexdobin/STAR" target="_blank">STAR2</a> aligner with 2-pass parameter, 2) preparing SAM file from the alignment, 3) running pXg and 4) several post-processing including Percolator, merging pXg result with the result of Percolator and estimating separated FDR.
+Note that it neither contains how to run de novo peptide sequencing engines such as <a href="https://www.bioinfor.com/peaks-studio/" target="_blank">PEAKS</a>, <a href="http://pfind.org/software/pNovo/index.html" target="_blank">pNovo3</a> and <a href="https://github.com/Noble-Lab/casanovo" target="_blank">Casanovo</a> AND how to create deep learning based features.
+
 ### RNA-Seq alignment
 We recommand to align fastq files using STAR2 with The Cancer Genome Atlas (TCGA) <a href="https://docs.gdc.cancer.gov/Data/Bioinformatics_Pipelines/Expression_mRNA_Pipeline" target="_blank">two-pass alignment option</a>. 
 
@@ -110,16 +109,15 @@ We recommand to align fastq files using STAR2 with The Cancer Genome Atlas (TCGA
 Once you get the aligned BAM or SAM file, you MUST sort the file by chromosomal coordinates and convert to SAM.
 Currently, pXg only supports SAM file.
 
-We provide a code for preprocessing SMA file using <a href="http://www.htslib.org/" target="_blank">SAMtools</a> below:
+We provide a code for preprocessing SAM file using <a href="http://www.htslib.org/" target="_blank">SAMtools</a> below:
 ```bash
-samtools view -h -q 255 aligned.out.sam > aligned.unique.sam -@ 32
-samtools view -h -f 4 aligned.out.sam > aligned.unmapped.sam -@ 32
-samtools merge aligned.unique_unmapped.sam aligned.unique.sam aligned.unmapped.sam -@ 32
-
-samtools sort -o aligned.unique_unmapped.sorted.sam aligned.unique_unmapped.sam -@ 32
+samtools sort -o in.sorted.sam in.sam -@ 8
 ```
 
-The "aligned.unique_unmapped.sorted.sam" is used for pXg input.
+The "in.sorted.sam" is used for pXg input.
+
+### Toy example
+We expect that you have 1) de novo results, 2) in.sorted.sam, 3) gene annotation (GTF) and optionally 4) protein sequence fasta file. 
 
 ### Run pXg
 In the "tutorial" folder, we provide a simple running example with data sets (PEAKS result, SAM, GTF and pXg command bash file).
