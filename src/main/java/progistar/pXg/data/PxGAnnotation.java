@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
 
@@ -68,249 +66,6 @@ public class PxGAnnotation {
 	}
 	
 	/**
-	 * Filter regions below than user-specific p-value. <br>
-	 * As a result, there are only two possible xBlocks are remained. <br>
-	 * 1) xBlocks with passing the threshold. <br>
-	 * 2) xBlocks with only matched to mock reads. <br>
-	 * <br>
-	 * Note that the first case will be regarded as target PSMs; <br>
-	 * and the second one will be regarded as decoy PSMs<br>
-	 * <br>
-	 * We enforce xBlocks with passing the threshold to have zero-mock reads. <br>
-	 * This is because existence of mock read count will be used to recognize target and decoy PSMs. <br>
-	 * And then, pSeq must be determined by exp read or mock read.<br> 
-	 */
-	public void estimatePvalueThreshold () {
-		System.out.println("Calculating p-values...");
-		Logger.append("Calculating p-values...");
-		Logger.newLine();
-		long startTime = System.currentTimeMillis();
-		
-		double[][] pValueTable = getPvalueTable();
-		
-		RunInfo.cutoffReads = new int[Parameters.maxPeptLen+1];
-		for(int peptLen = Parameters.minPeptLen; peptLen <= Parameters.maxPeptLen; peptLen++) {
-			for(int i=1; i<pValueTable[peptLen].length; i++) {
-				if(pValueTable[peptLen][i] < Parameters.pvalue) {
-					RunInfo.cutoffReads[peptLen] = i;
-					System.out.println("Minimum reads threshold to accept at "+peptLen+" aa peptide: "+(i));
-					// append to logger
-					Logger.append("Minimum reads threshold to accept at "+peptLen+" aa peptide: "+(i));
-					Logger.newLine();
-					break;
-				}
-			}
-		}
-		
-		/**
-		 * After filter xBlock by threshold, if there is at least one xBlock with exp read,<br>
-		 * then the all xBlocks with mock will be discarded in corresponding to pSeq.<br>
-		 * 
-		 */
-		final int[] cutoffs = RunInfo.cutoffReads;
-		ArrayList<String> zeroSizeList = new ArrayList<String>();
-		
-		// discard insignificant matches
-		this.xBlockMapper.forEach((pSeq, xBlocks) -> {
-			if(xBlocks.size() != 0) {
-				ArrayList<String> removeList = new ArrayList<String>();
-				
-				Iterator<String> keys = (Iterator<String>) xBlocks.keys();
-				
-				// single peptide can be assigned to multiple loci
-				while(keys.hasNext()) {
-					String key = keys.next();
-					XBlock xBlock = xBlocks.get(key);
-					
-					if(xBlock.targetReadCount < cutoffs[pSeq.length()] && xBlock.mockReadCount < cutoffs[pSeq.length()]) {
-						removeList.add(key);
-						continue;
-					}
-				}
-				
-				// filter out peptide with NGS count below than cut-off
-				removeList.forEach(key -> xBlocks.remove(key));
-				removeList.clear();
-				
-				// pSeq will be determined by either exp read or mock read.
-				if(xBlocks.size() == 0) {
-					zeroSizeList.add(pSeq);
-				}
-			}
-			
-		});
-		
-		// if all xBlocks are discarded?
-		zeroSizeList.forEach(key -> this.xBlockMapper.remove(key));
-		
-		// finally,
-		// xBlockMapper contains peptide with significantly-mapped RNA reads.
-		
-		long endTime = System.currentTimeMillis();
-		System.out.println("\tElapsed time: "+((endTime-startTime)/1000) + " sec");
-		
-	}
-	
-	/**
-	 * Calculate empirical p-value. <br>
-	 * By length. <br>
-	 * 
-	 * @return
-	 */
-	private double[][] getPvalueTable () {
-		double[][] pValueTable = new double[Parameters.maxPeptLen+1][this.maxNGSreadCount+1];
-		double[][] mockTable = new double[Parameters.maxPeptLen+1][this.maxNGSreadCount+1];
-		double[][] expTable = new double[Parameters.maxPeptLen+1][this.maxNGSreadCount+1];
-		// all peptides
-		ArrayList<String> peptides = PeptideAnnotation.enumerateSequence();
-		
-		for(String peptide : peptides) {
-			Hashtable<String, XBlock> xBlocks = this.xBlockMapper.get(peptide);
-			int length = peptide.length();
-			int[] mockCounts = new int[1];
-			int[] expCounts = new int[1];
-			
-			boolean isExp = false;
-			boolean isMock = false;
-			
-			if(xBlocks != null) {
-				mockCounts = new int[xBlocks.size()];
-				expCounts = new int[xBlocks.size()];
-				Iterator<String> keys = (Iterator<String>) xBlocks.keys();
-				int idx = 0;
-				while(keys.hasNext()) {
-					String key =keys.next();
-					XBlock xBlock = xBlocks.get(key);
-					
-					if(xBlock.mockReadCount > 0) {
-						mockCounts[idx] = xBlock.mockReadCount;
-						isMock = true;
-					}
-					if(xBlock.targetReadCount > 0) {
-						expCounts[idx] = xBlock.targetReadCount;
-						isExp = true;
-					}
-					idx++;
-				}
-			}
-			
-			// ignore overlapped sequences
-			if(isExp && isMock) {
-				continue;
-			}
-			
-			if(Parameters.mockPolicy == Constants.MOCK_ALL) {
-				// mock counts for all possible regions
-				boolean isZeroCount = true;
-				for(int mockCount : mockCounts) {
-					if(mockCount > 0) {
-						mockTable[length][mockCount]++;
-						isZeroCount = false;
-					}
-				}
-				// there is no matched region for the peptide,
-				// just count zero at once.
-				if(isZeroCount) {
-					mockTable[length][0]++;
-				}
-				
-				// exp counts for all possible regions
-				isZeroCount = true;
-				for(int expCount : expCounts) {
-					if(expCount > 0) {
-						expTable[length][expCount]++;
-						isZeroCount = false;
-					}
-				}
-				if(isZeroCount) {
-					expTable[length][0]++;
-				}
-			} else if(Parameters.mockPolicy == Constants.MOCK_MAX_ONE) {
-				// find max one through traversing counts
-				int maxCount = 0;
-				for(int mockCount : mockCounts) {
-					maxCount = Math.max(mockCount, maxCount);
-				}
-				mockTable[length][maxCount]++;
-				
-				maxCount = 0;
-				for(int expCount : expCounts) {
-					maxCount = Math.max(expCount, maxCount);
-				}
-				expTable[length][maxCount]++;
-				
-			} else if(Parameters.mockPolicy == Constants.MOCK_MEAN) {
-				// sum all counts through traversing counts
-				// and get the average values
-				double count = 0;
-				double size = 0;
-				for(int mockCount : mockCounts) {
-					if(mockCount > 0) {
-						count += mockCount;
-						size ++;
-					}
-				}
-				if(size != 0) {
-					count = Math.round(count/size);
-				}
-				mockTable[length][(int)count]++;
-				
-				count = 0;
-				size = 0;
-				for(int expCount : expCounts) {
-					if(expCount > 0) {
-						count += expCount;
-						size ++;
-					}
-				}
-				if(size != 0) {
-					count = Math.round(count/size);
-				}
-				expTable[length][(int)count]++;
-				
-			}
-		}
-		
-		// calculate cumulative decoy & target distribution
-		try {
-			BufferedWriter BW = new BufferedWriter(new FileWriter(Parameters.ngsStatFilePath));
-			BW.append("PeptideLength\tReadCount\tExperiment\tMock");
-			BW.newLine();
-			for(int peptLen = Parameters.minPeptLen; peptLen <= Parameters.maxPeptLen; peptLen++) {
-				BW.append(peptLen+"\t"+(mockTable[peptLen].length-1)+"\t"+expTable[peptLen][mockTable[peptLen].length-1]+"\t"+mockTable[peptLen][mockTable[peptLen].length-1]);
-				BW.newLine();
-				
-				for(int i=mockTable[peptLen].length-2; i>=0; i--) {
-					BW.append(peptLen+"\t"+i+"\t"+expTable[peptLen][i]+"\t"+mockTable[peptLen][i]);
-					BW.newLine();
-					
-					mockTable[peptLen][i] = mockTable[peptLen][i] + mockTable[peptLen][i+1];
-					expTable[peptLen][i] = expTable[peptLen][i] + expTable[peptLen][i+1];
-				}
-			}
-			BW.close();
-		}catch (IOException ioe) {
-			
-		}
-		
-		// calculate empirical p-value
-		for(int peptLen = Parameters.minPeptLen; peptLen <= Parameters.maxPeptLen; peptLen++) {
-			if(mockTable[peptLen][0] == 0) continue;
-			
-			for(int i=0; i<pValueTable[peptLen].length; i++) {
-				pValueTable[peptLen][i] = mockTable[peptLen][i] / mockTable[peptLen][0];
-			}
-		}
-		/*
-		for(int peptLen = Parameters.minPeptLen; peptLen <= Parameters.maxPeptLen; peptLen++) {
-			System.out.println(peptLen+"aa peptides: "+targetTable[peptLen][0]+" for experiment,  "+decoyTable[peptLen][0]+" for mock");
-		}
-		*/
-		
-		return pValueTable;
-	}
-	
-	/**
 	 * 
 	 * 
 	 */
@@ -366,7 +121,8 @@ public class PxGAnnotation {
 			}
 			
 			ArrayList<PBlock> pBlocks = PeptideAnnotation.pBlocks;
-			BW.append("UniqueID").append("\t");
+			BW.append("SpecID").append("\t");
+			BW.append("GenomicID").append("\t");
 			BW.append("Label").append("\t");
 			BW.append(PeptideAnnotation.toFields()).append("\t");
 			BW.append("DeltaScore").append("\t");
@@ -395,6 +151,9 @@ public class PxGAnnotation {
 			File outFile = new File(Parameters.unmappedFilePath);
 			BufferedWriter BWUnmapped = new BufferedWriter(new FileWriter(outFile));
 			
+			// calculate genomic ID
+			// The combination of genomic loci + strand + nucleotide sequence is mapping to unique gneomic ID.
+			Hashtable<String, Integer> genomicIDMapper = new Hashtable<String, Integer>();
 			for(PBlock pBlock : pBlocks) {
 				// peptide sequence without I/L consideration
 				String key = pBlock.getPeptideSequence();
@@ -414,6 +173,13 @@ public class PxGAnnotation {
 						try {
 							// assign fastaIDs.
 							xBlock.fastaIDs = pBlock.fastaIDs;
+							// assigne genomic ID
+							String genomicIDKey = xBlock.genomicLocus+"|"+xBlock.strand+"|"+xBlock.genomicSequence;
+							Integer genomicID = genomicIDMapper.get(genomicIDKey);
+							if(genomicID == null) {
+								genomicID = genomicIDMapper.size()+1;
+								genomicIDMapper.put(genomicIDKey, genomicID);
+							}
 							
 							// we treated unmapped reads as '0' genomic loci count.
 							String gLociCount = "0";
@@ -422,7 +188,7 @@ public class PxGAnnotation {
 							}
 							
 							// TSV writer
-							BW.append(pBlock.toString()).append("\t").append(pBlock.deltaScore+"\t").append(pBlock.rank+"\t").append(gLociCount+"\t").append(xBlock.toString(pBlock.psmStatus)).append("\t"+pBlock.isCannonical);
+							BW.append(pBlock.toString(genomicID)).append("\t").append(pBlock.deltaScore+"\t").append(pBlock.rank+"\t").append(gLociCount+"\t").append(xBlock.toString(pBlock.psmStatus)).append("\t"+pBlock.isCannonical);
 							BW.newLine();
 							
 							// if this is unmapped, then store.
@@ -500,7 +266,7 @@ public class PxGAnnotation {
 				// only select significantly mapped PSMs
 				// this is because we are interested in P( decoy (score > X) | significantly mapped PSMs)
 				xBlocks.forEach((key_, xBlock) -> {
-					if(xBlock.targetReadCount >= RunInfo.cutoffReads[key.length()]) {
+					if(xBlock.targetReadCount >= 1) {
 						pBlock.psmStatus = Constants.PSM_STATUS_TARGET;
 						pBlock.isCannonical |= xBlock.isCannonical();
 						pBlock.targetXBlocks.put(xBlock.getKey(), xBlock);
@@ -514,7 +280,7 @@ public class PxGAnnotation {
 				// only select significantly mapped PSMs
 				// this is because we are interested in P( decoy (score > X) | significantly mapped PSMs)
 				xBlocks.forEach((key_, xBlock) -> {
-					if(xBlock.mockReadCount >= RunInfo.cutoffReads[key.length()]) {
+					if(xBlock.mockReadCount >= 1) {
 						if(expAndMocks[0]) {
 							pBlock.psmStatus = Constants.PSM_STATUS_BOTH;
 						} else {
@@ -570,10 +336,10 @@ public class PxGAnnotation {
 				xBlock.filterRegions();
 				
 				// find min penalty
-				if(xBlock.targetReadCount >= RunInfo.cutoffReads[peptLen]) {
+				if(xBlock.targetReadCount >=1) {
 					minExpXBlockPenalty = Math.min(xBlock.bestRegionPriority, minExpXBlockPenalty);
 				}
-				if(xBlock.mockReadCount >= RunInfo.cutoffReads[peptLen]) {
+				if(xBlock.mockReadCount >= 1) {
 					minMockXBlockPenalty = Math.min(xBlock.bestRegionPriority, minMockXBlockPenalty);
 				}
 			}
@@ -585,7 +351,7 @@ public class PxGAnnotation {
 				String key = keys.next();
 				XBlock xBlock = xBlocks.get(key);
 				
-				if(xBlock.targetReadCount >= RunInfo.cutoffReads[peptLen]) {
+				if(xBlock.targetReadCount >= 1) {
 					if(xBlock.bestRegionPriority <= minExpXBlockPenalty) {
 						// for target xBlock mapper
 						Hashtable<String, XBlock> xBlocks_ = this.targetXBlockMapper.get(pSeq);
@@ -596,7 +362,7 @@ public class PxGAnnotation {
 						xBlocks_.put(key, xBlock);
 					}
 				}
-				if(xBlock.mockReadCount >= RunInfo.cutoffReads[peptLen]) {
+				if(xBlock.mockReadCount >= 1) {
 					if(xBlock.bestRegionPriority <= minMockXBlockPenalty) {
 						// for decoy xBlock mapper
 						Hashtable<String, XBlock> xBlocks_ = this.decoyXBlockMapper.get(pSeq);

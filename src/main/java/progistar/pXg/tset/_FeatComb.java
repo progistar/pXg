@@ -14,9 +14,8 @@ import progistar.pXg.constants.Parameters;
 class HEADER {
 	
 	String[] thisHeader = null;
-	double[] lengthReadSigma = new double[20];
-	double[] lengthReadMean = new double[20];
-	ArrayList[] lengthReads = new ArrayList[20];
+	ArrayList<Double> decoyQScore = new ArrayList<Double>();
+	ArrayList<Double> targetQScore = new ArrayList<Double>();
 	
 	int specIdIdx;
 	int labelIdx;
@@ -46,6 +45,7 @@ class HEADER {
 	int baIdx = -1;
 	int avgDeltaRTIdx = -1;
 	int lenIdx = -1;
+	int qscoreIdx = -1;
 	
 	public String genRecord1 (String[] fields) {
 		StringBuilder sb = new StringBuilder();
@@ -131,8 +131,10 @@ class HEADER {
 			avgDeltaRT = Double.parseDouble(fields[avgDeltaRTIdx]);
 		}
 		
-		String length = fields[lenIdx];
-		
+		double log2MeanQScore = 0;
+		if(qscoreIdx != -1) {
+			log2MeanQScore = Math.log(Double.parseDouble(fields[qscoreIdx]))/Math.log(2);
+		}
 		
 		crypticScore = (double) (snv * (Math.log(Parameters.PENALTY_MUTATION+1)/Math.log(2)) +
 				indel * (Math.log(Parameters.PENALTY_MUTATION+1)/Math.log(2)) +
@@ -151,37 +153,22 @@ class HEADER {
 		} else {
 			crypticScore = 1;
 		}
-
+		/*
 		if(baScore < 0) {
 			return null;
 		}
-		
-		crypticScore = 0;
-		length = "0";
-		//baScore = 0;
-		avgDeltaRT = 0;
-		//log2Reads = "0";
-		/*
-		Double log2ReadsNorm = Double.parseDouble(log2Reads);
-		if(lengthReadSigma[pept.length()] != 0) {
-			log2ReadsNorm = (Double.parseDouble(log2Reads) - lengthReadMean[pept.length()]) / lengthReadSigma[pept.length()];
-		}
-		log2Reads = log2ReadsNorm + "";
 		*/
-		//bestDeltaRT = 0;
-		//sa = 0;
-		
+		baScore = 0;
 		sb.append(specId).append("\t").append(label).append("\t").append(scanNr).append("\t").append(mainScore)
-		.append("\t").append(deltaScore).append("\t").append(log2Reads).append("\t").append(ppm);
+		.append("\t").append(deltaScore).append("\t").append(log2Reads).append("\t").append(Math.abs(Double.parseDouble(ppm)));
 		for(int i=0; i<charges.size(); i++) {
-			sb.append("\t").append(charges.get(i));
+			//sb.append("\t").append(charges.get(i));
+			sb.append("\t0");
 		}
-		sb.append("\t").append(crypticScore)
+		sb
 		.append("\t").append(sa)
 		.append("\t").append(bestDeltaRT)
-		.append("\t").append(avgDeltaRT)
-		.append("\t").append(baScore)
-		.append("\t").append(length)
+		.append("\t").append(log2MeanQScore)
 		.append("\t").append(pept).append("\t").append(prot);
 		
 		return sb.toString();
@@ -195,16 +182,14 @@ class HEADER {
 		.append(thisHeader[mainScoreIdx]).append("\t")
 		.append(thisHeader[deltaScoreIdx]).append("\t")
 		.append(thisHeader[log2ReadsIdx]).append("\t")
-		.append(thisHeader[ppmIdx]);
+		.append("absppm");
 		for(int i=0; i<chargeIndices.size(); i++) {
 			sb.append("\t").append(thisHeader[chargeIndices.get(i)]);
 		}
-		sb.append("\t").append("IsCanonical")
+		sb
 		.append("\t").append(thisHeader[SAIdx])
 		.append("\t").append(thisHeader[bestDeltaRTIdx])
-		.append("\t").append(thisHeader[avgDeltaRTIdx])
-		.append("\t").append(thisHeader[baIdx])
-		.append("\t").append(thisHeader[lenIdx])
+		.append("\t").append("Log2MeanQScore")
 		.append("\t").append(thisHeader[peptIdx])
 		.append("\t").append(thisHeader[protIdx]);
 		
@@ -266,6 +251,8 @@ class HEADER {
 				baIdx = i;
 			}  else if(headers[i].equalsIgnoreCase("AvgDelta")) {
 				avgDeltaRTIdx = i;
+			}  else if(headers[i].equalsIgnoreCase("MeanQScore")) {
+				qscoreIdx = i;
 			}
 			
 		}
@@ -276,7 +263,7 @@ public class _FeatComb {
 
 	public static void main(String[] args) throws IOException {
 		
-		File[] files = new File("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut_fullreads_features").listFiles();
+		File[] files = new File("/Users/gistar/projects/GastricCancer_NCC/percolator").listFiles();
 		for(File file : files) {
 			if(file.getName().endsWith("pxg.predfeat.pin")) {
 				System.out.println(file.getName());
@@ -290,7 +277,7 @@ public class _FeatComb {
 	public static void genTypeFeat (File file) throws IOException {
 
 		BufferedReader BR = new BufferedReader(new FileReader(file));
-		BufferedWriter BW = new BufferedWriter(new FileWriter(file.getAbsolutePath().replace(".pin", ".feat1.pin")));
+		BufferedWriter BW = new BufferedWriter(new FileWriter(file.getAbsolutePath().replace(".pin", ".feat.pin")));
 		String line = null;
 		String header = BR.readLine();
 		
@@ -300,44 +287,20 @@ public class _FeatComb {
 		BW.append(header_.toHeader1());
 		BW.newLine();
 		
-		Hashtable<String, String> checkRedundantPeptide = new Hashtable<String, String>();
+		Hashtable<String, String> checkRedundantGenomicId = new Hashtable<String, String>();
 		ArrayList<String> records = new ArrayList<String>();
 		while((line = BR.readLine()) != null) {
 			records.add(line);
 			String[] fields = line.split("\t");
-			String peptide = fields[header_.peptIdx];
-			int peptLen = peptide.length();
-			Double log2Reads = Double.parseDouble(fields[header_.log2ReadsIdx]);
+			String genomicId = fields[header_.protIdx];
+			Double log2Reads = Double.parseDouble(fields[header_.qscoreIdx]);
 			
-			if(checkRedundantPeptide.get(peptide) == null) {
-				checkRedundantPeptide.put(peptide, "");
-				if(header_.lengthReads[peptLen] == null) {
-					header_.lengthReads[peptLen] = new ArrayList<Double>();
-				}
-				header_.lengthReads[peptLen].add(log2Reads);
+			if(checkRedundantGenomicId.get(genomicId) == null) {
+				checkRedundantGenomicId.put(genomicId, "");
+				
 			}
 			
 		}
-		
-		for(int i=0; i<header_.lengthReads.length; i++) {
-			if(header_.lengthReads[i] == null) {
-				continue;
-			}
-			if(header_.lengthReads[i].size() > 1) {
-				for(int j=0; j<header_.lengthReads[i].size(); j++) {
-					header_.lengthReadMean[i] += (Double) header_.lengthReads[i].get(j);
-				}
-				header_.lengthReadMean[i] /= (double)(header_.lengthReads[i].size());
-				
-				for(int j=0; j<header_.lengthReads[i].size(); j++) {
-					header_.lengthReadSigma[i] += Math.pow(((Double) header_.lengthReads[i].get(j)) - header_.lengthReadMean[i],2);
-				}
-				
-				header_.lengthReadSigma[i] /= (double)(header_.lengthReads[i].size()-1);
-				header_.lengthReadSigma[i] = Math.sqrt(header_.lengthReadSigma[i]);
-			}
-		}
-		
 		
 		for(int i=0; i<records.size(); i++) {
 			String[] fields = records.get(i).split("\t");

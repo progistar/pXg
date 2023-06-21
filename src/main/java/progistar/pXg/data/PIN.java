@@ -19,7 +19,8 @@ public class PIN {
 	 * ScanNr is actually acting as scan index
 	 */
 	private static String PIN_HEADER = "SpecId\tLabel\tScanNr\tMainScore\tLog2Reads";
-	private static String[] pXgADDED_HEADERS = {"UniqueID", "Label"};
+	// note that the gemomicID is assigned to proteinIds
+	private static String[] pXgADDED_HEADERS = {"SpecID", "GenomicID", "Label"};
 	private static String[] pXg_DEFAULT_FEATURES = {"DeltaScore","Reads","MeanQScore", "InferredPeptide"};
 	
 	private PIN() {};
@@ -113,7 +114,8 @@ public class PIN {
 				String[] fields = record.split("\t");
 				
 				String specId = fields[0];
-				String label = fields[1];
+				String genomicId = fields[1];
+				String label = fields[2];
 				String scanNr = specIDtoScanIdx.get(specId)+"";
 				String mainScore = fields[Parameters.scoreColumnIndex + indexShiftSize];
 				String log2Reads = "" + Math.log(Double.parseDouble(fields[readIdx])+1)/Math.log(2);
@@ -147,9 +149,9 @@ public class PIN {
 				pinOutput.append("\t").append(peptide);
 				// target or decoy
 				if(label.equalsIgnoreCase("1")) {
-					pinOutput.append("\tTarget");
+					pinOutput.append("\t"+genomicId);
 				} else {
-					pinOutput.append("\trandom_Decoy");
+					pinOutput.append("\trandom_"+genomicId);
 				}
 				
 				pinRecords.add(pinOutput.toString());

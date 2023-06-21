@@ -238,7 +238,7 @@ public class PeptideAnnotation {
 		
 		// aggregate pBlocks by scanID
 		pBlocks.forEach(pBlock -> {
-			String scanID = pBlock.getUniqueID();
+			String scanID = pBlock.getSpecID();
 			ArrayList<PBlock> scanPBlocks = pBlocksByScan.get(scanID);
 			if(scanPBlocks == null) {
 				scanPBlocks = new ArrayList<PBlock>();

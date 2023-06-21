@@ -168,9 +168,6 @@ tdPlot
 ggsave("both_nocut_rna_hist.png", plot = tdPlot, width = 15, height = 7, units = "in", dpi = 1200)
 
 
-
-
-
 ########## TD Distribution in Percolator #############
 
 label_preprocess <- function(target, decoy, sample_name) {
@@ -185,47 +182,17 @@ label_preprocess <- function(target, decoy, sample_name) {
   
   dataS
 }
-feat <- "feat1"
-type <- "psm"
 
-dataS1 <- label_preprocess(paste("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/p001_features/BLCL1.",feat,".target.",type, sep = ""),
-                           paste("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/p001_features/BLCL1.",feat,".decoy.",type, sep = ""),
-                           "B-LCL1")
-dataS2 <- label_preprocess(paste("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/p001_features/BLCL2.",feat,".target.",type, sep = ""),
-                           paste("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/p001_features/BLCL2.",feat,".decoy.",type, sep = ""),
-                           "B-LCL2")
-dataS3 <- label_preprocess(paste("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/p001_features/BLCL3.",feat,".target.",type, sep = ""),
-                           paste("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/p001_features/BLCL3.",feat,".decoy.",type, sep = ""),
-                           "B-LCL3")
-dataS4 <- label_preprocess(paste("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/p001_features/BLCL4.",feat,".target.",type, sep = ""),
-                           paste("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/p001_features/BLCL4.",feat,".decoy.",type, sep = ""),
-                           "B-LCL4")
-dataS5 <- label_preprocess(paste("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut_fullreads_features/DOHH2.",feat,".target.",type, sep = ""),
-                           paste("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut_fullreads_features/DOHH2.",feat,".decoy.",type, sep = ""),
-                           "DOHH2")
-dataS6 <- label_preprocess(paste("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut_fullreads_features/HBL1.",feat,".target.",type, sep = ""),
-                           paste("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut_fullreads_features/HBL1.",feat,".decoy.",type, sep = ""),
-                           "HBL1")
-dataS7 <- label_preprocess(paste("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut_fullreads_features/SUDHL4.",feat,".target.",type, sep = ""),
-                            paste("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut_fullreads_features/SUDHL4.",feat,".decoy.",type, sep = ""),
-                            "SUDHL4")
-dataS8 <- label_preprocess(paste("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/p001_features/THP1_1.",feat,".target.",type, sep = ""),
-                           paste("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/p001_features/THP1_1.",feat,".decoy.",type, sep = ""),
-                           "THP1-1")
-dataS9 <- label_preprocess(paste("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/p001_features/THP1_2.",feat,".target.",type, sep = ""),
-                           paste("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/p001_features/THP1_2.",feat,".decoy.",type, sep = ""),
-                           "THP1-2")
-dataS10 <- label_preprocess(paste("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/p001_features/THP1_3.",feat,".target.",type, sep = ""),
-                           paste("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/p001_features/THP1_3.",feat,".decoy.",type, sep = ""),
-                           "THP1-3")
+feat1res <- read_excel(path = "BAAnalysis.xlsx", sheet = "Feat2_selected")
+feat1res$Category <- "Decoy"
+feat1res[feat1res$Label == 1, ]$Category <- "Target"
+
+feat1res$Category <- factor(x = feat1res$Category, levels = c("Target", "Decoy"))
 
 
-dataS <- rbind(dataS1, dataS2, dataS3, dataS4, dataS5, dataS6, dataS7, dataS8, dataS9, dataS10)
-dataS$Category <- factor(x = dataS$Category, levels = c("Target", "Decoy"))
-
-tdPlot <- ggplot(data=dataS, aes(x=score, fill = Category)) +
+tdPlot <- ggplot(data=feat1res[feat1res$IsCanonical == T, ], aes(x=percolator_score, fill = Category)) +
   scale_fill_manual(values=c(blueC, redC)) +
-  geom_histogram(alpha = 0.5, position = "identity", bins = 100) +
+  geom_histogram(alpha = 0.6, position = "identity", bins = 100) +
   #xlim(-minimax, minimax) +
   theme_bw() +
   labs(y="PSM", x = "Score") +
@@ -242,10 +209,7 @@ ggsave("TD_graph_feat5.png", plot = tdPlot, width = 15, height = 20, units = "in
 #S3_p001 <- S3_p001[, -c(44,45,46,47,48,49)]
 #S4_p001 <- S4_p001[, -c(44,45,46,47,48,49)]
 
-feat4res <- read_excel(path = "BAAnalysis_10samples.xlsx", sheet = "10samples.feat4")
-feat5res <- read_excel(path = "BAAnalysis_10samples.xlsx", sheet = "10samples.feat5")
-feat8res <- read_excel(path = "BAAnalysis_10samples.xlsx", sheet = "10samples.feat8")
-feat9res <- read_excel(path = "BAAnalysis_10samples.xlsx", sheet = "10samples.feat9")
+feat1res <- read_excel(path = "BAAnalysis.xlsx", sheet = "Feat1")
 
 dohh2 <- read_excel(path = "BAAnalysis_10samples.xlsx", sheet = "DOHH2.cuevas")
 hbl1 <- read_excel(path = "BAAnalysis_10samples.xlsx", sheet = "HBL1.cuevas")
@@ -254,6 +218,30 @@ sudhl4 <- read_excel(path = "BAAnalysis_10samples.xlsx", sheet = "SUDHL4.cuevas"
 thp1 <- read_excel(path = "BAAnalysis_10samples.xlsx", sheet = "THP1_1.scull")
 thp2 <- read_excel(path = "BAAnalysis_10samples.xlsx", sheet = "THP1_2.scull")
 thp3 <- read_excel(path = "BAAnalysis_10samples.xlsx", sheet = "THP1_3.scull")
+
+feat1res$Label <- as.character(feat1res$Label)
+
+#SA
+feat1res$percolator_score
+feat1res$BestDeltaRT
+feat1res$SA
+feat1res$mLog2BestELRank
+feat1res$Log2Reads
+feat1res$Log2MeanQScore
+feat1res$`ALC (%)`
+
+mapPlot <- ggplot(data=feat1res, aes(x=Label, y=Log2Reads, fill=Label)) +
+  theme_bw() +
+  scale_fill_brewer(palette="Set1") +
+  geom_boxplot() +
+  theme(text = element_text(size=20)) +
+  staticThemeRightTop +
+  labs(y= "Log2MeanQScore", x = "Peptide length") +
+  facet_grid(cols = vars(IsCanonical), rows = vars(Sample))
+
+mapPlot
+
+ggsave("tmp.png", plot = mapPlot, width = 15, height = 15, units = "in", dpi = 600)
 
 scull_res_cal <- function (res) {
   res$BA <- "Binder"
@@ -288,7 +276,7 @@ pep_cal <- function (res) {
                    "DOHH2","HBL1","SUDHL4")
   for(qval in qvals) {
     #subtmp <- res[res$`pep` <= qval, ]
-    subtmp <- res[res$`q-value` <= qval & res$percolator_score > 0, ]
+    subtmp <- res[res$`q-value` <= qval, ]
     #subtmp <- subtmp[subtmp$Length == 8 | subtmp$Length == 9 | subtmp$Length == 10 | subtmp$Length == 11, ]
     subtmp <- subtmp[subtmp$IsCanonical == F, ]
     
@@ -315,7 +303,7 @@ pep_cal <- function (res) {
     }
     
     #subtmp <- res[res$`pep` <= qval, ]
-    subtmp <- res[res$`q-value` <= qval & res$percolator_score > 0, ]
+    subtmp <- res[res$`q-value` <= qval, ]
     #subtmp <- subtmp[subtmp$Length == 8 | subtmp$Length == 9 | subtmp$Length == 10 | subtmp$Length == 11, ]
     subtmp <- subtmp[subtmp$IsCanonical == T, ]
     
@@ -352,7 +340,6 @@ pep_cal <- function (res) {
 }
 
 
-
 feat4Data <- pep_cal(feat4res)
 feat5Data <- pep_cal(feat5res)
 feat8Data <- pep_cal(feat8res)
@@ -375,8 +362,8 @@ feat9Data[feat9Data$PEP == 0.1, ]
 # THP1-1 = 138
 # THP1-2 = 99
 # THP1-3 = 194
-
-linePlot <- ggplot(data=feat45[feat45$PEP <= 0.2 & feat45$class == "noncanonical", ], aes(x=`PEP`, y=`MedianRNA`, group=Sample, color=Sample)) +
+feat4Data$`binder-ratioPeptide`
+linePlot <- ggplot(data=feat45[feat45$PEP <= 0.2 & feat45$class == "noncanonical", ], aes(x=`PEP`, y=`binder-ratioPeptide`, group=Sample, color=Sample)) +
   theme_bw() +
   #scale_fill_brewer(palette="Set1") +
   scale_color_brewer(palette="Set3") +

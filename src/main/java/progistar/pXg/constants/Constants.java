@@ -6,13 +6,13 @@ public class Constants {
 	//        plus, basically, this version number intends to upgrade behaviors of tool.
 	// minor: critical bug fix, change in results something like that.
 	// patch: tiny bug fix, typo, and change code styles something like that.
-	public static final String VERSION = "pXg v2.0.0";
+	public static final String VERSION = "pXg v2.0.1";
 	public static final String RELEASE = "(release 2023-03-24)";
 	public static final String INTRODUCE = "Seunghyuk Choi and Eunok Paek in the Department of Computer Science at Hanyang University in Seoul, South Korea. ";
 	
 	// Translation method
-	public static final int THREE_FRAME	=	0;
-	public static final int SIX_FRAME	=	1;
+	public static final int THREE_FRAME	=	3;
+	public static final int SIX_FRAME	=	6;
 	
 	// Decoy prefix
 	public static final String DECOY_PREFIX	=	"Decoy@";

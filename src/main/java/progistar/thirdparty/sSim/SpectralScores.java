@@ -215,7 +215,11 @@ public class SpectralScores {
 		ArrayList<double[]> experimentalPeaks = new ArrayList<double[]>();
 		ArrayList<double[]> syntheticPeaks = new ArrayList<double[]>();
 		
-		for(int c=1; c<s1_.getCharge(); c++) {
+		int charge = s1_.getCharge();
+		if(charge == 1) {
+			charge = 2;
+		}
+		for(int c=1; c<charge; c++) {
 			double[] peaks = p.getTheoreticalLadder(ProteomeConstants.Y_ION, c, false);
 			for(int i=0; i<peaks.length; i++) {
 				ArrayList<double[]> peakList = s1_.getSubPeaks(peaks[i]-0.02, peaks[i]+0.02);

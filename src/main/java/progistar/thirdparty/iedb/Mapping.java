@@ -11,76 +11,122 @@ import java.util.Hashtable;
 public class Mapping {
 
 	public static void main(String[] args) throws IOException {
-		File iedbFile = new File("/Users/gistar/projects/pXg/IEDB/EpitopeTable_20220925_MHC.csv");
-		File pXgFile = new File("/Users/gistar/projects/pXg/IEDB/298UniquencMAPs.tsv");
+		File previousReportFile = new File("/Users/gistar/projects/pXg/PreviousStudyResource/IEDB_IEAtlas_HLAligand_Cuevas_Laumont_Scull.txt");
+		File pXgReportFile = new File("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/canonical_fdr5.tsv");
 		
-		Hashtable<String, String> iedbMapper = loadIEDB(iedbFile);
+		Hashtable<String, String> mapper = loadPreviousMAPList(previousReportFile);
+		String[] sources = {
+				"IEDB",
+				"IEDB T Cell+",
+				"IEDB T Cell-",
+				"IEAtlas cancer",
+				"IEAtlas normal",
+				"HLA-ligand",
+				"Canonical (Scull et al.)",
+				"Canonical (Cuevas et al.)",
+				"Canonical (Laumont et al.)",
+				"Noncanonical (Scull et al.)",
+				"Noncanonical (Cuevas et al.)",
+				"Noncanonical (Laumont et al.)"
+		};
 		
-		BufferedReader BR = new BufferedReader(new FileReader(pXgFile));
-		BufferedWriter BW = new BufferedWriter(new FileWriter(pXgFile.getAbsolutePath()+".iedb"));
+		BufferedReader BR = new BufferedReader(new FileReader(pXgReportFile));
+		BufferedWriter BW = new BufferedWriter(new FileWriter(pXgReportFile.getAbsolutePath().replace(".tsv", ".reported.tmp.tsv")));
 		String line = null;
 		
-		// skip header
-		BW.append(BR.readLine());
-		BW.append("\tAtigenName\tAntigenID\tParentProtein\tParentID\tIEDBComment");
+		String header = BR.readLine();
+		BW.append(header);
+		for(int i=0; i<sources.length; i++) {
+			BW.append("\t"+sources[i]);
+		}
+		BW.append("\tNumberOfMappedSources");
 		BW.newLine();
 		
 		while((line = BR.readLine()) != null) {
 			String[] fields = line.split("\t");
-			String peptide = fields[0];
+			String peptide = fields[24];
 			
-			String iedbInfo = iedbMapper.get(peptide);
-			if(iedbInfo == null) {
-				iedbInfo = "NotMatched";
+			String record = line;
+			int mappingCount= 0;
+			for(int i=0; i<sources.length; i++) {
+				String key = peptide+"_"+sources[i];
+				if(mapper.get(key) == null) {
+					record +="\tNo";
+				} else {
+					record +="\tYes";
+					mappingCount++;
+				}
 			}
-			
-			BW.append(line+"\t"+iedbInfo);
+			record+="\t"+mappingCount;
+			BW.append(record);
 			BW.newLine();
 		}
+		
 		BW.close();
 		BR.close();
+		
 	}
 	
-	public static Hashtable<String, String> loadIEDB (File file) throws IOException {
-		Hashtable<String, String> iedb = new Hashtable<String, String>();
+	public static Hashtable<String, String> loadPreviousMAPList (File file) throws IOException {
+		Hashtable<String, String> mapper = new Hashtable<String, String>();
 		
 		BufferedReader BR = new BufferedReader(new FileReader(file));
 		String line = null;
 		
+		Hashtable<String, String> IEDB = new Hashtable<String, String>();
+		Hashtable<String, String> HLAligand = new Hashtable<String, String>();
+		Hashtable<String, String> Scull = new Hashtable<String, String>();
+		Hashtable<String, String> Cuevas = new Hashtable<String, String>();
+		Hashtable<String, String> Laumont = new Hashtable<String, String>();
+		Hashtable<String, String> IEAtlas = new Hashtable<String, String>();
+		Hashtable<String, String> BigDBs = new Hashtable<String, String>();
+		Hashtable<String, String> ThreeDBs = new Hashtable<String, String>();
+		Hashtable<String, String> AllDBs = new Hashtable<String, String>();
+		
 		BR.readLine(); // skip header
-		BR.readLine();	
 		while((line = BR.readLine()) != null) {
-			String[] fields = line.split("\\,");
-			fields[13] = fields[13].replace("\"", "");
-			fields[2] = fields[2].replace("\"", "");
-			String peptide = fields[2];
-			String antigenName = fields[9].replace("\"", "");
-			String antigenID = fields[10].replace("\"", "");
-			String parentProtein = fields[11].replace("\"", "");
-			String parentID = fields[12].replace("\"", "");
-			String comment = fields[16].replace("\"", "");
+			String[] fields = line.split("\t");
+			String peptide = fields[0];
+			String source = fields[2];
 			
-			if(antigenName.length() == 0) {
-				antigenName = "NA";
-			}
-			if(antigenID.length() == 0) {
-				antigenID = "NA";
-			}
-			if(parentProtein.length() == 0) {
-				parentProtein = "NA";
-			}
-			if(parentID.length() == 0) {
-				parentID = "NA";
-			}
-			if(comment.length() == 0) {
-				comment = "NA";
-			}
+			mapper.put(peptide+"_"+source, "");
 			
-			iedb.put(peptide, antigenName+"\t"+antigenID+"\t"+parentProtein+"\t"+parentID+"\t"+comment);
+			if(source.contains("IEDB")) {
+				IEDB.put(peptide, "");
+			}else if(source.contains("IEAtlas")) {
+				IEAtlas.put(peptide, "");
+			}else if(source.contains("Scull")) {
+				Scull.put(peptide, "");
+			}else if(source.contains("Laumont")) {
+				Laumont.put(peptide, "");
+			}else if(source.contains("Cuevas")) {
+				Cuevas.put(peptide, "");
+			}else if(source.contains("HLA-ligand")) {
+				HLAligand.put(peptide, "");
+			}
 		}
 		
 		BR.close();
+		BigDBs.putAll(IEAtlas);
+		BigDBs.putAll(IEDB);
+		BigDBs.putAll(HLAligand);
+		System.out.println("IEDB: "+IEDB.size());
+		System.out.println("HLA-ligand: "+HLAligand.size());
+		System.out.println("IEAtlas: "+IEAtlas.size());
+		System.out.println("Union above: "+BigDBs.size());
 		
-		return iedb;
+		
+		System.out.println("Scull: "+Scull.size());
+		System.out.println("Cuevas: "+Cuevas.size());
+		System.out.println("Laumont: "+Laumont.size());
+		ThreeDBs.putAll(Scull);
+		ThreeDBs.putAll(Cuevas);
+		ThreeDBs.putAll(Laumont);
+		AllDBs.putAll(BigDBs);
+		AllDBs.putAll(ThreeDBs);
+		System.out.println("Union publications: "+ThreeDBs.size());
+		System.out.println("Union: "+AllDBs.size());
+		
+		return mapper;
 	}
 }

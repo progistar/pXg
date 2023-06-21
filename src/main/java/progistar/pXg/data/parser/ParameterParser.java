@@ -25,49 +25,48 @@ public class ParameterParser {
 				System.out.println("Usage");
 				System.out.println();
 				System.out.println("Mandatory Fields");
-				System.out.println("  -gtf                 : GTF file path. We recommand to use the same gtf corresponding to alignment.");
-				System.out.println("  -sam                 : SAM file path. The sam file must be sorted by coordinate.");
-				System.out.println("  -psm                 : PSM file path. It is expected that the psm file is derived from proteomics search by de novo or database search engine.");
-				System.out.println("  -pept_col            : Peptide column index in the psm file. One-based!");
-				System.out.println("  -scan_col            : Scan number index (the value is expected as integer > 0). One-based!");
-				System.out.println("  -score_col           : Main score index. One-based!");
-				System.out.println("  -file_col            : File name index. One-based!");
-				System.out.println("  -charge_col          : Charge state index. One-based!");
-				System.out.println("  -out                 : Output path of pXg.");
+				System.out.println("  --gtf_file            : GTF file path. We recommand to use the same gtf corresponding to alignment.");
+				System.out.println("  --sam_file            : SAM file path. The sam file must be sorted by coordinate.");
+				System.out.println("  --psm_file            : PSM file path. It is expected that the psm file is derived from proteomics search by de novo or database search engine.");
+				System.out.println("  --pept_col            : Peptide column index in the psm file. One-based!");
+				System.out.println("  --scan_col            : Scan number index (the value is expected as integer > 0). One-based!");
+				System.out.println("  --score_col           : Main score index. One-based!");
+				System.out.println("  --file_col            : File name index. One-based!");
+				System.out.println("  --charge_col          : Charge state index. One-based!");
+				System.out.println("  --output              : Output file name of pXg.");
 				System.out.println();
 				System.out.println("Optional Fields");
-				System.out.println("  -add_feat_cols       : Specify the indices for additional features to generate PIN file. One-based!");
-				System.out.println("                         Several features can be added by comma separator. ex> 5,6,7");
-				System.out.println("  -sep                 : Specify the column separator. Possible values are csv or tsv. Default is csv");
-				System.out.println("  -translation         : Specify the method of translation nucleotides. 0 for three-frame and 1 for six-frame. Default is 1");
-				System.out.println("  -pval                : p-value cutoff of randomly matched peptide-read pairs. Default is 1.00, which means that do not use p-value cutoff");
-				System.out.println("  -ileq                : Controls whether pXg treats isoleucine (I) and leucine (L) as the same/equivalent with respect to a peptide identification. Default is true.");
-				System.out.println("  -length              : Range of peptide length to consider. Default is 8-15");
-				System.out.println("                         You can write in this way (min-max, both inclusive) : 8-13");
-				System.out.println("  -fasta               : Canonical sequence database to report conservative assignment of noncanonical PSMs");
-				System.out.println("  -rank                : How many candidates will be considered per a scan. Default is 100 (in other words, use all ranked candidates)");
-				System.out.println("  -out_sam             : Report matched reads as SAM format (true or false). Default is true.");
-				System.out.println("  -out_gtf             : Report matched peptides as GTF format (true or false). Default is true.");
-				System.out.println("  -out_noncanonial     : Report noncaonical peptides for SAM and/or GTF formats (true or false). Default is true.");
-				System.out.println("  -out_canonial        : Report caonical peptides for SAM and/or GTF formats (true or false). Default is true.");
-				System.out.println("  -pMut                : Penalty per a mutation. Default is 1.");
-				System.out.println("  -pAS                 : Penalty for alternative splicing. Default is 10.");
-				System.out.println("  -p5UTR               : Penalty for 5`-UTR. Default is 20.");
-				System.out.println("  -p3UTR               : Penalty for 3`-UTR. Default is 20.");
-				System.out.println("  -pncRNA              : Penalty for noncoding RNA. Default is 20.");
-				System.out.println("  -pFS                 : Penalty for frame shift. Default is 20.");
-				System.out.println("  -pIR                 : Penalty for intron region. Default is 30.");
-				System.out.println("  -pIGR                : Penalty for intergenic region. Default is 30.");
-				System.out.println("  -pasRNA              : Penalty for antisense RNA. Default is 30.");
-				System.out.println("  -punmap              : Penalty for unmapped reads. Default is 100.");
-				System.out.println("  -gtf_partition_size  : The size of treating genomic region at once. Default is 10000000");
-				System.out.println("  -sam_partition_size  : The size of treating number of reads at once. Default is 1000000");
-				System.out.println("  -threads             : The number of threads. Default is 4");
+				System.out.println("  --add_feat_cols       : Specify the indices for additional features to generate PIN file. One-based!");
+				System.out.println("                          Several features can be added by comma separator. ex> 5,6,7");
+				System.out.println("  --sep                 : Specify the column separator. Possible values are csv or tsv. Default is csv");
+				System.out.println("  --mode                : Specify the method of translation nucleotides. 3 for three-frame and 6 for six-frame. Default is 3");
+				System.out.println("  --ileq                : Controls whether pXg treats isoleucine (I) and leucine (L) as the same/equivalent with respect to a peptide identification. Default is true.");
+				System.out.println("  --lengths             : Range of peptide length to consider. Default is 8-15");
+				System.out.println("                          You can write in this way (min-max, both inclusive) : 8-13");
+				System.out.println("  --fasta_file          : Canonical sequence database to avoid ambiguous assignment of noncanonical peptides");
+				System.out.println("  --rank                : How many candidates will be considered per a scan. Default is 100 (in other words, use all ranked candidates)");
+				System.out.println("  --out_sam             : Report matched reads as SAM format (true or false). Default is true.");
+				System.out.println("  --out_gtf             : Report matched peptides as GTF format (true or false). Default is true.");
+				System.out.println("  --out_noncanonial     : Report noncaonical peptides for SAM and/or GTF formats (true or false). Default is true.");
+				System.out.println("  --out_canonial        : Report caonical peptides for SAM and/or GTF formats (true or false). Default is true.");
+				System.out.println("  --penalty_mutation    : Penalty per a mutation. Default is 1.");
+				System.out.println("  --penalty_AS          : Penalty for alternative splicing. Default is 10.");
+				System.out.println("  --penalty_5UTR        : Penalty for 5`-UTR. Default is 20.");
+				System.out.println("  --penalty_3UTR        : Penalty for 3`-UTR. Default is 20.");
+				System.out.println("  --penalty_ncRNA       : Penalty for noncoding RNA. Default is 20.");
+				System.out.println("  --penalty_FS          : Penalty for frame shift. Default is 20.");
+				System.out.println("  --penalty_IR          : Penalty for intron region. Default is 30.");
+				System.out.println("  --penalty_IGR         : Penalty for intergenic region. Default is 30.");
+				System.out.println("  --penalty_asRNA       : Penalty for antisense RNA. Default is 30.");
+				System.out.println("  --penalty_unknown     : Penalty for unmapped reads. Default is 100.");
+				System.out.println("  --gtf_partition_size  : The size of treating genomic region at once. Default is 10000000");
+				System.out.println("  --sam_partition_size  : The size of treating number of reads at once. Default is 1000000");
+				System.out.println("  --threads             : The number of threads. Default is 4");
 				System.out.println();
 				System.out.println("Example1");
-				System.out.println("java -Xmx30G -jar pXg.jar -gtf gencode.gtf -sam aligned.sorted.sam -psm peaks.result -scan_col 5 -file_col 2 -pept_col 4 -charge_col 11 -score_col 8 -add_feat_cols 14,15  -out_canonical false -out peaks.pXg");
+				System.out.println("java -Xmx30G -jar pXg.jar -gtf_file gencode.gtf -sam_file aligned.sorted.sam -psm_file peaks.result -scan_col 5 -file_col 2 -pept_col 4 -charge_col 11 -score_col 8 -add_feat_cols 14,15  -out_canonical false -out test");
 				System.out.println("Example2");
-				System.out.println("java -Xmx30G -jar pXg.jar -gtf gencode.gtf -sam aligned.sorted.sam -psm peaks.result -scan_col 5 -file_col 2 -pept_col 4 -charge_col 11 -score_col 8 -add_feat_cols 14,15 -length 8-11 -out peaks.pXg");
+				System.out.println("java -Xmx30G -jar pXg.jar -gtf_file gencode.gtf -sam_file aligned.sorted.sam -psm_file peaks.result -scan_col 5 -file_col 2 -pept_col 4 -charge_col 11 -score_col 8 -add_feat_cols 14,15 -lengths 8-11 -out test");
 				return -1;
 			}
 			
@@ -123,10 +122,9 @@ public class ParameterParser {
 				}
 				// -out (mandatory)
 				else if(option.equalsIgnoreCase(Parameters.CMD_OUTPUT_PATH)) {
-					Parameters.outputFilePath = args[i+1];
-					Parameters.ngsStatFilePath = Parameters.outputFilePath +".read.dist";
+					Parameters.outputFilePath = args[i+1] +".pXg";
 					Parameters.pinFilePath = Parameters.outputFilePath +".pin";
-					Parameters.unmappedFilePath = Parameters.outputFilePath +".unmapped";
+					Parameters.unmappedFilePath = Parameters.outputFilePath +".unknown.seq";
 					Parameters.exportGTFPath = Parameters.outputFilePath +".gtf";
 					Parameters.exportSAMPath = Parameters.outputFilePath +".sam";
 					
@@ -134,10 +132,6 @@ public class ParameterParser {
 						printAlreadyExistFileOrDirectory(Parameters.outputFilePath);
 						return -1;
 					}
-				}
-				// -pval (optional)
-				else if(option.equalsIgnoreCase(Parameters.CMD_P_VALUE)) {
-					Parameters.pvalue = Double.parseDouble(args[i+1]);
 				}
 				// -ileq (optional)
 				else if(option.equalsIgnoreCase(Parameters.CMD_IL)) {
@@ -293,9 +287,12 @@ public class ParameterParser {
 		Parameters.scanColumnIndex--;
 		Parameters.chargeColumnIndex--;
 		Parameters.fileColumnIndex--;
-		for(int i=0; i<Parameters.additionalFeatureIndices.length; i++) {
-			Parameters.additionalFeatureIndices[i]--;
+		if(Parameters.additionalFeatureIndices != null) {
+			for(int i=0; i<Parameters.additionalFeatureIndices.length; i++) {
+				Parameters.additionalFeatureIndices[i]--;
+			}
 		}
+		
 		
 		return 0;
 	}
@@ -330,10 +327,7 @@ public class ParameterParser {
 		} else if(Parameters.translationMethod == Constants.SIX_FRAME) {
 			translation = "six-frame translation";
 		}
-		System.out.println("  TRANSLATION_METHOD: "+Parameters.translationMethod +" ("+translation+")");
-		if(Parameters.pvalue < 1.00) {
-			System.out.println("  READ_CUTOFF_P_VALUE: "+Parameters.pvalue);
-		}
+		System.out.println("  TRANSLATION_MODE: "+Parameters.translationMethod +" ("+translation+")");
 		if(Parameters.proteinFastaPath != null) {
 			System.out.println(" PROTEIN_DB: "+Parameters.proteinFastaPath);
 		}
@@ -354,25 +348,24 @@ public class ParameterParser {
 		}
 		System.out.println("  ADDITIONAL_FEATURE_COLS: "+addFeatCols);
 		System.out.println("  RANK TO CONSIDER: "+Parameters.psmRank);
-		System.out.println("  PEPTIDE_LENGTH: "+Parameters.minPeptLen+"-"+Parameters.maxPeptLen);
+		System.out.println("  PEPTIDE_LENGTHS: "+Parameters.minPeptLen+"-"+Parameters.maxPeptLen);
 		System.out.println(" OUT_RESULT: "+Parameters.outputFilePath);
-		System.out.println("  OUT_READ_DIST.: "+Parameters.ngsStatFilePath);
 		System.out.println("  OUT_PIN.: "+Parameters.pinFilePath);
-		System.out.println("  OUT_UNMAPPED: "+Parameters.unmappedFilePath);
+		System.out.println("  OUT_UNKNOWN: "+Parameters.unmappedFilePath);
 		System.out.println("  OUT_SAM: "+Parameters.EXPORT_SAM);
 		System.out.println("  OUT_GTF: "+Parameters.EXPORT_GTF);
 		System.out.println("  OUT_CANONICAL: "+Parameters.EXPORT_CANONICAL);
 		System.out.println("  OUT_NONCANONICAL: "+Parameters.EXPORT_NONCANONICAL);
-		System.out.println(" pMut: "+Parameters.PENALTY_MUTATION);
-		System.out.println(" pAS: "+Parameters.PENALTY_AS);
-		System.out.println(" p5UTR: "+Parameters.PENALTY_5UTR);
-		System.out.println(" p3UTR: "+Parameters.PENALTY_3UTR);
-		System.out.println(" pncRNA: "+Parameters.PENALTY_ncRNA);
-		System.out.println(" pFS: "+Parameters.PENALTY_FS);
-		System.out.println(" pIR: "+Parameters.PENALTY_IR);
-		System.out.println(" pIGR: "+Parameters.PENALTY_IGR);
-		System.out.println(" pasRNA: "+Parameters.PENALTY_asRNA);
-		System.out.println(" punmap: "+Parameters.PENALTY_UNMAP);
+		System.out.println(" penalty_mutation: "+Parameters.PENALTY_MUTATION);
+		System.out.println(" penalty_AS: "+Parameters.PENALTY_AS);
+		System.out.println(" penalty_5UTR: "+Parameters.PENALTY_5UTR);
+		System.out.println(" penalty_3UTR: "+Parameters.PENALTY_3UTR);
+		System.out.println(" penalty_ncRNA: "+Parameters.PENALTY_ncRNA);
+		System.out.println(" penalty_FS: "+Parameters.PENALTY_FS);
+		System.out.println(" penalty_IR: "+Parameters.PENALTY_IR);
+		System.out.println(" penalty_IGR: "+Parameters.PENALTY_IGR);
+		System.out.println(" penalty_asRNA: "+Parameters.PENALTY_asRNA);
+		System.out.println(" penalty_unknown: "+Parameters.PENALTY_UNMAP);
 		System.out.println(" THREADS: "+Parameters.nThreads);
 		
 		// append to logger
@@ -386,12 +379,8 @@ public class ParameterParser {
 		Logger.newLine();
 		Logger.append("  SAM_PARTITION_SIZE: "+Parameters.readSize);
 		Logger.newLine();
-		Logger.append("  TRANSLATION_METHOD: "+Parameters.translationMethod +" ("+translation+")");
+		Logger.append("  TRANSLATION_MODE: "+Parameters.translationMethod +" ("+translation+")");
 		Logger.newLine();
-		if(Parameters.pvalue < 1.00) {
-			Logger.append("  READ_CUTOFF_P_VALUE: "+Parameters.pvalue);
-			Logger.newLine();
-		}
 		if(Parameters.proteinFastaPath != null) {
 			Logger.append(" PROTEIN_DB: "+Parameters.proteinFastaPath);
 			Logger.newLine();
@@ -402,15 +391,13 @@ public class ParameterParser {
 		Logger.newLine();
 		Logger.append("  SCORE_COL: "+Parameters.scoreColumnIndex);
 		Logger.newLine();
-		Logger.append("  ADDITIONAL_FEATURE_COLS: "+addFeatCols.substring(1));
+		Logger.append("  ADDITIONAL_FEATURE_COLS: "+addFeatCols);
 		Logger.newLine();
 		Logger.append("  RANK TO CONSIDER: "+Parameters.psmRank);
 		Logger.newLine();
-		Logger.append("  PEPTIDE_LENGTH: "+Parameters.minPeptLen+"-"+Parameters.maxPeptLen);
+		Logger.append("  PEPTIDE_LENGTHS: "+Parameters.minPeptLen+"-"+Parameters.maxPeptLen);
 		Logger.newLine();
 		Logger.append(" OUT_RESULT: "+Parameters.outputFilePath);
-		Logger.newLine();
-		Logger.append("  OUT_READ_DIST.: "+Parameters.ngsStatFilePath);
 		Logger.newLine();
 		Logger.append("  OUT_PIN: "+Parameters.pinFilePath);
 		Logger.newLine();
@@ -424,25 +411,25 @@ public class ParameterParser {
 		Logger.newLine();
 		Logger.append("  OUT_NONCANONICAL: "+Parameters.EXPORT_NONCANONICAL);
 		Logger.newLine();
-		Logger.append(" pMut: "+Parameters.PENALTY_MUTATION);
+		Logger.append(" penalty_mutation: "+Parameters.PENALTY_MUTATION);
 		Logger.newLine();
-		Logger.append(" pAS: "+Parameters.PENALTY_AS);
+		Logger.append(" penalty_AS: "+Parameters.PENALTY_AS);
 		Logger.newLine();
-		Logger.append(" p5UTR: "+Parameters.PENALTY_5UTR);
+		Logger.append(" penalty_5UTR: "+Parameters.PENALTY_5UTR);
 		Logger.newLine();
-		Logger.append(" p3UTR: "+Parameters.PENALTY_3UTR);
+		Logger.append(" penalty_3UTR: "+Parameters.PENALTY_3UTR);
 		Logger.newLine();
-		Logger.append(" pncRNA: "+Parameters.PENALTY_ncRNA);
+		Logger.append(" penalty_ncRNA: "+Parameters.PENALTY_ncRNA);
 		Logger.newLine();
-		Logger.append(" pFS: "+Parameters.PENALTY_FS);
+		Logger.append(" penalty_FS: "+Parameters.PENALTY_FS);
 		Logger.newLine();
-		Logger.append(" pIR: "+Parameters.PENALTY_IR);
+		Logger.append(" penalty_IR: "+Parameters.PENALTY_IR);
 		Logger.newLine();
-		Logger.append(" pIGR: "+Parameters.PENALTY_IGR);
+		Logger.append(" penalty_IGR: "+Parameters.PENALTY_IGR);
 		Logger.newLine();
-		Logger.append(" pasRNA: "+Parameters.PENALTY_asRNA);
+		Logger.append(" penalty_asRNA: "+Parameters.PENALTY_asRNA);
 		Logger.newLine();
-		Logger.append(" punmap: "+Parameters.PENALTY_UNMAP);
+		Logger.append(" penalty_unknown: "+Parameters.PENALTY_UNMAP);
 		Logger.newLine();
 		Logger.append(" THREADS: "+Parameters.nThreads);
 		Logger.newLine();

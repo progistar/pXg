@@ -202,9 +202,6 @@ public class Master {
 			RunInfo.mappingFilterPeptideNum3 = PeptideAnnotation.getPeptideSizeWithXBlocks(pXgA.getXBlockMapper());
 			RunInfo.mappingFilterScanNum3 = PeptideAnnotation.getScanSizeWithXBlocks(pXgA.getXBlockMapper());
 			
-			// filter by pvalue
-			pXgA.estimatePvalueThreshold();
-			
 			// count peptides and scans after p-value
 			RunInfo.pvalueFilterPeptideNum4 = PeptideAnnotation.getPeptideSizeWithXBlocks(pXgA.getXBlockMapper());
 			RunInfo.pvalueFilterScanNum4 = PeptideAnnotation.getScanSizeWithXBlocks(pXgA.getXBlockMapper());

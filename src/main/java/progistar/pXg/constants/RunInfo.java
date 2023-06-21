@@ -12,9 +12,6 @@ public class RunInfo {
 	public static long[] workerProcessedReads = null;
 	public static long totalProcessedReads = 0;
 	public static long totalProcessedPeptides = 0;
-	public static int[] cutoffReads = null;
-	public static double cPSMScoreTreshold = 0;
-	public static double ncPSMScoreTreshold = 0;
 	public static Hashtable<String, Integer> processedChromosomes = new Hashtable<String, Integer>();
 	
 	// original scans & peptides
@@ -50,22 +47,6 @@ public class RunInfo {
 		Logger.newLine();
 	}
 	
-	/**
-	 * @deprecated
-	 * Do not use after v2.0.0
-	 * 
-	 */
-	public static void printPSMCutoff () {
-		System.out.println("Minimum PSM score threshold to accept as canonical PSMs: "+cPSMScoreTreshold);
-		System.out.println("Minimum PSM score threshold to accept as noncanonical PSMs: "+ncPSMScoreTreshold);
-		
-		// append to logger
-		Logger.append("Minimum PSM score threshold to accept as canonical PSMs: "+cPSMScoreTreshold);
-		Logger.newLine();
-		Logger.append("Minimum PSM score threshold to accept as noncanonical PSMs: "+ncPSMScoreTreshold);
-		Logger.newLine();
-	}
-	
 	public static void printFilterStat () {
 		System.out.println("Step\tScans\tPeptides");
 		System.out.println("Initial\t"+initialScanNum+"\t"+initialPeptideNum);
@@ -73,11 +54,6 @@ public class RunInfo {
 		System.out.println("Length Filter\t"+lengthFilterScanNum2+"\t"+lengthFilterPeptideNum2);
 		
 		System.out.println("Mapped Candidates\t"+mappingFilterScanNum3+"\t"+mappingFilterPeptideNum3);
-		if(Parameters.pvalue < 1.00) {
-			System.out.println("Significantly Mapped\t"+pvalueFilterScanNum4+"\t"+pvalueFilterPeptideNum4);
-		}
-		
-		
 		// append to logger
 		Logger.append("Step\tScans\tPeptides");
 		Logger.newLine();
@@ -89,10 +65,6 @@ public class RunInfo {
 		Logger.newLine();
 		Logger.append("Mapped Candidates\t"+mappingFilterScanNum3+"\t"+mappingFilterPeptideNum3);
 		Logger.newLine();
-		if(Parameters.pvalue < 1.00) {
-			Logger.append("Significantly Mapped\t"+pvalueFilterScanNum4+"\t"+pvalueFilterPeptideNum4);
-			Logger.newLine();
-		}
 	}
 	
 }

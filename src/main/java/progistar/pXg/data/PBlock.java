@@ -44,20 +44,23 @@ public class PBlock implements Comparable<PBlock> {
 		} else return this.pSeq;
 	}
 	
-	public String getUniqueID () {
-		String uniqueID = record[Parameters.fileColumnIndex] +"|"+record[Parameters.scanColumnIndex]+"|"+record[Parameters.chargeColumnIndex];
-		return uniqueID;
+	public String getSpecID () {
+		String specID = record[Parameters.fileColumnIndex] +"|"+record[Parameters.scanColumnIndex]+"|"+record[Parameters.chargeColumnIndex];
+		return specID;
 	}
 	
 	/**
 	 * return record. <br>
 	 * 
 	 */
-	public String toString () {
+	public String toString (int genomicID) {
 		StringBuilder recordLine = new StringBuilder();
 		
-		// add unique ID
-		recordLine.append(this.getUniqueID()).append("\t");
+		// add spectrum ID
+		recordLine.append(this.getSpecID()).append("\t");
+		
+		// add genomic ID
+		recordLine.append(genomicID).append("\t");
 		
 		// TD labeling
 		if(this.psmStatus == Constants.PSM_STATUS_DECOY) {

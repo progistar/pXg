@@ -99,52 +99,132 @@ public class ThirdPartyInput {
 	}
 	
 	public static void main(String[] args) throws IOException {
-		
+		/*
 		if(!checkInput(args)) {
 			return;
 		}
+		*/
 		
+		boolean[] selectedSet = {
+				false, // B-LCL1
+				false, // B-LCL2
+				false, // B-LCL3
+				false, // B-LCL4
+				false, // DOHH2
+				false, // HBL1
+				false, // SUDHL4
+				false, // THP1-1
+				false, // THP1-2
+				false, // THP1-3
+				
+				true, // DI2T
+				true, // DI5T
+				true, // IN19T
+				true, // IN26T
+				true, // IN81T
+				true, // R1_IN403T
+				true, // R2_IN403T
+				true, // IN407T
+				true, // IN506T
+				true, // IN524T
+				true, // IN525T
+				true, // IN526T
+				true, // IN529T
+				true, // R1_IN532T
+				true, // R2_IN532T
+				true, // M004T
+				true // M009T
+		};
 		
 		String[] pxgList = {
-				"PEAKS_BLCL1.p001.pxg",
-				"PEAKS_BLCL2.p001.pxg",
-				"PEAKS_BLCL3.p001.pxg",
-				"PEAKS_BLCL4.p001.pxg",
-				"PEAKS_HBL1.p001.pxg",
-				"PEAKS_DOHH2.p001.pxg",
-				"PEAKS_SUDHL4.p001.pxg",
-				"PEAKS_THP1_1.p001.pxg",
-				"PEAKS_THP1_2.p001.pxg",
-				"PEAKS_THP1_3.p001.pxg",
+				"B-LCL1.pxg",
+				"B-LCL2.pxg",
+				"B-LCL3.pxg",
+				"B-LCL4.pxg",
+				"DOHH2.pxg",
+				"HBL1.pxg",
+				"SUDHL4.pxg",
+				"THP1-1.pxg",
+				"THP1-2.pxg",
+				"THP1-3.pxg",
+				
+				"DI2T.pxg",
+				"DI5T.pxg",
+				"IN19T.pxg",
+				"IN26T.pxg",
+				"IN81T.pxg",
+				"R1_IN403T.pxg",
+				"R2_IN403T.pxg",
+				"IN407T.pxg",
+				"IN506T.pxg",
+				"IN524T.pxg",
+				"IN525T.pxg",
+				"IN526T.pxg",
+				"IN529T.pxg",
+				"R1_IN532T.pxg",
+				"R2_IN532T.pxg",
+				"M004T.pxg",
+				"M009T.pxg"
 		};
 		
-		String[] pxgList2 = {
-				"PEAKS_HBL1.nocut.pxg",
-				"PEAKS_DOHH2.nocut.pxg",
-				"PEAKS_SUDHL4.nocut.pxg",
-		};
-		
-		String absPath = "/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut_fullreads";
+		String absPath = "/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut";
+		absPath = "/Users/gistar/projects/GastricCancer_NCC/pXg";
 		// CE = 35 for B-LCL
 		// CE = 25 for SHUDL4, DOHH2, HBL1
 		// CE = 32 for THP
-		String CE = "25";
 		
-		int rtIdx = 13;
-		int infPeptIdx = 23;
-		int isCanonicalIdx = 39;
-		int labelIdx = 1;
-		int chargeIdx = 12;
-		int alcIdx = 9;
+		String[] CESet = {
+			"35",
+			"35",
+			"35",
+			"35",
+			"25",
+			"25",
+			"25",
+			"32",
+			"32",
+			"32",
+			
+			"28", // DI2T
+			"28", // DI5T
+			"28", // IN19T
+			"28", // IN26T
+			"28", // IN81T
+			"28", // R1_IN403T
+			"28", // R2_IN403T
+			"28", // IN407T
+			"28", // IN506T
+			"28", // R1_IN523T
+			"28", // R2_IN523T
+			"28", // IN524T
+			"28", // IN525T
+			"28", // IN526T
+			"28", // IN529T
+			"28", // M004T
+			"28" // M009T
+		};
+		
+		int rtIdx = 14;
+		int infPeptIdx = 24;
+		int isCanonicalIdx = 41;
+		int labelIdx = 2;
+		int chargeIdx = 13;
+		int alcIdx = 10;
 		
 		String prositHeader = "modified_sequence,collision_energy,precursor_charge";
 		String deepLCHeader = "seq,modifications,tr";
-		for(String pxg : pxgList2) {
+		for(int idx = 0; idx < pxgList.length; idx++) {
+			if(!selectedSet[idx]) {
+				continue;
+			}
+			
+			String CE = CESet[idx];
+			String pxg = pxgList[idx];
 			File file = new File(absPath+"/"+pxg);
 			BufferedReader BR = new BufferedReader(new FileReader(file));
 			BufferedWriter BWProsit = new BufferedWriter(new FileWriter(file.getAbsolutePath().replace(".pxg", ".input.prosit")));
-			BufferedWriter BWDeepLC = new BufferedWriter(new FileWriter(file.getAbsolutePath().replace(".pxg", ".input.deepLC")));
-			BufferedWriter BWDeepLCCal = new BufferedWriter(new FileWriter(file.getAbsolutePath().replace(".pxg", ".input.cal.deepLC")));
+			BufferedWriter BWDeepLC = new BufferedWriter(new FileWriter(file.getAbsolutePath().replace(".pxg", ".input.deeplc")));
+			BufferedWriter BWDeepLCCal = new BufferedWriter(new FileWriter(file.getAbsolutePath().replace(".pxg", ".input.cal.deeplc")));
 			BufferedWriter BWNetMHCpan = new BufferedWriter(new FileWriter(file.getAbsolutePath().replace(".pxg", ".input.netmhcpan")));
 			String line = null;
 			
