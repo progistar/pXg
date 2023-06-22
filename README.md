@@ -12,8 +12,9 @@
 - [Tutorial](#tutorial)
   - [RNA-Seq alignment](#rna-seq-alignment)
   - [SAM preparation](#sam-preparation)
+  - [Toy example](#toy-example)
   - [Run pXg](#run-pxg)
-- [3rd-party application](#3rd-party-application)
+  - [Run Percolator using the pXg results](#run-percolator-using-the-pxg-results)
   - [IGV viewer](#igv-viewer)
 ---
 
@@ -99,7 +100,7 @@ java -Xmx30G -jar pXg.jar \
 ```
 
 ## Tutorial
-This tutorial aims to understand how to run pXg and estimate FDR from the result. It contains 1) running <a href="https://github.com/alexdobin/STAR" target="_blank">STAR2</a> aligner with 2-pass parameter, 2) preparing SAM file from the alignment, 3) running pXg and 4) several post-processing including Percolator, merging pXg result with the result of Percolator and estimating separated FDR.
+This tutorial aims to understand how to run pXg and estimate FDR from the result. It contains 1) running <a href="https://github.com/alexdobin/STAR" target="_blank">STAR2</a> aligner with 2-pass parameter, 2) preparing SAM file from the alignment, 3) running pXg and 4) several post-processing including <a href="https://github.com/percolator/percolator" target="_blank">Percolator</a>, merging pXg result with the result of Percolator and estimating separated FDR.
 Note that it neither contains how to run de novo peptide sequencing engines such as <a href="https://www.bioinfor.com/peaks-studio/" target="_blank">PEAKS</a>, <a href="http://pfind.org/software/pNovo/index.html" target="_blank">pNovo3</a> and <a href="https://github.com/Noble-Lab/casanovo" target="_blank">Casanovo</a> AND how to create deep learning based features.
 
 ### RNA-Seq alignment
@@ -117,18 +118,36 @@ samtools sort -o in.sorted.sam in.sam -@ 8
 The "in.sorted.sam" is used for pXg input.
 
 ### Toy example
-We expect that you have 1) de novo results, 2) in.sorted.sam, 3) gene annotation (GTF) and optionally 4) protein sequence fasta file. 
+In this tutorial, toy datasets including 1) de novo results, 2) in.sorted.sam, 3) gene annotation (GTF) and 4) protein sequence fasta file are provided in the <a href="https://github.com/progistar/pXg/tree/main/tutorial" target="_blank">tutorial</a> folder so that a user can try to run the pXg pipeline. 
 
 ### Run pXg
-In the "tutorial" folder, we provide a simple running example with data sets (PEAKS result, SAM, GTF and pXg command bash file).
-However, do not use the example for your research purpose. Rather, we recommand below:
+Using the toy datasets, you can run the pXg pipline using following command: <br>
 ```bash
-java -Xmx50G -jar pXg.jar -gtf gencode.gtf -sam aligned.unique_unmapped.sorted.sam -psm peaks.result -fasta uniprot_contam.fasta -pept_col 4 -score_col 8 -scan_cols 1,2,5  -pval 0.01 -fdr 0.1 -out peaks.pXg
+java -Xmx2G -jar pXg.v2.0.1.jar \
+--gtf_file toy.gtf \
+--sam_file toy.sorted.sam \
+--psm_file toy.psm.csv \
+--fasta_file toy.fasta \
+--output toy \
+--scan_col 5 \
+--file_col 2 \
+--pept_col 4 \
+--score_col 8 \
+--charge_col 11 \
+--add_feat_cols 15 \
+--sep csv \
+--mode 6 \
+--threads 2
 ```
+This may take about 2 mins.<br>
 
-Note that the memory option "-Xmx50G" depends on the size of SMA file. In our experience, "-Xmx30G" is enough to deal with ~20G file. 
+Note that the memory option "-Xmx50G" depends on the size of SAM file. In our experience, "-Xmx30G" is enough to deal with ~20G file. 
 
-## 3rd-party application
+### Run Percolator using the pXg results
+Once you get the pXg result, you can add more features such as spectral similarity and delta retention time described in our manuscript. Without the additional features, still it is possible to run <a href="https://github.com/percolator/percolator" target="_blank">Percolator</a> and estimate FDR from the pXg results.<br>
+We recommand to use Percolator version >= v3.06.1 because former versions have an issue to print proteinIds.<br>
+Post processing codes are also provided in the tutorial folder (post_process.ipynb).
+
 ### IGV viewer
-<img src="https://github.com/progistar/pXg/blob/main/img/igv1.png"/>
+<img src="https://github.com/progistar/pXg/blob/main/img/toy.viewer.png"/>
 When pXg finishes identifying peptides, the resulting GTF and SAM files are immediately available in the <a href="https://software.broadinstitute.org/software/igv/" target="_blank">IGV viewer</a>.

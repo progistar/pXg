@@ -1,1 +1,1 @@
-java -Xmx2G -jar pXg.v1.7.0.jar -gtf example.gtf -sam test.sorted.sam -psm example.peaks.csv -out test.pXg -scan_cols 1,2,5 -pept_col 4 -score_col 8 -pval 1.00 -fdr 1.00 -sep csv
+java -Xmx2G -jar pXg.v2.0.1.jar --gtf_file toy.gtf --sam_file toy.sorted.sam --psm_file toy.psm.csv --fasta_file toy.fasta --output toy --scan_col 5 --file_col 2 --pept_col 4 --score_col 8 --charge_col 11 --add_feat_cols 15 --sep csv --mode 6 --threads 2
