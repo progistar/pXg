@@ -16,6 +16,8 @@
   - [Run pXg](#run-pxg)
   - [Run Percolator using the pXg results](#run-percolator-using-the-pxg-results)
   - [IGV viewer](#igv-viewer)
+- [TODO](#todo)
+  - [Integrative pipeline](#integrative-pipeline)
 ---
 
 ## About pXg
@@ -24,7 +26,7 @@ pXg (proteomics X genomics), a software tool that enables the reliable identific
 <br>
 
 ## Usage
-pXg can be integrated with any search engines such as PEAKS and pNovo3. 
+pXg can be integrated with any search engines such as PEAKS and pNovo3.
 It was developed for the reliable identification of ncMAPs from de novo peptide sequencing; however, it can also be used to capture the number of reads mapped to a peptide sequence.
 ### Input format
 |Input    | Description    | Format    | Mandatory   |
@@ -151,3 +153,8 @@ Post processing codes are also provided in the tutorial folder (post_process.ipy
 ### IGV viewer
 <img src="https://github.com/progistar/pXg/blob/main/img/toy.viewer.png"/>
 When pXg finishes identifying peptides, the resulting GTF and SAM files are immediately available in the <a href="https://software.broadinstitute.org/software/igv/" target="_blank">IGV viewer</a>.
+
+## TODO
+### Integrative pipeline
+* The pXg pipline will be intragted with SOTA de novo sequencing tools and RNA-Seq aligners to deal with 1) MS/MS spectra, 2) fastq (RNA-Seq), 3) Gene annotation, 4) Genome sequence, and 5) Protein sequence database at once!<br>
+* For example, Casanovo is the SOTA now; therefore, we are implementing to deal with that of input file.
