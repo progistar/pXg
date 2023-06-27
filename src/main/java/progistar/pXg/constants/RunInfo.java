@@ -53,7 +53,7 @@ public class RunInfo {
 		System.out.println("Rank Filter\t"+rankFilterScanNum1+"\t"+rankFilterPeptideNum1);
 		System.out.println("Length Filter\t"+lengthFilterScanNum2+"\t"+lengthFilterPeptideNum2);
 		
-		System.out.println("Mapped Candidates\t"+mappingFilterScanNum3+"\t"+mappingFilterPeptideNum3);
+		System.out.println("RNA-matched Candidates\t"+mappingFilterScanNum3+"\t"+mappingFilterPeptideNum3);
 		// append to logger
 		Logger.append("Step\tScans\tPeptides");
 		Logger.newLine();
@@ -63,7 +63,7 @@ public class RunInfo {
 		Logger.newLine();
 		Logger.append("Length Filter\t"+lengthFilterScanNum2+"\t"+lengthFilterPeptideNum2);
 		Logger.newLine();
-		Logger.append("Mapped Candidates\t"+mappingFilterScanNum3+"\t"+mappingFilterPeptideNum3);
+		Logger.append("RNA-matched Candidates\t"+mappingFilterScanNum3+"\t"+mappingFilterPeptideNum3);
 		Logger.newLine();
 	}
 	

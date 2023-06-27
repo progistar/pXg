@@ -15,7 +15,7 @@ public class Constants {
 	public static final int SIX_FRAME	=	6;
 	
 	// Decoy prefix
-	public static final String DECOY_PREFIX	=	"Decoy@";
+	public static final String DECOY_PREFIX	=	"Decoy$";
 
 	//
 	public static final byte EXON = 30;

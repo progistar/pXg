@@ -16,10 +16,10 @@ public class SAMExportor {
 	
 	public static void putSequenceID (XBlock xBlock) {
 		
-		sequenceIDChecker.put(xBlock.sequenceID.split("\\@")[0], "");
+		sequenceIDChecker.put(xBlock.sequenceID.split("\\@")[0].replace(Constants.DECOY_PREFIX, ""), "");
 		
 		xBlock.siblingXBlocks.forEach((sxBlock) -> {
-			sequenceIDChecker.put(sxBlock.sequenceID.split("\\@")[0], "");
+			sequenceIDChecker.put(sxBlock.sequenceID.split("\\@")[0].replace(Constants.DECOY_PREFIX, ""), "");
 		});
 		
 	}
@@ -37,12 +37,6 @@ public class SAMExportor {
 				// for target check
 				if(sequenceIDChecker.get(sequenceID) != null) {
 					BW.append(line);
-					BW.newLine();
-				}
-				// for decoy check
-				sequenceID = Constants.DECOY_PREFIX + sequenceID;
-				if(sequenceIDChecker.get(sequenceID) != null) {
-					BW.append(Constants.DECOY_PREFIX).append(line);
 					BW.newLine();
 				}
 			}
