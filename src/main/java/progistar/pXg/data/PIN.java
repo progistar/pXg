@@ -71,7 +71,7 @@ public class PIN {
 			
 			while((line = BR.readLine()) != null) {
 				String[] fields = line.split("\t");
-				int charge = Integer.parseInt(fields[Parameters.chargeColumnIndex + indexShiftSize]);
+				int charge = (int)Double.parseDouble(fields[Parameters.chargeColumnIndex + indexShiftSize]);
 				minCharge = Math.min(minCharge, charge);
 				maxCharge = Math.max(maxCharge, charge);
 				records.add(line);
