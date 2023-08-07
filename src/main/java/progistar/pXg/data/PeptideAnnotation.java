@@ -9,10 +9,8 @@ import java.util.Iterator;
 import org.ahocorasick.trie.Emit;
 import org.ahocorasick.trie.Trie;
 
-import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
 import progistar.pXg.constants.RunInfo;
-import progistar.pXg.utils.Logger;
 
 public class PeptideAnnotation {
 
@@ -218,14 +216,19 @@ public class PeptideAnnotation {
 	}
 	
 	public static void peptideLengthFilter () {
-		for(int i=pBlocks.size()-1; i>=0; i--) {
-			int peptLength = pBlocks.get(i).getPeptideSequence().length();
+		ArrayList<PBlock> tmpPBlocks = pBlocks;
+		pBlocks = new ArrayList<PBlock>();
+		
+		int size = tmpPBlocks.size();
+		for(int i=0; i<size; i++) {
+			int peptLength = tmpPBlocks.get(i).getPeptideSequence().length();
 			
 			// filter-out non-interesting
-			if(peptLength < Parameters.minPeptLen || peptLength > Parameters.maxPeptLen) {
-				pBlocks.remove(i);
+			if(peptLength >= Parameters.minPeptLen && peptLength <= Parameters.maxPeptLen) {
+				pBlocks.add(tmpPBlocks.get(i));
 			}
 		}
+		tmpPBlocks.clear();
 	}
 	
 	/**

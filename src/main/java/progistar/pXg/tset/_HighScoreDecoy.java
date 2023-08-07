@@ -102,23 +102,39 @@ public class _HighScoreDecoy {
 				false, // THP1-2
 				false, // THP1-3
 				
-				true, // DI2T
-				true, // DI5T
-				true, // IN19T
-				true, // IN26T
-				true, // IN81T
-				true, // R1_IN403T
-				true, // R2_IN403T
-				true, // IN407T
-				true, // IN506T
-				true, // IN524T
-				true, // IN525T
-				true, // IN526T
-				true, // IN529T
-				true, // R1_IN532T
-				true, // R2_IN532T
-				true, // M004T
-				true // M009T
+				false, // DI2T
+				false, // DI5T
+				false, // IN19T
+				false, // IN26T
+				false, // IN81T
+				false, // R1_IN403T
+				false, // R2_IN403T
+				false, // IN407T
+				false, // IN506T
+				false, // IN524T
+				false, // IN525T
+				false, // IN526T
+				false, // IN529T
+				false, // R1_IN532T
+				false, // R2_IN532T
+				false, // M004T
+				false, // M009T
+				
+				true, // DI2N
+				true, // DI5N
+				true, // IN19N
+				true, // IN26N
+				true, // IN81N
+				true, // IN403N
+				true, // IN407N
+				true, // IN506N
+				true, // IN524N
+				true, // IN525N
+				true, // IN526N
+				true, // IN529N
+				true, // IN532N
+				true, // M004N
+				true // M009N
 		};
 		
 		
@@ -243,7 +259,23 @@ public class _HighScoreDecoy {
 				"R1_IN532T.pxg", // R1_IN532T
 				"R2_IN532T.pxg", // R2_IN532T
 				"M004T.pxg", // M004T
-				"M009T.pxg" // M009T
+				"M009T.pxg", // M009T
+				
+				"DI2N.pxg",
+				"DI5N.pxg",
+				"IN19N.pxg",
+				"IN26N.pxg",
+				"IN81N.pxg",
+				"IN403N.pxg",
+				"IN407N.pxg",
+				"IN506N.pxg",
+				"IN524N.pxg",
+				"IN525N.pxg",
+				"IN526N.pxg",
+				"IN529N.pxg",
+				"IN532N.pxg",
+				"M004N.pxg",
+				"M009N.pxg"
 		};
 		
 		String[] BAList = {
@@ -274,7 +306,23 @@ public class _HighScoreDecoy {
 				"R1_IN532T.netmhcpan.xls", // R1_IN532T
 				"R2_IN532T.netmhcpan.xls", // R2_IN532T
 				"M004T.netmhcpan.xls", // M004T
-				"M009T.netmhcpan.xls" // M009T
+				"M009T.netmhcpan.xls", // M009T
+				
+				"DI2N.netmhcpan.xls", // DI2N
+				"DI5N.netmhcpan.xls", // DI5N
+				"IN19N.netmhcpan.xls", // IN19N
+				"IN26N.netmhcpan.xls", // IN26N
+				"IN81N.netmhcpan.xls", // IN81N
+				"IN403N.netmhcpan.xls", // R1_IN403N
+				"IN407N.netmhcpan.xls", // IN407N
+				"IN506N.netmhcpan.xls", // IN506N
+				"IN524N.netmhcpan.xls", // IN524N
+				"IN525N.netmhcpan.xls", // IN525N
+				"IN526N.netmhcpan.xls", // IN526N
+				"IN529N.netmhcpan.xls", // IN529N
+				"IN532N.netmhcpan.xls", // R1_IN532N
+				"M004N.netmhcpan.xls", // M004N
+				"M009N.netmhcpan.xls" // M009N
 		};
 		
 		String[] sampleNames = {
@@ -305,7 +353,23 @@ public class _HighScoreDecoy {
 				"R1_IN532T", // R1_IN532T
 				"R2_IN532T", // R2_IN532T
 				"M004T", // M004T
-				"M009T" // M009T
+				"M009T", // M009T
+				
+				"DI2N", // DI2N
+				"DI5N", // DI5N
+				"IN19N", // IN19N
+				"IN26N", // IN26N
+				"IN81N", // IN81N
+				"IN403N", // IN403N
+				"IN407N", // IN407N
+				"IN506N", // IN506N
+				"IN524N", // IN524N
+				"IN525N", // IN525N
+				"IN526N", // IN526N
+				"IN529N", // IN529N
+				"IN532N", // IN532N
+				"M004N", // M004N
+				"M009N" // M009N
 		};
 		
 		String[] outList = {
@@ -336,7 +400,24 @@ public class _HighScoreDecoy {
 				"R1_IN532T."+feat+".BA", // R1_IN532T
 				"R2_IN532T."+feat+".BA", // R2_IN532T
 				"M004T."+feat+".BA", // M004T
-				"M009T."+feat+".BA" // M009T
+				"M009T."+feat+".BA", // M009T
+				
+				
+				"DI2N."+feat+".BA", // DI2N
+				"DI5N."+feat+".BA", // DI5N
+				"IN19N."+feat+".BA", // IN19N
+				"IN26N."+feat+".BA", // IN26N
+				"IN81N."+feat+".BA", // IN81N
+				"IN403N."+feat+".BA", // R1_IN403N
+				"IN407N."+feat+".BA", // IN407N
+				"IN506N."+feat+".BA", // IN506N
+				"IN524N."+feat+".BA", // IN524N
+				"IN525N."+feat+".BA", // IN525N
+				"IN526N."+feat+".BA", // IN526N
+				"IN529N."+feat+".BA", // IN529N
+				"IN532N."+feat+".BA", // IN532N
+				"M004N."+feat+".BA", // M004N
+				"M009N."+feat+".BA" // M009N
 		};
 		
 		BufferedWriter BWAll = new BufferedWriter(new FileWriter("/Users/gistar/projects/GastricCancer_NCC/percolator/_all."+feat+".BA"));

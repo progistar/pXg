@@ -10,10 +10,8 @@ import java.util.Iterator;
 
 import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
-import progistar.pXg.constants.RunInfo;
 import progistar.pXg.data.parser.GTFExportor;
 import progistar.pXg.data.parser.SAMExportor;
-import progistar.pXg.utils.Logger;
 
 public class PxGAnnotation {
 
@@ -251,9 +249,10 @@ public class PxGAnnotation {
 		long startTime = System.currentTimeMillis();
 		
 		ArrayList<PBlock> pBlocks = PeptideAnnotation.pBlocks;
-		
+		PeptideAnnotation.pBlocks = new ArrayList<PBlock>();
 		// update pBlocks!
-		for(int i=0; i<pBlocks.size(); i++) {
+		int size = pBlocks.size();
+		for(int i=0; i<size; i++) {
 			PBlock pBlock = pBlocks.get(i);
 			// peptide sequence without I/L consideration
 			String key = pBlock.getPeptideSequence();
@@ -294,12 +293,12 @@ public class PxGAnnotation {
 			}
 			
 			// remove unassigned pBlock
-			if(!expAndMocks[0] && !expAndMocks[1]) {
-				pBlocks.remove(i--);
+			if(expAndMocks[0] || expAndMocks[1]) {
+				PeptideAnnotation.pBlocks.add(pBlock);
 			}
 			
 		}
-		
+		pBlocks.clear();
 		long endTime = System.currentTimeMillis();
 		System.out.println("\tElapsed time: "+((endTime-startTime)/1000) + " sec");
 		

@@ -117,23 +117,40 @@ public class ThirdPartyInput {
 				false, // THP1-2
 				false, // THP1-3
 				
-				true, // DI2T
-				true, // DI5T
-				true, // IN19T
-				true, // IN26T
-				true, // IN81T
-				true, // R1_IN403T
-				true, // R2_IN403T
-				true, // IN407T
-				true, // IN506T
-				true, // IN524T
-				true, // IN525T
-				true, // IN526T
-				true, // IN529T
-				true, // R1_IN532T
-				true, // R2_IN532T
-				true, // M004T
-				true // M009T
+				false, // DI2T
+				false, // DI5T
+				false, // IN19T
+				false, // IN26T
+				false, // IN81T
+				false, // R1_IN403T
+				false, // R2_IN403T
+				false, // IN407T
+				false, // IN506T
+				false, // IN524T
+				false, // IN525T
+				false, // IN526T
+				false, // IN529T
+				false, // R1_IN532T
+				false, // R2_IN532T
+				false, // M004T
+				false, // M009T
+				
+
+				true, // DI2N
+				true, // DI5N
+				true, // IN19N
+				true, // IN26N
+				true, // IN81N
+				true, // IN403N
+				true, // IN407N
+				true, // IN506N
+				true, // IN524N
+				true, // IN525N
+				true, // IN526N
+				true, // IN529N
+				true, // IN532N
+				true, // M004N
+				true // M009N
 		};
 		
 		String[] pxgList = {
@@ -164,11 +181,27 @@ public class ThirdPartyInput {
 				"R1_IN532T.pxg",
 				"R2_IN532T.pxg",
 				"M004T.pxg",
-				"M009T.pxg"
+				"M009T.pxg",
+				
+				"DI2N.pxg",
+				"DI5N.pxg",
+				"IN19N.pxg",
+				"IN26N.pxg",
+				"IN81N.pxg",
+				"IN403N.pxg",
+				"IN407N.pxg",
+				"IN506N.pxg",
+				"IN524N.pxg",
+				"IN525N.pxg",
+				"IN526N.pxg",
+				"IN529N.pxg",
+				"IN532N.pxg",
+				"M004N.pxg",
+				"M009N.pxg"
 		};
 		
 		String absPath = "/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut";
-		absPath = "/Users/gistar/projects/GastricCancer_NCC/pXg";
+		absPath = "/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal";
 		// CE = 35 for B-LCL
 		// CE = 25 for SHUDL4, DOHH2, HBL1
 		// CE = 32 for THP
@@ -201,7 +234,23 @@ public class ThirdPartyInput {
 			"28", // IN526T
 			"28", // IN529T
 			"28", // M004T
-			"28" // M009T
+			"28", // M009T
+			
+			"28", // DI2N
+			"28", // DI5N
+			"28", // IN19N
+			"28", // IN26N
+			"28", // IN81N
+			"28", // IN403N
+			"28", // IN407N
+			"28", // IN506N
+			"28", // IN523N
+			"28", // IN524N
+			"28", // IN525N
+			"28", // IN526N
+			"28", // IN529N
+			"28", // M004N
+			"28" // M009N
 		};
 		
 		int rtIdx = 14;

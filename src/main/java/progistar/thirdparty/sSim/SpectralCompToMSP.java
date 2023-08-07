@@ -27,24 +27,41 @@ public class SpectralCompToMSP {
 				false, // THP1-1
 				false, // THP1-2
 				false, // THP1-3
+
+				false, // DI2T
+				false, // DI5T
+				false, // IN19T
+				false, // IN26T
+				false, // IN81T
+				false, // R1_IN403T
+				false, // R2_IN403T
+				false, // IN407T
+				false, // IN506T
+				false, // IN524T
+				false, // IN525T
+				false, // IN526T
+				false, // IN529T
+				false, // R1_IN532T
+				false, // R2_IN532T
+				false, // M004T
+				false, // M009T
 				
-				true, // DI2T
-				true, // DI5T
-				true, // IN19T
-				true, // IN26T
-				true, // IN81T
-				true, // R1_IN403T
-				true, // R2_IN403T
-				true, // IN407T
-				true, // IN506T
-				true, // IN524T
-				true, // IN525T
-				true, // IN526T
-				true, // IN529T
-				true, // R1_IN532T
-				true, // R2_IN532T
-				true, // M004T
-				true // M009T
+
+				true, // DI2N
+				true, // DI5N
+				true, // IN19N
+				true, // IN26N
+				true, // IN81N
+				true, // IN403N
+				true, // IN407N
+				true, // IN506N
+				true, // IN524N
+				true, // IN525N
+				true, // IN526N
+				true, // IN529N
+				true, // IN532N
+				true, // M004N
+				true // M009N
 		};
 		
 		String[] exSpectraSet = {
@@ -75,8 +92,23 @@ public class SpectralCompToMSP {
 				"/Users/gistar/projects/GastricCancer_NCC/mgf/20201110_HLA-I_2_R1.scannum.mgf", // R1_IN532T
 				"/Users/gistar/projects/GastricCancer_NCC/mgf/20201110_HLA-I_5_R1.scannum.mgf", // R2_IN532T
 				"/Users/gistar/projects/GastricCancer_NCC/mgf/20221125_KHK_T1_07.scannum.mgf", // M004T
-				"/Users/gistar/projects/GastricCancer_NCC/mgf/230217_MHC_I_160min_M009T.scannum.mgf" // M009T
+				"/Users/gistar/projects/GastricCancer_NCC/mgf/230217_MHC_I_160min_M009T.scannum.mgf", // M009T
 				
+				"/Users/gistar/projects/GastricCancer_NCC/mgf/20221125_KHK_N1_05.scannum.mgf", // DI2N
+				"/Users/gistar/projects/GastricCancer_NCC/mgf/20221125_KHK_N1_06.scannum.mgf", // DI5N
+				"/Users/gistar/projects/GastricCancer_NCC/mgf/20221125_KHK_N1_12.scannum.mgf", // IN19N
+				"/Users/gistar/projects/GastricCancer_NCC/mgf/20221125_KHK_N1_09.scannum.mgf", // IN26N
+				"/Users/gistar/projects/GastricCancer_NCC/mgf/20221125_KHK_N1_10.scannum.mgf", // IN81N
+				"/Users/gistar/projects/GastricCancer_NCC/mgf/20201110_HLA-I_1_R1.scannum.mgf", // IN403N
+				"/Users/gistar/projects/GastricCancer_NCC/mgf/20221125_KHK_N1_11.scannum.mgf", // IN407N
+				"/Users/gistar/projects/GastricCancer_NCC/mgf/20221125_KHK_N1_04.scannum.mgf", // IN506N
+				"/Users/gistar/projects/GastricCancer_NCC/mgf/20221125_KHK_N1_08.scannum.mgf", // IN524N
+				"/Users/gistar/projects/GastricCancer_NCC/mgf/20221125_KHK_N1_01.scannum.mgf", // IN525N
+				"/Users/gistar/projects/GastricCancer_NCC/mgf/20201110_HLA-I_7_R1.scannum.mgf", // IN526N
+				"/Users/gistar/projects/GastricCancer_NCC/mgf/20221125_KHK_N1_03.scannum.mgf", // IN529N
+				"/Users/gistar/projects/GastricCancer_NCC/mgf/20201110_HLA-I_6_R1.scannum.mgf", // IN532N
+				"/Users/gistar/projects/GastricCancer_NCC/mgf/20221125_KHK_N1_07.scannum.mgf", // M004N
+				"/Users/gistar/projects/GastricCancer_NCC/mgf/230118_MHC_I_160min_M009N.scannum.mgf" // M009N
 		};
 		
 		String[] predSpectraSet = {
@@ -107,7 +139,23 @@ public class SpectralCompToMSP {
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/R1_IN532T.msp", // R1_IN532T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/R2_IN532T.msp", // R2_IN532T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/M004T.msp", // M004T
-				"/Users/gistar/projects/GastricCancer_NCC/pXg/M009T.msp" // M009T
+				"/Users/gistar/projects/GastricCancer_NCC/pXg/M009T.msp", // M009T
+
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/DI2N.msp", // DI2N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/DI5N.msp", // DI5N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN19N.msp", // IN19N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN26N.msp", // IN26N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN81N.msp", // IN81N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN403N.msp", // IN403N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN407N.msp", // IN407N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN506N.msp", // IN506N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN524N.msp", // IN524N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN525N.msp", // IN525N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN526N.msp", // IN526N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN529N.msp", // IN529N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN532N.msp", // IN532N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/M004N.msp", // M004N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/M009N.msp" // M009N
 		};
 		
 		String[] deepLCSet = {
@@ -138,7 +186,23 @@ public class SpectralCompToMSP {
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/R1_IN532T.deeplc", // R1_IN532T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/R2_IN532T.deeplc", // R2_IN532T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/M004T.deeplc", // M004T
-				"/Users/gistar/projects/GastricCancer_NCC/pXg/M009T.deeplc" // M009T
+				"/Users/gistar/projects/GastricCancer_NCC/pXg/M009T.deeplc", // M009T
+				
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/DI2N.deeplc", // DI2N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/DI5N.deeplc", // DI5N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN19N.deeplc", // IN19N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN26N.deeplc", // IN26N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN81N.deeplc", // IN81N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN403N.deeplc", // IN403N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN407N.deeplc", // IN407N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN506N.deeplc", // IN506N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN524N.deeplc", // IN524N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN525N.deeplc", // IN525N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN526N.deeplc", // IN526N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN529N.deeplc", // IN529N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN532N.deeplc", // IN532N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/M004N.deeplc", // M004N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/M009N.deeplc" // M009N
 				
 		};
 		
@@ -170,7 +234,23 @@ public class SpectralCompToMSP {
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/R1_IN532T.netmhcpan.xls", // R1_IN532T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/R2_IN532T.netmhcpan.xls", // R2_IN532T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/M004T.netmhcpan.xls", // M004T
-				"/Users/gistar/projects/GastricCancer_NCC/pXg/M009T.netmhcpan.xls" // M009T
+				"/Users/gistar/projects/GastricCancer_NCC/pXg/M009T.netmhcpan.xls", // M009T
+				
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/DI2N.netmhcpan.xls", // DI2N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/DI5N.netmhcpan.xls", // DI5N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN19N.netmhcpan.xls", // IN19N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN26N.netmhcpan.xls", // IN26N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN81N.netmhcpan.xls", // IN81N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN403N.netmhcpan.xls", // IN403N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN407N.netmhcpan.xls", // IN407N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN506N.netmhcpan.xls", // IN506N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN524N.netmhcpan.xls", // IN524N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN525N.netmhcpan.xls", // IN525N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN526N.netmhcpan.xls", // IN526N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN529N.netmhcpan.xls", // IN529N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN532N.netmhcpan.xls", // IN532N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/M004N.netmhcpan.xls", // M004N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/M009N.netmhcpan.xls" // M009N
 		};
 		
 		String[] pinSet = {
@@ -201,7 +281,23 @@ public class SpectralCompToMSP {
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/R1_IN532T.pxg.pin", // R1_IN532T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/R2_IN532T.pxg.pin", // R2_IN532T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/M004T.pxg.pin", // M004T
-				"/Users/gistar/projects/GastricCancer_NCC/pXg/M009T.pxg.pin" // M009T
+				"/Users/gistar/projects/GastricCancer_NCC/pXg/M009T.pxg.pin", // M009T
+				
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/DI2N.pxg.pin", // DI2N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/DI5N.pxg.pin", // DI5N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN19N.pxg.pin", // IN19N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN26N.pxg.pin", // IN26N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN81N.pxg.pin", // IN81N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN403N.pxg.pin", // IN403N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN407N.pxg.pin", // IN407N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN506N.pxg.pin", // IN506N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN524N.pxg.pin", // IN524N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN525N.pxg.pin", // IN525N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN526N.pxg.pin", // IN526N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN529N.pxg.pin", // IN529N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN532N.pxg.pin", // IN532N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/M004N.pxg.pin", // M004N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/M009N.pxg.pin" // M009N
 				
 		};
 		
@@ -233,7 +329,23 @@ public class SpectralCompToMSP {
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/R1_IN532T.pxg", // R1_IN532T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/R2_IN532T.pxg", // R2_IN532T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/M004T.pxg", // M004T
-				"/Users/gistar/projects/GastricCancer_NCC/pXg/M009T.pxg" // M009T
+				"/Users/gistar/projects/GastricCancer_NCC/pXg/M009T.pxg", // M009T
+				
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/DI2N.pxg", // DI2N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/DI5N.pxg", // DI5N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN19N.pxg", // IN19N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN26N.pxg", // IN26N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN81N.pxg", // IN81N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN403N.pxg", // IN403N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN407N.pxg", // IN407N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN506N.pxg", // IN506N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN524N.pxg", // IN524N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN525N.pxg", // IN525N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN526N.pxg", // IN526N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN529N.pxg", // IN529N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN532N.pxg", // IN532N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/M004N.pxg", // M004N
+				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/M009N.pxg" // M009N
 				
 		};
 		
@@ -244,6 +356,10 @@ public class SpectralCompToMSP {
 			}
 			
 			System.out.println(pinSet[idx]);
+			System.out.println(exSpectraSet[idx]);
+			System.out.println(predSpectraSet[idx]);
+			System.out.println(deepLCSet[idx]);
+			System.out.println(netmhcpanSet[idx]);
 			// index by title
 			Spectra exSpectra = new Spectra(exSpectraSet[idx], Spectra.FILE_TYPE_MGF);
 			// index by peptide/charge
@@ -266,6 +382,10 @@ public class SpectralCompToMSP {
 			while((line = BRlc.readLine()) != null) {
 				String[] fields = line.split("\\,");
 				String peptide =fields[1];
+				// if observed is "-"
+				if(fields[3].equalsIgnoreCase("-")) {
+					fields[3] = fields[4];
+				}
 				Double obRT = Double.parseDouble(fields[3]);
 				Double predRT = Double.parseDouble(fields[4]);
 				double delta = obRT - predRT;

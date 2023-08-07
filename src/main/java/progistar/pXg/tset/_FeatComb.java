@@ -263,7 +263,7 @@ public class _FeatComb {
 
 	public static void main(String[] args) throws IOException {
 		
-		File[] files = new File("/Users/gistar/projects/GastricCancer_NCC/percolator").listFiles();
+		File[] files = new File("/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal").listFiles();
 		for(File file : files) {
 			if(file.getName().endsWith("pxg.predfeat.pin")) {
 				System.out.println(file.getName());
