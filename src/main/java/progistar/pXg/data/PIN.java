@@ -120,7 +120,7 @@ public class PIN {
 				String mainScore = fields[Parameters.scoreColumnIndex + indexShiftSize];
 				String log2Reads = "" + Math.log(Double.parseDouble(fields[readIdx])+1)/Math.log(2);
 				
-				int charge = Integer.parseInt(fields[Parameters.chargeColumnIndex + indexShiftSize]);
+				int charge = (int) Double.parseDouble(fields[Parameters.chargeColumnIndex + indexShiftSize]);
 				
 				pinOutput.append(specId+"\t"+label+"\t"+scanNr+"\t"+mainScore+"\t"+log2Reads);
 				// append charge
