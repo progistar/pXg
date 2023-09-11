@@ -59,27 +59,15 @@ public class SamParser {
 		
 		// average of phred33 QScore
 		int length = phred33.length();
-		double qScore = 0;
 		double meanQScore = 0;
-		double maxQScore = -100;
-		double minQScore = 100;
 		for(int i=0; i<length; i++) {
 			char qChar = phred33.charAt(i);
 			if(qChar != '*') {
 				meanQScore += (qChar-33);
-				maxQScore = Math.max(maxQScore, (qChar-33));
-				minQScore = Math.min(minQScore, (qChar-33));
 			}
 		}
 		
-		if(Parameters.PHRED_CAL.equalsIgnoreCase(Constants.CAL_PHRED_AVG)) {
-			meanQScore /= (double) length;
-			qScore = meanQScore;
-		} else if(Parameters.PHRED_CAL.equalsIgnoreCase(Constants.CAL_PHRED_MAX)) {
-			qScore = maxQScore;
-		} else if(Parameters.PHRED_CAL.equalsIgnoreCase(Constants.CAL_PHRED_MIN)) {
-			qScore = minQScore;
-		}
+		meanQScore /= (double) length;
 		
 		// Note that
 		// Chr of unmapped reads are marked as *
@@ -104,7 +92,7 @@ public class SamParser {
 		int chrIndex = IndexConvertor.chrToIndex(chr);
 		
 		// Genomic Sequence
-		return new GenomicSequence(qName, chrIndex, startPosition, cigars, mdStr, qScore);
+		return new GenomicSequence(qName, chrIndex, startPosition, cigars, mdStr, meanQScore);
 		
 	}
 	

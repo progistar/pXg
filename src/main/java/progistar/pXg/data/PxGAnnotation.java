@@ -54,8 +54,18 @@ public class PxGAnnotation {
 		} else {
 			thisXBlock.mockReadCount += xBlock.mockReadCount;
 			thisXBlock.targetReadCount += xBlock.targetReadCount;
-			thisXBlock.decoyMeanQScore += xBlock.decoyMeanQScore;
-			thisXBlock.targetMeanQScore += xBlock.targetMeanQScore;
+			
+			if(Parameters.PHRED_CAL.equalsIgnoreCase(Constants.CAL_PHRED_AVG)) {
+				thisXBlock.decoyQScore += xBlock.decoyQScore;
+				thisXBlock.targetQScore += xBlock.targetQScore;
+			} else if(Parameters.PHRED_CAL.equalsIgnoreCase(Constants.CAL_PHRED_MAX)) {
+				thisXBlock.decoyQScore = Math.max(xBlock.decoyQScore, thisXBlock.decoyQScore);
+				thisXBlock.targetQScore = Math.max(xBlock.targetQScore, thisXBlock.targetQScore);
+			} else if(Parameters.PHRED_CAL.equalsIgnoreCase(Constants.CAL_PHRED_MIN)) {
+				thisXBlock.decoyQScore = Math.min(xBlock.decoyQScore, thisXBlock.decoyQScore);
+				thisXBlock.targetQScore = Math.min(xBlock.targetQScore, thisXBlock.targetQScore);
+			}
+			
 			thisXBlock.siblingXBlocks.add(xBlock); // 
 		}
 		

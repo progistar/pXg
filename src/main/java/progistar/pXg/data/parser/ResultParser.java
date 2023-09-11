@@ -98,10 +98,10 @@ public class ResultParser {
 							
 							if(isDecoy) {
 								xBlock.mockReadCount++;
-								xBlock.decoyMeanQScore += meanQScore;
+								xBlock.decoyQScore += meanQScore;
 							} else {
 								xBlock.targetReadCount++;
-								xBlock.targetMeanQScore += meanQScore;
+								xBlock.targetQScore += meanQScore;
 							}
 							
 							xBlock.sequenceID = uniqueID;

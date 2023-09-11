@@ -25,8 +25,8 @@ public class XBlock {
 	public String[] fastaIDs		=	new String[0];
 	public String fullReadSequence	=	null; // for unmapped read
 	public double bestRegionPriority 	= 	Double.MAX_VALUE;
-	public double targetMeanQScore		=	0;
-	public double decoyMeanQScore		=	0;
+	public double targetQScore		=	0;
+	public double decoyQScore		=	0;
 	
 	
 	// with the same key value block
@@ -83,6 +83,12 @@ public class XBlock {
 		}
 		
 		if(psmStatus == Constants.PSM_STATUS_DECOY) {
+			
+			double qScore = this.decoyQScore;
+			if(Parameters.PHRED_CAL.equalsIgnoreCase(Constants.CAL_PHRED_AVG)) {
+				qScore /= (double)mockReadCount;
+			}
+			
 			return new StringBuilder(peptideSequence).reverse().toString() +"\t"+genomicLocus+"\t"
 					+strand+"\t"+genomicSequence
 					+"\t"+mutations
@@ -91,8 +97,14 @@ public class XBlock {
 					+"\t"+geneNames.get("key")+"\t"+geneNames.get("count")
 					+"\t"+events.get("key")+"\t"+events.get("count")
 					+"\t"+fastaIDs.get("key")+"\t"+fastaIDs.get("count")
-					+"\t"+mockReadCount+"\t"+(this.decoyMeanQScore/((double)mockReadCount));
+					+"\t"+mockReadCount+"\t"+(qScore);
 		} else {
+			
+			double qScore = this.targetQScore;
+			if(Parameters.PHRED_CAL.equalsIgnoreCase(Constants.CAL_PHRED_AVG)) {
+				qScore /= (double)targetReadCount;
+			}
+			
 			return peptideSequence +"\t"+genomicLocus+"\t"
 					+strand+"\t"+genomicSequence
 					+"\t"+mutations
@@ -101,7 +113,7 @@ public class XBlock {
 					+"\t"+geneNames.get("key")+"\t"+geneNames.get("count")
 					+"\t"+events.get("key")+"\t"+events.get("count")
 					+"\t"+fastaIDs.get("key")+"\t"+fastaIDs.get("count")
-					+"\t"+targetReadCount+"\t"+(this.targetMeanQScore/((double)targetReadCount));
+					+"\t"+targetReadCount+"\t"+(qScore);
 		}
 	}
 	
