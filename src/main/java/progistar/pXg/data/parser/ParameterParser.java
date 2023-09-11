@@ -264,6 +264,11 @@ public class ParameterParser {
 					Double penalty = Double.parseDouble(args[i+1]);
 					Parameters.PENALTY_UNMAP= penalty;
 				}
+				// hidden parameters for revision
+				else if(option.equalsIgnoreCase(Parameters.CMD_PHRED_CAL)) {
+					Parameters.PHRED_CAL = args[i+1].toLowerCase();
+					System.out.println("!!Hidden parameter phred cal: "+Parameters.PHRED_CAL);
+				}
 
 			}
 		}catch(Exception e) {

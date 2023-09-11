@@ -133,4 +133,10 @@ public class Parameters {
 	
 	// Third-party path
 	public static String netMHCpanPath				=	"/Users/gistar/tools/netMHCpan4.1/netMHCpan-4.1/netMHCpan";
+	
+	
+	
+	// hidden parameters for revision
+	public static String CMD_PHRED_CAL					=	"--cal_phred";
+	public static String PHRED_CAL						=	Constants.CAL_PHRED_AVG;
 }

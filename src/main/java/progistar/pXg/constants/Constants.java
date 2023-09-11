@@ -115,5 +115,8 @@ public class Constants {
 	public static final String STRAND_COLUMN_NAME			=	"Strand";
 	public static final String EVENT_COLUMN_NAME			=	"Events";
 	
-	
+	// hidden parameters for revision
+	public static final String CAL_PHRED_MIN				=	"min";
+	public static final String CAL_PHRED_MAX				=	"max";
+	public static final String CAL_PHRED_AVG				=	"avg";
 }
