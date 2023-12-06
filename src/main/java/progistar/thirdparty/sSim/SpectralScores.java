@@ -222,7 +222,7 @@ public class SpectralScores {
 		for(int c=1; c<charge; c++) {
 			double[] peaks = p.getTheoreticalLadder(ProteomeConstants.Y_ION, c, false);
 			for(int i=0; i<peaks.length; i++) {
-				ArrayList<double[]> peakList = s1_.getSubPeaks(peaks[i]-0.02, peaks[i]+0.02);
+				ArrayList<double[]> peakList = s1_.getSubPeaks(peaks[i]-tolerance, peaks[i]+tolerance);
 				if(peakList.size() != 0) {
 					double[] peak = {0,0};
 					double closestMZ = 0;
@@ -238,7 +238,7 @@ public class SpectralScores {
 					experimentalPeaks.add(peak);
 				}
 				
-				peakList = s2_.getSubPeaks(peaks[i]-0.02, peaks[i]+0.02);
+				peakList = s2_.getSubPeaks(peaks[i]-tolerance, peaks[i]+tolerance);
 				if(peakList.size() != 0) {
 					double[] peak = {0,0};
 					double closestMZ = 0;
@@ -257,7 +257,7 @@ public class SpectralScores {
 			
 			peaks = p.getTheoreticalLadder(ProteomeConstants.B_ION, c, false);
 			for(int i=0; i<peaks.length; i++) {
-				ArrayList<double[]> peakList = s1_.getSubPeaks(peaks[i]-0.02, peaks[i]+0.02);
+				ArrayList<double[]> peakList = s1_.getSubPeaks(peaks[i]-tolerance, peaks[i]+tolerance);
 				if(peakList.size() != 0) {
 					double[] peak = {0,0};
 					double closestMZ = 0;
@@ -273,7 +273,7 @@ public class SpectralScores {
 					experimentalPeaks.add(peak);
 				}
 				
-				peakList = s2_.getSubPeaks(peaks[i]-0.02, peaks[i]+0.02);
+				peakList = s2_.getSubPeaks(peaks[i]-tolerance, peaks[i]+tolerance);
 				if(peakList.size() != 0) {
 					double[] peak = {0,0};
 					double closestMZ = 0;
@@ -446,60 +446,168 @@ public class SpectralScores {
 		return sca;
 	}
 	
-	public static double spectralCorrelation (ArrayList<double[]> experimentalPeaks, ArrayList<double[]> theoreticalPeaks, double tolerance) {
-		int sizeOfExp = experimentalPeaks.size();
-		int sizeOfThr = theoreticalPeaks.size();
-		double[][] expPeaks = new double[sizeOfExp][2];
-		double[][] thrPeaks = new double[sizeOfThr][2];
+	public static double spectralContrastAngleWithFull (Spectrum s1_, Spectrum s2_, double tolerance, boolean isSquareRootNorm) {
 		
-		// normalization theoretical peaks.
-		double norThr = 0;
-		for(int i=0; i<sizeOfThr; i++) {
-			thrPeaks[i][0] = theoreticalPeaks.get(i)[0];
-			thrPeaks[i][1] = Math.sqrt(theoreticalPeaks.get(i)[1]);
-			norThr += theoreticalPeaks.get(i)[1];
+		// max SI
+		double maxExp = 1;
+		double maxThr = 1;
+		int binSize = (int) (5000.0 / (2*tolerance));
+		
+		ArrayList<double[]> precursorIonS1 = new ArrayList<double[]>();
+		ArrayList<double[]> precursorIonS2 = new ArrayList<double[]>();
+		
+		precursorIonS1.addAll(s1_.getSubPeaks(s1_.getPrecursorMz()-tolerance, s1_.getPrecursorMz()+tolerance));
+		precursorIonS1.addAll(s1_.getSubPeaks(s1_.getPrecursorMz()-(ProteomeConstants.H2O/((double)s1_.getCharge()))-tolerance, s1_.getPrecursorMz()-(ProteomeConstants.H2O/((double)s1_.getCharge()))+tolerance));
+		precursorIonS1.addAll(s1_.getSubPeaks(s1_.getPrecursorMz()-(ProteomeConstants.NH3/((double)s1_.getCharge()))-tolerance, s1_.getPrecursorMz()-(ProteomeConstants.NH3/((double)s1_.getCharge()))+tolerance));
+		
+		precursorIonS2.addAll(s2_.getSubPeaks(s2_.getPrecursorMz()-tolerance, s2_.getPrecursorMz()+tolerance));
+		precursorIonS2.addAll(s2_.getSubPeaks(s2_.getPrecursorMz()-(ProteomeConstants.H2O/((double)s2_.getCharge()))-tolerance, s2_.getPrecursorMz()-(ProteomeConstants.H2O/((double)s2_.getCharge()))+tolerance));
+		precursorIonS2.addAll(s2_.getSubPeaks(s2_.getPrecursorMz()-(ProteomeConstants.NH3/((double)s2_.getCharge()))-tolerance, s2_.getPrecursorMz()-(ProteomeConstants.NH3/((double)s2_.getCharge()))+tolerance));
+		
+		
+		double[] s1 = new double[binSize];
+		for(double[] peak : s1_.peaks) {
+			int idx = (int) (peak[0] / (2*tolerance));
+			s1[idx] += peak[1];
 		}
-		norThr = Math.sqrt(norThr);
-		for(int i=0; i<sizeOfThr; i++) thrPeaks[i][1] = thrPeaks[i][1] / norThr;
-		
-		// normalization experimental peaks.
-		double norExp = 0;
-		for(int i=0; i<sizeOfExp; i++) {
-			expPeaks[i][0] = experimentalPeaks.get(i)[0];
-			expPeaks[i][1] = Math.sqrt(experimentalPeaks.get(i)[1]);
-			norExp += experimentalPeaks.get(i)[1];
+		for(double[] precursor :precursorIonS1) {
+			int idx = (int) (precursor[0] / (2*tolerance));
+			s1[idx] = 0;
 		}
-		norExp = Math.sqrt(norExp);
-		for(int i=0; i<sizeOfExp; i++) expPeaks[i][1] = expPeaks[i][1] / norExp;
 		
-		// 
-		double innerproduct = 0;
-		// inner product
-		int thrIndex = 0;
-		int expIndex = 0;
-		boolean doMatchFurther = true;
-		while(doMatchFurther) {
-			double delta = thrPeaks[thrIndex][0] - expPeaks[expIndex][0];
-			if(Math.abs(delta) <= tolerance) {
-				innerproduct += thrPeaks[thrIndex][1] * expPeaks[expIndex][1];
-				expIndex++;
-				thrIndex++;
-			}
-			else if(delta > 0) expIndex++;
-			else if(delta < 0) thrIndex++;
-			else if(delta == 0) {
-				expIndex++;
-				thrIndex++;
-			}
+		double[] s2 = new double[binSize];
+		for(double[] peak : s2_.peaks) {
+			int idx = (int) (peak[0] / (2*tolerance));
+			s2[idx] += peak[1];
+		}
+		for(double[] precursor :precursorIonS2) {
+			int idx = (int) (precursor[0] / (2*tolerance));
+			s2[idx] = 0;
+		}
+		
+		
+		double maxExpInt = 0;
+		double maxThrInt = 0;
+		
+		for(int i=0; i<binSize; i++) {
+			maxExp += s1[i] * s1[i];
+			maxExpInt = Math.max(maxExpInt, s1[i]);
 			
-			if(thrIndex >= thrPeaks.length || expIndex >= expPeaks.length) doMatchFurther = false;
+			maxThr += s2[i] * s2[i];
+			maxThrInt = Math.max(maxThrInt, s2[i]);
+		}
+		
+		double[] expPeaks = new double[binSize];
+		double[] thrPeaks = new double[binSize];
+
+
+		for(int i=0; i<binSize; i++) {
+			expPeaks[i] = s1[i] / Math.sqrt(maxExp);
+		}
+		for(int i=0; i<binSize; i++) {
+			thrPeaks[i] = s2[i] / Math.sqrt(maxThr);
+		}
+		
+		
+		
+		double innerproduct = 0;
+		for(int i=0; i<binSize; i++) {
+			innerproduct += expPeaks[i] * thrPeaks[i];
 		}
 		
 		// calculate experimental Norm.
-		DecimalFormat decimalFormat = new DecimalFormat("#.####");
+		DecimalFormat decimalFormat = new DecimalFormat("#.#####");
 		innerproduct = Double.parseDouble(decimalFormat.format(innerproduct));
 		double sca = 1 - 2 * (Math.acos(innerproduct) / Math.PI);
 		
 		return sca;
+	}
+	
+	
+	public static double spectralCorrelation (Spectrum s1_, Spectrum s2_, double tolerance) {
+
+		// max SI
+		double maxExp = 1;
+		double maxThr = 1;
+		int binSize = (int) (5000.0 / (2*tolerance));
+		
+		ArrayList<double[]> precursorIonS1 = new ArrayList<double[]>();
+		ArrayList<double[]> precursorIonS2 = new ArrayList<double[]>();
+		
+		precursorIonS1.addAll(s1_.getSubPeaks(s1_.getPrecursorMz()-tolerance, s1_.getPrecursorMz()+tolerance));
+		precursorIonS1.addAll(s1_.getSubPeaks(s1_.getPrecursorMz()-(ProteomeConstants.H2O/((double)s1_.getCharge()))-tolerance, s1_.getPrecursorMz()-(ProteomeConstants.H2O/((double)s1_.getCharge()))+tolerance));
+		precursorIonS1.addAll(s1_.getSubPeaks(s1_.getPrecursorMz()-(ProteomeConstants.NH3/((double)s1_.getCharge()))-tolerance, s1_.getPrecursorMz()-(ProteomeConstants.NH3/((double)s1_.getCharge()))+tolerance));
+		
+		precursorIonS2.addAll(s2_.getSubPeaks(s2_.getPrecursorMz()-tolerance, s2_.getPrecursorMz()+tolerance));
+		precursorIonS2.addAll(s2_.getSubPeaks(s2_.getPrecursorMz()-(ProteomeConstants.H2O/((double)s2_.getCharge()))-tolerance, s2_.getPrecursorMz()-(ProteomeConstants.H2O/((double)s2_.getCharge()))+tolerance));
+		precursorIonS2.addAll(s2_.getSubPeaks(s2_.getPrecursorMz()-(ProteomeConstants.NH3/((double)s2_.getCharge()))-tolerance, s2_.getPrecursorMz()-(ProteomeConstants.NH3/((double)s2_.getCharge()))+tolerance));
+		
+		
+		double[] s1 = new double[binSize];
+		for(double[] peak : s1_.peaks) {
+			int idx = (int) (peak[0] / (2*tolerance));
+			s1[idx] += peak[1];
+		}
+		for(double[] precursor :precursorIonS1) {
+			int idx = (int) (precursor[0] / (2*tolerance));
+			s1[idx] = 0;
+		}
+		
+		double[] s2 = new double[binSize];
+		for(double[] peak : s2_.peaks) {
+			int idx = (int) (peak[0] / (2*tolerance));
+			s2[idx] += peak[1];
+		}
+		for(double[] precursor :precursorIonS2) {
+			int idx = (int) (precursor[0] / (2*tolerance));
+			s2[idx] = 0;
+		}
+		
+		
+		for(int i=0; i<binSize; i++) {
+			maxExp += s1[i] * s1[i];
+			
+			maxThr += s2[i] * s2[i];
+		}
+		
+		double[] expPeaks = new double[binSize];
+		double[] thrPeaks = new double[binSize];
+
+		double expNumPeaks = 0;
+		double thrNumPeaks = 0;
+		double expAvg = 0;
+		double thrAvg = 0;
+		
+		for(int i=0; i<binSize; i++) {
+			expPeaks[i] = s1[i] / Math.sqrt(maxExp);
+			if(expPeaks[i] != 0) {
+				expNumPeaks++;
+				expAvg += expPeaks[i];
+			}
+		}
+		for(int i=0; i<binSize; i++) {
+			thrPeaks[i] = s2[i] / Math.sqrt(maxThr);
+			if(thrPeaks[i] != 0) {
+				thrNumPeaks++;
+				thrAvg += thrPeaks[i];
+			}
+		}
+		
+		
+		expAvg /= expNumPeaks;
+		thrAvg /= thrNumPeaks;
+		
+		double sum = 0;
+		double expSum = 0;
+		double thrSum = 0;
+		for(int i=0; i<binSize; i++) {
+			if(expPeaks[i] != 0 || thrPeaks[i] != 0) {
+				sum += (expPeaks[i] - expAvg) * (thrPeaks[i] - thrAvg);
+				expSum += Math.pow((expPeaks[i] - expAvg), 2);
+				thrSum += Math.pow((thrPeaks[i] - thrAvg), 2);
+			}
+		}
+		
+		return (sum / Math.sqrt(expSum*thrSum));
 	}
 }

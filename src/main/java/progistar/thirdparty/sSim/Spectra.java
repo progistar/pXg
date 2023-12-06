@@ -291,9 +291,7 @@ public class Spectra {
 	 * @return
 	 */
 	public Spectrum getSpectrumByScanNum (String scanNum) {
-		Spectrum spectrum = this.scanIndexer.get(scanNum);
-		if(spectrum == null) System.err.println("getSpectrumByScanNum: wrong scanNum! " + scanNum);
-		return spectrum;
+		return this.scanIndexer.get(scanNum);
 	}
 	
 	public int getFileType () {

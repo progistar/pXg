@@ -29,6 +29,17 @@ public class Spectrum {
 		return this.peptide;
 	}
 	
+	public Spectrum deepCopy() {
+		ArrayList<double[]> newPeaks = new ArrayList<double[]>();
+		Spectrum s = new Spectrum(scanNum, charge, msLevel, precursorMz, newPeaks, retentionTime, index);
+		s.peptide = this.peptide;
+		for(double[] peak : this.peaks) {
+			double[] newPeak = {peak[0], peak[1]};
+			newPeaks.add(newPeak);
+		}
+		
+		return s;
+	}
 	
 	/**
 	 * If you want to skip putting peak list, then just give null.<br>

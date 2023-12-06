@@ -96,6 +96,10 @@ public class ResultParser {
 								xBlock.peptideSequence = GenomicSequence.reverseComplementTranslation(xBlock.genomicSequence, 0);
 							}
 							
+							if(xBlock.mockReadCount != 0 || xBlock.targetReadCount != 0 || xBlock.decoyQScore != 0 || xBlock.targetQScore != 0) {
+								System.out.println("Line 100 at ResultParser.java: why they are not zero?");
+							}
+							
 							if(isDecoy) {
 								xBlock.mockReadCount++;
 								xBlock.decoyQScore += meanQScore;
