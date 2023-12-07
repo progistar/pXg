@@ -102,34 +102,32 @@ public class Master {
 					// the index for that chr is automatically assigned by auto-increment key.
 					IndexConvertor.putChrIndexer(chr);
 					int chrIndex_ = IndexConvertor.chrToIndex(chr);
-					
-					// check all chromosomes are well preocessed.
+					// check all chromosomes are well processed.
 					RunInfo.processedChromosomes.put(chr, chrIndex_);
 					
 					// store chr and start positions
 					chrIndices[readCount] = chrIndex_;
 					startPositions[readCount] = startPosition;
-	            	
 					readCount ++;
 					if(readCount == readPartitionSize) {
-						readCount = 0;
 						// the array is initialized as "false"
 						Arrays.fill(assignedArray, false);
-						
 						// assign tasks to workers
 						assignTasks(taskQueue, workers, readCount);
 						// once give the tasks, remove reads
+						RunInfo.totalProcessedReads += readCount;
+						readCount = 0;
 					}
 	            }
 	            
 	            // do last tasks
 	            if(readCount > 0) {
-	            	readCount = 0;
 	            	Arrays.fill(assignedArray, false);
-	            	
 					// assign tasks to workers
 					assignTasks(taskQueue, workers, readCount);
 					// once give the tasks, remove reads
+					RunInfo.totalProcessedReads += readCount;
+					readCount = 0;
 	            }
 	            
 	            
@@ -178,7 +176,6 @@ public class Master {
 	}
 	
 	public static void assignTasks (Vector<Task> taskQueue, Worker[] workers, int readCount) {
-		
 		Task[] tasks = getTasks(readCount);
 		for(int i=0; i<tasks.length; i++) {
 			if(tasks[i].isAssigned) {
