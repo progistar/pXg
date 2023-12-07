@@ -11,8 +11,9 @@ import htsjdk.samtools.SamReaderFactory;
 public class TestBamReader {
 
 	public static void main(String[] args) {
-        String bamFilePath = "/Users/gistar/eclipse-workspace/pXg/test/decoy_position_test/decoy_position_.sam";
+        String bamFilePath = "/Users/gistar/eclipse-workspace/pXg/test/decoy_position_test/decoy_position.sam";
 
+        String lineSeparator = System.getProperty("line.separator");
         try (SamReader samReader = SamReaderFactory.makeDefault().open(new File(bamFilePath))) {
         	
         	// get header
@@ -28,17 +29,10 @@ public class TestBamReader {
         	for (String comment : header.getComments()) {
         		System.out.println(comment);
         	}
-        	// get records
-            for (SAMRecord samRecord : samReader) {
-                // Process each SAMRecord as needed
-                System.out.print(samRecord.getSAMString());
-                break;
-            }
             
             for (SAMRecord samRecord : samReader) {
                 // Process each SAMRecord as needed
-                System.out.print(samRecord.getSAMString());
-                break;
+                System.out.println(samRecord.getSAMString().replace(lineSeparator, ""));
             }
         } catch (IOException e) {
             e.printStackTrace();
