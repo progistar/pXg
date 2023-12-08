@@ -40,7 +40,8 @@ public class Fasta {
 						fastaRecord.sequence = sequence.toString();
 					}
 					fastaRecord = new FastaRecord();
-					fastaRecord.id = line.split("\\|")[1];
+					
+					fastaRecord.id = line.split("\\s")[0].substring(1);
 					records.add(fastaRecord);
 					sequence.setLength(0);
 				} else {
