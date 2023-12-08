@@ -11,7 +11,7 @@
     - [Basic command](#basic-command)
 - [Tutorial](#tutorial)
   - [RNA-Seq alignment](#rna-seq-alignment)
-  - [SAM preparation](#sam-preparation)
+  - [SAM/BAM preparation](#sam-preparation)
   - [Toy example](#toy-example)
   - [Run pXg](#run-pxg)
   - [Run Percolator using the pXg results](#run-percolator-using-the-pxg-results)
@@ -33,7 +33,7 @@ It was developed for the reliable identification of ncMAPs from de novo peptide 
 | :---:   | :---:       | :---:     | :---:       |
 | Searh result       | A list of PSMs identified from a search engine (e.g. <a href="https://www.bioinfor.com/peaks-studio/" target="_blank">PEAKS</a>, <a href="http://pfind.org/software/pNovo/index.html" target="_blank">pNovo3</a>, <a href="https://github.com/Noble-Lab/casanovo" target="_blank">Casanovo</a>)     | TSV or CSV | Yes   |
 | Gene annotation    | It must be the same file used in the read alignment (e.g. <a href="https://www.gencodegenes.org/" target="_blank">Gencode</a>, <a href="https://ensemblgenomes.org/" target="_blank">Ensembl</a>)       | GTF        | Yes   |
-| RNA-Seq reads      | Mapped and unmapped RNA-Seq reads. The file must be sorted by coordinates | SAM        | Yes   |
+| RNA-Seq reads      | Mapped and unmapped RNA-Seq reads. The file must be sorted by coordinates | SAM/BAM        | Yes   |
 | Protein sequences  | Canonical and contaminant protein sequences (e.g. UniProt)                        | Fasta      | No    |
 
 *pXg is not applicable to the flat formatted output in pNovo3. A user must convert the flat format to CSV or TSV.<br>
@@ -55,7 +55,7 @@ It was developed for the reliable identification of ncMAPs from de novo peptide 
 |Option    | Description    | Mandatory   |
 | :---:   | :---:       | :---:     |
 | gtf_file       | GTF file path. We recommand to use the same gtf corresponding to alignment |Yes   |
-| sam_file       | SAM file path. The sam file must be sorted by coordinate |Yes   |
+| sam_file       | SAM/BAM file path. The file must be sorted by coordinate |Yes   |
 | psm_file       | PSM file path. It is expected that the psm file is derived from proteomics search by de novo or database search engine |Yes   |
 | pept_col       | Peptide column index in the psm file |Yes   |
 | scan_col       | Scan number index in the psm file    |Yes   |
@@ -91,7 +91,7 @@ It was developed for the reliable identification of ncMAPs from de novo peptide 
 ```bash
 java -Xmx30G -jar pXg.jar \
 --gtf_file [gene annotation file path] \
---sam_file [sorted SAM file path] \
+--sam_file [sorted SAM/BAM file path] \
 --psm_file [de novo result file path] \
 --fasta_file [protein sequence fasta file paht] \
 --pept_col [index of peptide column] \
