@@ -2,6 +2,8 @@ package progistar.pXg.tset;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMRecord;
@@ -18,18 +20,14 @@ public class TestBamReader {
         	
         	// get header
         	SAMFileHeader header = samReader.getFileHeader();
-        	if (header.getTextHeader() != null) {
-        		for (String line : header.getTextHeader().split("\n")) {
-        			System.out.println(line);
-        		}
-        		
-        	}
         	
-        	// get comment
-        	for (String comment : header.getComments()) {
-        		System.out.println(comment);
-        	}
-            
+        	Set<Entry<String, String>> attrs = header.getAttributes();
+        	
+        	attrs.forEach(s -> {
+        		System.out.println(s.getKey());
+        	});
+        	
+        	
             for (SAMRecord samRecord : samReader) {
                 // Process each SAMRecord as needed
                 System.out.println(samRecord.getSAMString().replace(lineSeparator, ""));

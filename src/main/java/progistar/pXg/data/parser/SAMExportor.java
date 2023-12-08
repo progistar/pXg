@@ -1,11 +1,13 @@
 package progistar.pXg.data.parser;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileReader;
+import java.io.File;
 import java.io.IOException;
 import java.util.Hashtable;
 
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
 import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
 import progistar.pXg.data.XBlock;
@@ -25,23 +27,25 @@ public class SAMExportor {
 	}
 	
 	public static void writeSAM (BufferedWriter BW) throws IOException {
-		BufferedReader BR = new BufferedReader(new FileReader(Parameters.sequenceFilePath));
-		String line = null;
 		
-		while((line = BR.readLine()) != null) {
-			if(line.startsWith("@")) {
-				BW.append(line);
-				BW.newLine();
-			} else {
-				String sequenceID = line.split("\\s")[0];
+		try (SamReader samReader = SamReaderFactory.makeDefault().open(new File(Parameters.sequenceFilePath))) {
+			
+			String lineSeparator = System.getProperty("line.separator");
+        	// get records				
+            for (SAMRecord samRecord : samReader) {
+                // Process each SAMRecord as needed
+            	String record = samRecord.getSAMString().replace(lineSeparator, "");
+            	String sequenceID = record.split("\\s")[0];
 				// for target check
 				if(sequenceIDChecker.get(sequenceID) != null) {
-					BW.append(line);
+					BW.append(record);
 					BW.newLine();
 				}
-			}
-		}
-		
-		BR.close();
+            }
+            
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 	}
 }

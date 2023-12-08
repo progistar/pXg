@@ -103,7 +103,7 @@ public class Master {
 					IndexConvertor.putChrIndexer(chr);
 					int chrIndex_ = IndexConvertor.chrToIndex(chr);
 					// check all chromosomes are well processed.
-					RunInfo.processedChromosomes.put(chr, chrIndex_);
+					RunInfo.processedChromosomes.put(chr, chrIndex_); 	
 					
 					// store chr and start positions
 					chrIndices[readCount] = chrIndex_;
