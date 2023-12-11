@@ -113,7 +113,7 @@ public class Master {
 						// the array is initialized as "false"
 						Arrays.fill(assignedArray, false);
 						// assign tasks to workers
-						assignTasks(taskQueue, workers, readCount);
+						while(!assignTasks(taskQueue, workers, readCount));
 						// once give the tasks, remove reads
 						RunInfo.totalProcessedReads += readCount;
 						readCount = 0;
@@ -124,7 +124,7 @@ public class Master {
 	            if(readCount > 0) {
 	            	Arrays.fill(assignedArray, false);
 					// assign tasks to workers
-					assignTasks(taskQueue, workers, readCount);
+					while(!assignTasks(taskQueue, workers, readCount));
 					// once give the tasks, remove reads
 					RunInfo.totalProcessedReads += readCount;
 					readCount = 0;
@@ -175,12 +175,14 @@ public class Master {
 		}
 	}
 	
-	public static void assignTasks (Vector<Task> taskQueue, Worker[] workers, int readCount) {
+	public static boolean assignTasks (Vector<Task> taskQueue, Worker[] workers, int readCount) {
 		Task[] tasks = getTasks(readCount);
+		boolean isDone = true;
 		for(int i=0; i<tasks.length; i++) {
 			if(tasks[i].isAssigned) {
 				// add task into taskQueue
 				taskQueue.add(tasks[i]);
+				isDone = false;
 			} 
 		}
 		
@@ -203,7 +205,8 @@ public class Master {
 				Thread.yield();
 			}
 		}
-			
+		
+		return isDone;
 	}
 	
 	/**
