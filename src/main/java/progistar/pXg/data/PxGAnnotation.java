@@ -97,7 +97,9 @@ public class PxGAnnotation {
 				}
 				// 22.01.24
 				// if the pBlock has fasta!
-				pBlock.isCannonical = true;
+				// 23.12.18
+				// it was deprecated.
+				// pBlock.isCannonical = true;
 			}
 		}
 		

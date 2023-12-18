@@ -87,20 +87,20 @@ public class _HighScoreDecoy {
 	
 	public static void percolatorAnalysis () throws IOException {
 		
-		String feat = "feat";
+		String feat = "protonly";
 		String type = "psm";
 		
 		boolean[] selectedSet = {
-				false, // B-LCL1
-				false, // B-LCL2
-				false, // B-LCL3
-				false, // B-LCL4
-				false, // DOHH2
-				false, // HBL1
-				false, // SUDHL4
-				false, // THP1-1
-				false, // THP1-2
-				false, // THP1-3
+				true, // B-LCL1
+				true, // B-LCL2
+				true, // B-LCL3
+				true, // B-LCL4
+				true, // DOHH2
+				true, // HBL1
+				true, // SUDHL4
+				true, // THP1-1
+				true, // THP1-2
+				true, // THP1-3
 				
 				false, // DI2T
 				false, // DI5T
@@ -120,21 +120,21 @@ public class _HighScoreDecoy {
 				false, // M004T
 				false, // M009T
 				
-				true, // DI2N
-				true, // DI5N
-				true, // IN19N
-				true, // IN26N
-				true, // IN81N
-				true, // IN403N
-				true, // IN407N
-				true, // IN506N
-				true, // IN524N
-				true, // IN525N
-				true, // IN526N
-				true, // IN529N
-				true, // IN532N
-				true, // M004N
-				true // M009N
+				false, // DI2N
+				false, // DI5N
+				false, // IN19N
+				false, // IN26N
+				false, // IN81N
+				false, // IN403N
+				false, // IN407N
+				false, // IN506N
+				false, // IN524N
+				false, // IN525N
+				false, // IN526N
+				false, // IN529N
+				false, // IN532N
+				false, // M004N
+				false // M009N
 		};
 		
 		
@@ -420,7 +420,7 @@ public class _HighScoreDecoy {
 				"M009N."+feat+".BA" // M009N
 		};
 		
-		BufferedWriter BWAll = new BufferedWriter(new FileWriter("/Users/gistar/projects/GastricCancer_NCC/percolator/_all."+feat+".BA"));
+		BufferedWriter BWAll = new BufferedWriter(new FileWriter("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut_features/_all."+feat+".BA"));
 		
 		int cnt = 0;
 		
@@ -430,9 +430,9 @@ public class _HighScoreDecoy {
 				continue;
 			}
 
-			BufferedWriter BW = new BufferedWriter(new FileWriter("/Users/gistar/projects/GastricCancer_NCC/percolator/"+outList[i]));
+			BufferedWriter BW = new BufferedWriter(new FileWriter("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut_features/"+outList[i]));
 			
-			BufferedReader BR = new BufferedReader(new FileReader("/Users/gistar/projects/GastricCancer_NCC/percolator/"+sampleListTarget[i]));
+			BufferedReader BR = new BufferedReader(new FileReader("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut_features/"+sampleListTarget[i]));
 			Hashtable<String, String> percolatorRes = new Hashtable<String, String>();
 			String line = null;
 			BR.readLine(); // skip header
@@ -447,7 +447,7 @@ public class _HighScoreDecoy {
 			System.out.println("Percolator result: "+percolatorRes.size());
 			BR.close();
 			// for decoy
-			BR = new BufferedReader(new FileReader("/Users/gistar/projects/GastricCancer_NCC/percolator/"+sampleListDecoy[i]));
+			BR = new BufferedReader(new FileReader("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut_features/"+sampleListDecoy[i]));
 			BR.readLine(); // skip header
 			while((line = BR.readLine()) != null) {
 				String[] fields = line.split("\t");
@@ -459,9 +459,9 @@ public class _HighScoreDecoy {
 			
 			System.out.println("Percolator result: "+percolatorRes.size());
 			BR.close();
-			NetMHCpanResult netMHCpanResult = NetMHCpanParser.parseNetMHCpan("/Users/gistar/projects/GastricCancer_NCC/pXg/"+BAList[i]);
+			NetMHCpanResult netMHCpanResult = NetMHCpanParser.parseNetMHCpan("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/"+BAList[i]);
 			
-			BR = new BufferedReader(new FileReader("/Users/gistar/projects/GastricCancer_NCC/percolator/"+pxgList[i]+".predfeat."+feat+".pin"));
+			BR = new BufferedReader(new FileReader("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut_features/"+pxgList[i]+".predfeat."+feat+".pin"));
 			String[] pinHeader = BR.readLine().split("\t");
 			int specIdIdx = -1;
 			int SAIdx = -1;
@@ -501,16 +501,20 @@ public class _HighScoreDecoy {
 				if(genomicId.contains("_")) {
 					genomicId = genomicId.split("_")[1];
 				}
+				//String key = fields[specIdIdx]+"_"+genomicId+"_"+fields[peptideIdx];
+				//pinFeatureMapper.put(key, fields[log2ReadIdx]+"\t"+fields[SAIdx]+"\t"+
+				//fields[bestDeltaRTIdx]+"\t"+fields[log2MeanQScoreIdx]);
+				
 				String key = fields[specIdIdx]+"_"+genomicId+"_"+fields[peptideIdx];
-				pinFeatureMapper.put(key, fields[log2ReadIdx]+"\t"+fields[SAIdx]+"\t"+
-				fields[bestDeltaRTIdx]+"\t"+fields[log2MeanQScoreIdx]);
+				pinFeatureMapper.put(key, fields[SAIdx]+"\t"+fields[bestDeltaRTIdx]);
 			}
 			
 			BR.close();
 			
 			
-			BR = new BufferedReader(new FileReader("/Users/gistar/projects/GastricCancer_NCC/pXg/"+pxgList[i]));
-			String header = BR.readLine()+"\tLog2Reads\tSA\tBestDeltaRT\tLog2MeanQScore\tmLog2BestELRank\tpercolator_score\tq-value\tpep\tEL_Rank\tBestHLAType\tSample\tIsSelectedTarget";
+			BR = new BufferedReader(new FileReader("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/"+pxgList[i]));
+			//String header = BR.readLine()+"\tLog2Reads\tSA\tBestDeltaRT\tLog2MeanQScore\tmLog2BestELRank\tpercolator_score\tq-value\tpep\tEL_Rank\tBestHLAType\tSample\tIsSelectedTarget";
+			String header = BR.readLine()+"\tSA\tBestDeltaRT\tmLog2BestELRank\tpercolator_score\tq-value\tpep\tEL_Rank\tBestHLAType\tSample\tIsSelectedTarget";
 			BW.append(header);
 			BW.newLine();
 			
@@ -519,7 +523,7 @@ public class _HighScoreDecoy {
 				BWAll.newLine();
 			}
 			
-			Hashtable<String,String> surviveMapper = parseXML("/Users/gistar/projects/GastricCancer_NCC/percolator/"+sampleListTargetXML[i]);
+			Hashtable<String,String> surviveMapper = parseXML("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut_features/"+sampleListTargetXML[i]);
 			
 			while((line = BR.readLine()) != null) {
 				String[] fields = line.split("\t");

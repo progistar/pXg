@@ -73,7 +73,7 @@ public class ParameterParser {
 			for(int i=0; i<args.length; i+=2) {
 				String option = args[i].toLowerCase();
 				
-				// -gtf (mandatory)
+				// --gtf_file (mandatory)
 				if(option.equalsIgnoreCase(Parameters.CMD_GENOMIC_ANNOTATION_PATH)) {
 					Parameters.genomicAnnotationFilePath = args[i+1];
 					if(!isExist(Parameters.genomicAnnotationFilePath)) {
@@ -81,7 +81,7 @@ public class ParameterParser {
 						return -1;
 					}
 				} 
-				// -sam (mandatory)
+				// --sam_file (mandatory)
 				else if(option.equalsIgnoreCase(Parameters.CMD_GENOMIC_SEQUENCE_PATH)) {
 					Parameters.sequenceFilePath = args[i+1];
 					if(!isExist(Parameters.sequenceFilePath)) {
@@ -89,7 +89,7 @@ public class ParameterParser {
 						return -1;
 					}
 				}
-				// -psm (mandatory)
+				// --psm_file (mandatory)
 				else if(option.equalsIgnoreCase(Parameters.CMD_PEPTIDE_ANNOTATION_PATH)) {
 					Parameters.peptideFilePath = args[i+1];
 					if(!isExist(Parameters.peptideFilePath)) {
@@ -97,11 +97,11 @@ public class ParameterParser {
 						return -1;
 					}
 				}
-				// -sep (optional)
+				// --sep (optional)
 				else if(option.equalsIgnoreCase(Parameters.SEP_TYPE)) {
 					Parameters.sepType = args[i+1];
 				}
-				// -translation (optional)
+				// --mode (optional)
 				else if(option.equalsIgnoreCase(Parameters.CMD_TRANSLATION)) {
 					String sixFT= String.valueOf(Constants.SIX_FRAME);
 					String threeFT= String.valueOf(Constants.THREE_FRAME);
@@ -112,7 +112,7 @@ public class ParameterParser {
 					
 					Parameters.translationMethod = Integer.parseInt(args[i+1]);
 				}
-				// -fasta (optional)
+				// --fasta_file (optional)
 				else if(option.equalsIgnoreCase(Parameters.CMD_PROTEIN_SEQUENCE_PATH)) {
 					Parameters.proteinFastaPath = args[i+1];
 					if(!isExist(Parameters.proteinFastaPath)) {
@@ -120,7 +120,7 @@ public class ParameterParser {
 						return -1;
 					}
 				}
-				// -out (mandatory)
+				// --output (mandatory)
 				else if(option.equalsIgnoreCase(Parameters.CMD_OUTPUT_PATH)) {
 					Parameters.outputFilePath = args[i+1] +".pXg";
 					Parameters.pinFilePath = Parameters.outputFilePath +".pin";
@@ -443,22 +443,22 @@ public class ParameterParser {
 	private static boolean isMandatoryOkay () {
 		boolean pass = true;
 		
-		// -gtf
+		// --gtf_file
 		if(Parameters.genomicAnnotationFilePath == null) {
 			System.out.println("mandatory option -gtf is missing...");
 			pass = false;
 		}
-		// -sam
+		// --sam_file
 		if(Parameters.sequenceFilePath == null) {
 			System.out.println("mandatory option -sam is missing...");
 			pass = false;
 		}
-		// -psm
+		// --psm_file
 		if(Parameters.peptideFilePath == null) {
 			System.out.println("mandatory option -psm is missing...");
 			pass = false;
 		}
-		// -out
+		// --out_file
 		if(Parameters.outputFilePath == null) {
 			System.out.println("mandatory option -out is missing...");
 			pass = false;
