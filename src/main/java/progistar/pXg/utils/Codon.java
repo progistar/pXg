@@ -3,13 +3,12 @@ package progistar.pXg.utils;
 import java.util.Arrays;
 
 import progistar.pXg.constants.Constants;
+import progistar.pXg.constants.Parameters;
 
 public class Codon {
 	private static final int nucleoIndexes = 8;
 	private static String AminoToNuclArray[][];
 	private static char NuclToAminoArray[][][];
-	private static char ReversedNuclToAminoArray[][][];
-	private static char ReversedComplementNuclToAminoArray[][][];
 	private static boolean setOkay = false;
 	private static char aminoAcids[] = {'A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y'};
 	
@@ -46,14 +45,10 @@ public class Codon {
 	public static void mapping() {
 		AminoToNuclArray = new String[26][];
 		NuclToAminoArray = new char[nucleoIndexes][nucleoIndexes][nucleoIndexes];
-		ReversedNuclToAminoArray = new char[nucleoIndexes][nucleoIndexes][nucleoIndexes];
-		ReversedComplementNuclToAminoArray = new char[nucleoIndexes][nucleoIndexes][nucleoIndexes];
 		
 		for(int ntPos = 0; ntPos<nucleoIndexes; ntPos++){
 			for(int ntPos_ = 0; ntPos_<nucleoIndexes; ntPos_++){
 				Arrays.fill(NuclToAminoArray[ntPos][ntPos_], 'X');
-				Arrays.fill(ReversedNuclToAminoArray[ntPos][ntPos_], 'X');
-				Arrays.fill(ReversedComplementNuclToAminoArray[ntPos][ntPos_], 'X');
 			}
 		}
 		
@@ -65,29 +60,7 @@ public class Codon {
 				[nucleotides[AA -'A'][ntPos].charAt(0) & 7]
 				[nucleotides[AA -'A'][ntPos].charAt(1) & 7]
 				[nucleotides[AA -'A'][ntPos].charAt(2) & 7]
-						= AA;
-				
-				ReversedNuclToAminoArray
-				[nucleotides[AA -'A'][ntPos].charAt(2) & 7]
-				[nucleotides[AA -'A'][ntPos].charAt(1) & 7]
-				[nucleotides[AA -'A'][ntPos].charAt(0) & 7]
-						= AA;
-				
-				char[] RCNts = new char[3];
-				for(int nt=0; nt<3; nt++){
-					switch(nucleotides[AA -'A'][ntPos].charAt(nt)){
-					case 'A': RCNts[2-nt] = 'T'; break;
-					case 'C': RCNts[2-nt] = 'G'; break;
-					case 'T': RCNts[2-nt] = 'A'; break;
-					case 'G': RCNts[2-nt] = 'C'; break;
-					}
-				}
-				
-				ReversedComplementNuclToAminoArray
-				[RCNts[0] & 7]
-				[RCNts[1] & 7]
-				[RCNts[2] & 7]
-						= AA;
+						= (Parameters.leucineIsIsoleucine && AA == 'I') ? 'L' : AA;
 			}
 		}
 		
@@ -101,10 +74,6 @@ public class Codon {
 		return NuclToAminoArray[nucleotides.charAt(0) & 7][nucleotides.charAt(1) & 7][nucleotides.charAt(2) & 7];
 	}
 	
-	public static String[] aminoToNucl (String amino){
-		if(!setOkay) mapping();
-		return AminoToNuclArray[amino.charAt(0)-'A'];
-	}
 	/**
 	 * Decide AA-level region annotation.<br>
 	 * Note that the worst nucleotide is a representative to AA.<br> 

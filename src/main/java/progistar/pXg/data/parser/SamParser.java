@@ -1,16 +1,9 @@
 package progistar.pXg.data.parser;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import progistar.pXg.constants.Constants;
-import progistar.pXg.constants.Parameters;
-import progistar.pXg.constants.RunInfo;
 import progistar.pXg.data.Cigar;
 import progistar.pXg.data.GenomicSequence;
 import progistar.pXg.utils.IndexConvertor;
