@@ -56,6 +56,7 @@ public class Codon {
 			AminoToNuclArray[AA - 'A'] = new String[nucleotides[AA -'A'].length];
 			for(int ntPos = 0; ntPos<nucleotides[AA -'A'].length; ntPos++){
 				AminoToNuclArray[AA - 'A'][ntPos] = nucleotides[AA -'A'][ntPos];
+				
 				NuclToAminoArray
 				[nucleotides[AA -'A'][ntPos].charAt(0) & 7]
 				[nucleotides[AA -'A'][ntPos].charAt(1) & 7]
