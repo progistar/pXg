@@ -131,6 +131,9 @@ public class Parameters {
 	// Three or Six frame translation
 	public static int translationMethod				=	Constants.SIX_FRAME;
 	
+	public static final String CMD_REMOVE_QUOTES	=	"--rm_quotes";
+	public static boolean rmQuotes					=	true;
+	
 	// Third-party path
 	public static String netMHCpanPath				=	"/Users/gistar/tools/netMHCpan4.1/netMHCpan-4.1/netMHCpan";
 	

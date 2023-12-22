@@ -49,6 +49,11 @@ public class PeptideParser {
 					if(line.startsWith(headerMarker)) continue;
 				}
 				
+				// remove quotes
+				if(Parameters.rmQuotes) {
+					line = line.replace("\"", "");
+				}
+				
 				// the first line after headers must be field line.
 				if(recordCount == -1) {
 					if(Parameters.sepType.equalsIgnoreCase("tsv")) {
