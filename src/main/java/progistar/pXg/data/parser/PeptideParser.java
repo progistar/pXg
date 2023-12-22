@@ -49,27 +49,25 @@ public class PeptideParser {
 					if(line.startsWith(headerMarker)) continue;
 				}
 				
-				// remove quotes
+				String[] record = null;
+				if(Parameters.sepType.equalsIgnoreCase("tsv")) {
+					record = line.split("\t");
+				} else if(Parameters.sepType.equalsIgnoreCase("csv")) {
+					record = line.split(",");
+				}
+				
 				if(Parameters.rmQuotes) {
-					line = line.replace("\"", "");
+					for(int i=0; i<record.length; i++) {
+						record[i] = record[i].replace("\"", "");
+					}
 				}
 				
 				// the first line after headers must be field line.
 				if(recordCount == -1) {
-					if(Parameters.sepType.equalsIgnoreCase("tsv")) {
-						PeptideAnnotation.setFields(line.split("\t"));
-					} else if(Parameters.sepType.equalsIgnoreCase("csv")) {
-						PeptideAnnotation.setFields(line.split(","));
-					}
+					PeptideAnnotation.setFields(record);
 				} 
 				// record
 				else {
-					String[] record = null;
-					if(Parameters.sepType.equalsIgnoreCase("tsv")) {
-						record = line.split("\t");
-					} else if(Parameters.sepType.equalsIgnoreCase("csv")) {
-						record = line.split(",");
-					}
 					String peptide = record[Parameters.peptideColumnIndex];
 					
 					// find peptide strip sequence
