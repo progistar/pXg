@@ -51,9 +51,7 @@ public class Master {
 		genomicAnnotation = GTFParser.parseGTF(genomicAnnotationFilePath);
 		PeptideParser.parseResult(peptideFilePath); // static..!
 		tmpOutputFilePaths = new Hashtable<String, BufferedWriter>();
-				
-		// TODO:
-		// Make available to BAM file.
+
 		SAM_FILE = new File(sequenceFilePath);
 		
 		// for SAM - GTF associated task assignment

@@ -41,7 +41,7 @@ public class Worker extends Thread {
 	}
 	
 	private String genTmpFilePath () {
-		return Parameters.sequenceFilePath + ".worker"+this.workerID+".tmp";
+		return Parameters.sequenceFilePath +"."+ Constants.UNIQUE_RUN_ID + ".worker" + this.workerID+ ".tmp";
 	}
 	
 	/**

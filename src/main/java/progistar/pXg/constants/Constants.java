@@ -10,6 +10,8 @@ public class Constants {
 	public static final String RELEASE = "(release 2023-12-18)";
 	public static final String INTRODUCE = "Seunghyuk Choi and Eunok Paek in the Department of Computer Science at Hanyang University in Seoul, South Korea. ";
 	
+	public static long	UNIQUE_RUN_ID	=	0;
+	
 	// Translation method
 	public static final int THREE_FRAME	=	3;
 	public static final int SIX_FRAME	=	6;

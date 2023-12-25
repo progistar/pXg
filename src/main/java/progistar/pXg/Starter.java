@@ -1,5 +1,6 @@
 package progistar.pXg;
 
+import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
 import progistar.pXg.constants.RunInfo;
 import progistar.pXg.data.parser.ParameterParser;
@@ -16,6 +17,11 @@ public class Starter
     {
     	
     	long startTime = System.currentTimeMillis();
+    	// set this application id by start time.
+    	// the start time is supposed to be an unique id.
+    	// this unique id is used to name the temporary files.
+    	Constants.UNIQUE_RUN_ID = startTime;
+    	
     	// fail to parse params
     	if(ParameterParser.parseParams(args) == -1) {
     		System.exit(1);
