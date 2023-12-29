@@ -61,7 +61,7 @@ public class Codon {
 				[nucleotides[AA -'A'][ntPos].charAt(0) & 7]
 				[nucleotides[AA -'A'][ntPos].charAt(1) & 7]
 				[nucleotides[AA -'A'][ntPos].charAt(2) & 7]
-						= (Parameters.leucineIsIsoleucine && AA == 'I') ? 'L' : AA;
+						= AA;
 			}
 		}
 		

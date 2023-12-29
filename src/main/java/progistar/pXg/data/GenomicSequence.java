@@ -252,11 +252,19 @@ public class GenomicSequence {
 	}
 	
 	public String getForwardStrandTranslation (int frame) {
-		return GenomicSequence.translation(getNucleotideString(), frame);
+		if(Parameters.leucineIsIsoleucine) {
+			return GenomicSequence.translation(getNucleotideString(), frame).replace("I","L");
+		} else {
+			return GenomicSequence.translation(getNucleotideString(), frame);
+		}
 	}
 	
 	public String getReverseStrandTranslation (int frame) {
-		return GenomicSequence.reverseComplementTranslation(this.getNucleotideString(), frame);
+		if(Parameters.leucineIsIsoleucine) {
+			return GenomicSequence.reverseComplementTranslation(this.getNucleotideString(), frame).replace("I", "L");
+		} else {
+			return GenomicSequence.reverseComplementTranslation(this.getNucleotideString(), frame);
+		}
 	}
 	/**
 	 * frame is a start position. This is zero-base.
