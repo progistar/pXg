@@ -198,7 +198,12 @@ public class PxGAnnotation {
 							}
 							
 							// TSV writer
-							BW.append(pBlock.toString(genomicID)).append("\t").append(pBlock.deltaScore+"\t").append(pBlock.rank+"\t").append(gLociCount+"\t").append(xBlock.toString(pBlock.psmStatus)).append("\t"+pBlock.isCannonical);
+							BW.append(pBlock.toString(genomicID)).append("\t")
+							.append(pBlock.deltaScore+"\t")
+							.append(pBlock.rank+"\t")
+							.append(gLociCount+"\t")
+							.append(xBlock.toString(pBlock.psmStatus))
+							.append("\t"+pBlock.isCannonical);
 							BW.newLine();
 							
 							// if this is unmapped, then store.
@@ -210,7 +215,9 @@ public class PxGAnnotation {
 								BWUnmapped.append(">"+xBlock.peptideSequence);
 								BWUnmapped.newLine();
 								for(XBlock thisXBlock : unmappedXBlocks) {
-									BWUnmapped.append(thisXBlock.sequenceID).append("\t").append(thisXBlock.fullReadSequence).append("\t").append(thisXBlock.genomicSequence);
+									BWUnmapped.append(thisXBlock.sequenceID).append("\t")
+									.append(thisXBlock.fullReadSequence).append("\t")
+									.append(thisXBlock.genomicSequence);
 									BWUnmapped.newLine();
 								}
  							} else {

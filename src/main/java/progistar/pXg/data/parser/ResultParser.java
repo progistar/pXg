@@ -89,7 +89,6 @@ public class ResultParser {
 								}
 							}
 							
-							
 							if(xBlock.strand == '+') {
 								xBlock.peptideSequence = GenomicSequence.translation(xBlock.genomicSequence, 0);
 							} else {

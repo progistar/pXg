@@ -28,6 +28,7 @@ public class Fasta {
 		}
 		
 		try {
+			boolean isWarning = false;
 			BufferedReader BR = new BufferedReader(new FileReader(file));
 			String line = null;
 			
@@ -40,8 +41,19 @@ public class Fasta {
 						fastaRecord.sequence = sequence.toString();
 					}
 					fastaRecord = new FastaRecord();
+					String id = line.split("\\s")[0].substring(1);;
 					
-					fastaRecord.id = line.split("\\s")[0].substring(1);
+					// check if the id contains "|"
+					if(id.contains("|")) {
+						if(!isWarning) {
+							System.out.println("Detected | character in a header of the fasta file");
+							System.out.println("The character is converted ;");
+							id = id.replace("|", ";");
+							isWarning = true;
+						}
+					}
+					
+					fastaRecord.id = id;
 					records.add(fastaRecord);
 					sequence.setLength(0);
 				} else {
