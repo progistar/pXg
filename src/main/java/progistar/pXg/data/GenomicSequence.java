@@ -179,7 +179,7 @@ public class GenomicSequence {
 			// deletion sequence
 			else if(sign == '^') {
 				Mutation mutation = new Mutation();
-				mutation.relPos = mRelPos; // to zero-based
+				mutation.relPos = mRelPos - 1; // to zero-based
 				mutation.refSeq = md.substring(1);
 				allMutations.add(mutation);
 			}

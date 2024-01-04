@@ -37,6 +37,7 @@ public class Constants {
 	public static final char MARK_NCDS			=	'N';
 	public static final char MARK_INTRON		=	'I';
 	public static final char MARK_INTERGENIC	=	'-';
+	
 	public static final char MARK_MAPPED		=	'M';
 	public static final char MARK_SOFTCLIP		=	'?';
 	public static final char MARK_UNMAPPED		=	'*';

@@ -61,7 +61,6 @@ public class Mapper {
 	    		break;
 	    		
 	    	case 'S': // soft-clip
-	    		// NOTHING TO DO
 	    		break;
     		default :
     			break;
