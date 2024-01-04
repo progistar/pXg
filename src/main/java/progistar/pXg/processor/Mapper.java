@@ -59,6 +59,10 @@ public class Mapper {
 	    	case '*': // unmapped
 	    		// NOTHING TO DO
 	    		break;
+	    		
+	    	case 'S': // soft-clip
+	    		// NOTHING TO DO
+	    		break;
     		default :
     			break;
 	    	}
@@ -104,6 +108,15 @@ public class Mapper {
 		    		
 		    		for(int i=0; i<cigar.annotations.length; i++) {
 		    			cigar.annotations[i][0] = Constants.MARK_UNMAPPED;
+		    		}
+		    		
+		    		break;
+		    		
+		    	case 'S': // soft-clip
+		    		cigar.annotations = new char[cigar.relativePositions.length][1];
+		    		
+		    		for(int i=0; i<cigar.annotations.length; i++) {
+		    			cigar.annotations[i][0] = Constants.MARK_SOFTCLIP;
 		    		}
 		    		
 		    		break;
@@ -158,6 +171,17 @@ public class Mapper {
 		    	case 'N': // skip (ex> exon junction)
 		    		break;
 		    		
+		    	case 'S': // soft-clip
+		    		cigar.annotations = new char[cigar.relativePositions.length][tBlocks.length];
+		    		
+		    		for(int i=0; i<cigar.annotations.length; i++) {
+		    			for(int j=0; j<tBlocks.length; j++) {
+		    				cigar.annotations[i][j] = Constants.MARK_SOFTCLIP;
+		    			}
+		    		}
+		    		
+		    		break;	
+		    	
 	    		default :
 	    			break;
 		    	}

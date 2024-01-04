@@ -102,7 +102,7 @@ public class GenomicSequence {
 	
 	/**
 	 * Check unmapped status by cigar string.<br>
-	 * If there is a cigar with '*', it will return 'false'.<br>
+	 * If there is a cigar with '*' or 'S', it will return 'false'.<br>
 	 * Currently, we do not generate mock reads of unmapped reads. <br>
 	 * 
 	 * @return
@@ -110,11 +110,13 @@ public class GenomicSequence {
 	public boolean isMapped () {
 		assert this.cigars.size() != 0;
 		
-		if(this.cigars.get(0).operation == '*') {
-			return false;
-		} else {
-			return true;
+		for(Cigar cigar : this.cigars) {
+			if(cigar.operation == 'S' || cigar.operation == '*') {
+				return false;
+			}
 		}
+			
+		return true;
 	}
 	
 	public String getLocus () {

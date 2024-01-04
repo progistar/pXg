@@ -112,6 +112,7 @@ public class Parameters {
 	public static double PENALTY_IGR				=	30;
 	public static double PENALTY_asRNA				=	30;
 	public static double PENALTY_UNMAP				=	100;
+	public static double PENALTY_SOFTCLIP			=	PENALTY_UNMAP;
 	
 	// Export option
 	public static boolean EXPORT_TSV				=	true;

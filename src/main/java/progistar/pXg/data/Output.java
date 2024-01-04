@@ -62,8 +62,6 @@ public class Output {
 		// this is intergenic
 		// or non-coding
 		if(tBlock == null || tBlock.transcriptCodingType == Constants.NON_CODING_TRANSCRIPT) return Constants.NO_FRAME;
-		// with soft-clip
-		if(this.startGenomicPositions.isEmpty() || this.endGenomicPositions.isEmpty()) return Constants.NO_FRAME;
 		// anti-sense
 		if(this.strand != tBlock.strand) return Constants.NO_FRAME;
 		
@@ -157,7 +155,7 @@ public class Output {
 		int relPos = 0;
 		for(Cigar cigar : gSeq.cigars) {
 			// append sequence
-			if(cigar.operation == 'M' || cigar.operation == 'I' || cigar.operation == '*') {
+			if(cigar.operation == 'M' || cigar.operation == 'I' || cigar.operation == '*' || cigar.operation == 'S') {
 				for(int i=0; i<cigar.annotations.length; i++) {
 					if(this.startPosInNGS <= relPos && relPos <= this.endPosInNGS) {
 						genomicRegion.append(cigar.annotations[i][transcriptNum]);
@@ -238,7 +236,7 @@ public class Output {
 				endGenomicPosition = -1;
 			}
 			
-			if(cigar.operation == 'M' || cigar.operation == 'I' || cigar.operation == '*') {
+			if(cigar.operation == 'M' || cigar.operation == 'I' || cigar.operation == '*' || cigar.operation == 'S') {
 				for(int i=0; i<cigar.annotations.length; i++) {
 					if(this.startPosInNGS <= relPos && relPos <= this.endPosInNGS) {
 						if(startGenomicPosition == -1) startGenomicPosition = cigar.relativePositions[i] + gSeq.startPosition;

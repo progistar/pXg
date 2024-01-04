@@ -138,7 +138,16 @@ public class SamParser {
 	    		break;
 	    		
 	    	case 'S': // soft clip
+	    		cigar.nucleotides = nucleotides.substring(ntIndex, ntIndex + cigar.markerSize);
 	    		ntIndex += cigar.markerSize;
+	    		
+	    		relativePositions = new int[cigar.markerSize];
+	    		for(int j=0; j<relativePositions.length; j++) {
+	    			relativePositions[j] = relPos; // relPos is not changed... consistent!
+	    		}
+	    		
+	    		cigar.relativePositions = relativePositions;
+	    		filterResults.add(cigar);
 	    		break;
 	    		
 	    	case 'I': // insertion

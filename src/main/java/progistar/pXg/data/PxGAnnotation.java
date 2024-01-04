@@ -344,8 +344,6 @@ public class PxGAnnotation {
 			
 			double minExpXBlockPenalty = Double.MAX_VALUE;
 			double minMockXBlockPenalty = Double.MAX_VALUE;
-			int peptLen = pSeq.length();
-			
 			while(keys.hasNext()) {
 				String key = keys.next();
 				XBlock xBlock = xBlocks.get(key);

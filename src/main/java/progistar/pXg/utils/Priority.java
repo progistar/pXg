@@ -10,7 +10,7 @@ public class Priority {
 
 	// Region Score
 	// XXX smaller is better
-	public static final Pattern REGION_REG = Pattern.compile("\\([0-9A-Za-z;\\*\\-]*\\)");
+	public static final Pattern REGION_REG = Pattern.compile("\\([0-9A-Za-z;\\*\\-\\?]*\\)");
 	
 	/**
 	 * 
@@ -66,15 +66,21 @@ public class Priority {
 			// - = intergenic
 			if(regions[0].contains(Constants.MARK_INTRON+"")) {
 				rPenalty += Parameters.PENALTY_IR;
-				if(regions[0].contains(Constants.MARK_CDS+"")) {
-					rPenalty -= Parameters.PENALTY_IR * 0.1; // if containing CDS, up-vote.
+				if(regions[0].contains(Constants.MARK_CDS+"") || 
+						regions[0].contains(Constants.MARK_3UTR+"") ||
+						regions[0].contains(Constants.MARK_5UTR+"") ||
+						regions[0].contains(Constants.MARK_NCDS+"")) {
+					rPenalty -= Parameters.PENALTY_IR * 0.1; // if containing Exon, up-vote.
 				}
 			} 
 			
 			if(regions[0].contains(Constants.MARK_INTERGENIC+"")) {
 				rPenalty += Parameters.PENALTY_IGR;;
-				if(regions[0].contains(Constants.MARK_CDS+"")) {
-					rPenalty -= Parameters.PENALTY_IGR * 0.1; // if containing CDS, up-vote.
+				if(regions[0].contains(Constants.MARK_CDS+"") || 
+						regions[0].contains(Constants.MARK_3UTR+"") ||
+						regions[0].contains(Constants.MARK_5UTR+"") ||
+						regions[0].contains(Constants.MARK_NCDS+"")) {
+					rPenalty -= Parameters.PENALTY_IGR * 0.1; // if containing Exon, up-vote.
 				}
 			}
 			
@@ -92,6 +98,18 @@ public class Priority {
 			// worst-case... unmapped
 			if(regions[0].contains(Constants.MARK_UNMAPPED+"")) {
 				rPenalty += Parameters.PENALTY_UNMAP;
+			}
+			
+			if(regions[0].contains(Constants.MARK_SOFTCLIP+"")) {
+				rPenalty += Parameters.PENALTY_SOFTCLIP;
+				if(regions[0].contains(Constants.MARK_CDS+"") || 
+						regions[0].contains(Constants.MARK_3UTR+"") ||
+						regions[0].contains(Constants.MARK_5UTR+"") ||
+						regions[0].contains(Constants.MARK_NCDS+"") ||
+						regions[0].contains(Constants.MARK_INTERGENIC+"") ||
+						regions[0].contains(Constants.MARK_INTRON+"")) {
+					rPenalty -= Parameters.PENALTY_SOFTCLIP * 0.1; // if containing genome region, up-vote.
+				}
 			}
 			
 			penalty = rPenalty + mPenalty;
@@ -135,7 +153,7 @@ public class Priority {
 				event = Constants.EVENT_INTRON;
 			} else if(regions[2].contains(Constants.OUT_OF_FRAME+"")) {
 				event = Constants.EVENT_FRAMESHIFT;
-			} else if(regions[0].contains(Constants.MARK_UNMAPPED+"")) {
+			} else if(regions[0].contains(Constants.MARK_UNMAPPED+"") || regions[0].contains(Constants.MARK_SOFTCLIP+"")) {
 				event = Constants.EVENT_UNKNOWN;
 			}
 			

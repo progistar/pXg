@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import progistar.pXg.assemble.Assembler;
 import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
 import progistar.pXg.data.GenomicSequence;
@@ -108,17 +107,14 @@ public class ResultParser {
 							}
 							
 							xBlock.sequenceID = uniqueID;
-							if(fullReads == null) {
-								// put xBlock
-								annotation.putXBlock(pSeq, xBlock);
-							} else {
+							if(xBlock.tAnnotations.contains(Constants.MARK_UNMAPPED+"")) {
 								// those xBlocks are needed to merge into contig.
 								xBlock.genomicLocus = "-";
-								annotation.putXBlock(pSeq, xBlock);
-								
 								// TODO: assembly?
-								Assembler.addXBlock(pSeq, xBlock);
+								// Assembler.addXBlock(pSeq, xBlock);
 							}
+							
+							annotation.putXBlock(pSeq, xBlock);
 						}catch(Exception e) {
 							e.printStackTrace();
 							System.out.println(line);

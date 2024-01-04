@@ -89,7 +89,7 @@ public class Codon {
 		char aaRegion = Constants.MARK_CDS;
 		
 		// worst annotation has the highest priority.
-		// soft-clip is the worst case... will be discarded!
+		// soft-clip is the worst case... 
 		if(nt1 == Constants.MARK_UNMAPPED || nt2 == Constants.MARK_UNMAPPED || nt3 == Constants.MARK_UNMAPPED) aaRegion = Constants.MARK_UNMAPPED;
 		else if(nt1 == Constants.MARK_SOFTCLIP || nt2 == Constants.MARK_SOFTCLIP || nt3 == Constants.MARK_SOFTCLIP) aaRegion = Constants.MARK_SOFTCLIP;
 		else if(nt1 == Constants.MARK_INTERGENIC || nt2 == Constants.MARK_INTERGENIC || nt3 == Constants.MARK_INTERGENIC) aaRegion = Constants.MARK_INTERGENIC;
