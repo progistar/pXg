@@ -143,8 +143,6 @@ public class Priority {
 			if(!event.equalsIgnoreCase( Constants.EVENT_UNKNOWN)) {
 				if(regions[1].equalsIgnoreCase("antisense")) {
 					event += ";"+Constants.EVENT_ANTISENSE;
-				} else {
-					event += ";"+Constants.EVENT_SENSE;
 				}
 				
 				if(regions[3].charAt(0) == Constants.MARK_AS) {

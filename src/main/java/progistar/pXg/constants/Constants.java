@@ -90,7 +90,6 @@ public class Constants {
 	
 	// Events
 	public static final String EVENT_ANTISENSE		=	"asRNA";
-	public static final String EVENT_SENSE			=	"sense";
 	public static final String EVENT_5UTR			=	"5`-UTR";
 	public static final String EVENT_3UTR			=	"3`-UTR";
 	public static final String EVENT_NONCODING		=	"ncRNA";

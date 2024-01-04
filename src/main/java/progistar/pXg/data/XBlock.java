@@ -44,7 +44,7 @@ public class XBlock {
 		// wildtype
 		if(mutations.equalsIgnoreCase("-")) {
 			// proteincoding;sense
-			if(events.equalsIgnoreCase(Constants.EVENT_PROTEINCODING+";"+Constants.EVENT_SENSE)) {
+			if(events.equalsIgnoreCase(Constants.EVENT_PROTEINCODING)) {
 				isCannonical = true;
 			}
 		}

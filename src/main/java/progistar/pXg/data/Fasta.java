@@ -47,10 +47,10 @@ public class Fasta {
 					if(id.contains("|")) {
 						if(!isWarning) {
 							System.out.println("Detected | character in a header of the fasta file");
-							System.out.println("The character is converted ;");
-							id = id.replace("|", ";");
+							System.out.println("The character is converted :");
 							isWarning = true;
 						}
+						id = id.replace("|", ":");
 					}
 					
 					fastaRecord.id = id;
