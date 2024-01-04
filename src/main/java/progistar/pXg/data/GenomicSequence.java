@@ -101,22 +101,29 @@ public class GenomicSequence {
 	}
 	
 	/**
-	 * Check unmapped status by cigar string.<br>
-	 * If there is a cigar with '*' or 'S', it will return 'false'.<br>
-	 * Currently, we do not generate mock reads of unmapped reads. <br>
+	 * Check unmapped/softclip status by cigar string.<br>
+	 * 
+	 * 
+	 * If cigars have '*', then it returns 'MARK_UNMAPPED' <br>
+	 * If cigars have 'S', then it returns 'MARK_SOFTCLIP' <br>
+	 * Otherwise, it returns 'MARK_MAPPED'
 	 * 
 	 * @return
 	 */
-	public boolean isMapped () {
+	public char getMappingStatus () {
 		assert this.cigars.size() != 0;
 		
+		if(this.cigars.get(0).operation == '*') {
+			return Constants.MARK_UNMAPPED;
+		}
+		
 		for(Cigar cigar : this.cigars) {
-			if(cigar.operation == 'S' || cigar.operation == '*') {
-				return false;
+			if(cigar.operation == 'S') {
+				return Constants.MARK_SOFTCLIP;
 			}
 		}
 			
-		return true;
+		return Constants.MARK_MAPPED;
 	}
 	
 	public String getLocus () {

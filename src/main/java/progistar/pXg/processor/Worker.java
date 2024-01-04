@@ -116,8 +116,9 @@ public class Worker extends Thread {
 			BW.newLine();
 			
 
-			// for unmapped we need more sequence information
-			if(!gSeq.isMapped()) {
+			// for unmapped/softclip we need more sequence information
+			char mappingStatus = gSeq.getMappingStatus();
+			if(mappingStatus == Constants.MARK_UNMAPPED || mappingStatus == Constants.MARK_SOFTCLIP) {
 				BW.append(Constants.OUTPUT_G_SEQUENCE).append("\t").append(gSeq.getNucleotideString());
 				BW.newLine();
 			}
@@ -174,9 +175,10 @@ public class Worker extends Thread {
 					// intergenic
 					String senseMarker = "-";
 					if(gSeq.tBlocks[i] == null) {
-						if(gSeq.isMapped()) {
+						mappingStatus = gSeq.getMappingStatus();
+						if(mappingStatus == Constants.MARK_MAPPED || mappingStatus == Constants.MARK_SOFTCLIP) {
 							BW.append("intergenic");
-						} else {
+						} else if (mappingStatus == Constants.MARK_UNMAPPED) {
 							BW.append("unmapped");
 						}
 					} else {
