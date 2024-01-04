@@ -58,6 +58,7 @@ public class ParameterParser {
 				System.out.println("  --penalty_IR          : Penalty for intron region. Default is 30.");
 				System.out.println("  --penalty_IGR         : Penalty for intergenic region. Default is 30.");
 				System.out.println("  --penalty_asRNA       : Penalty for antisense RNA. Default is 30.");
+				System.out.println("  --penalty_softclip    : Penalty for softclip reads. Default is 50.");
 				System.out.println("  --penalty_unknown     : Penalty for unmapped reads. Default is 100.");
 				System.out.println("  --gtf_partition_size  : The size of treating genomic region at once. Default is 10000000");
 				System.out.println("  --sam_partition_size  : The size of treating number of reads at once. Default is 1000000");
@@ -264,6 +265,11 @@ public class ParameterParser {
 					Double penalty = Double.parseDouble(args[i+1]);
 					Parameters.PENALTY_UNMAP= penalty;
 				}
+				// -punmap (optional)
+				else if(option.equalsIgnoreCase(Parameters.CMD_PENALTY_SOFTCLIP)) {
+					Double penalty = Double.parseDouble(args[i+1]);
+					Parameters.PENALTY_SOFTCLIP= penalty;
+				}
 				// hidden parameters for revision
 				else if(option.equalsIgnoreCase(Parameters.CMD_PHRED_CAL)) {
 					Parameters.PHRED_CAL = args[i+1].toLowerCase();
@@ -370,6 +376,7 @@ public class ParameterParser {
 		System.out.println(" penalty_IR: "+Parameters.PENALTY_IR);
 		System.out.println(" penalty_IGR: "+Parameters.PENALTY_IGR);
 		System.out.println(" penalty_asRNA: "+Parameters.PENALTY_asRNA);
+		System.out.println(" penalty_softclip: "+Parameters.PENALTY_SOFTCLIP);
 		System.out.println(" penalty_unknown: "+Parameters.PENALTY_UNMAP);
 		System.out.println(" THREADS: "+Parameters.nThreads);
 		

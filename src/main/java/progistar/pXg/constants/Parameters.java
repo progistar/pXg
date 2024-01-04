@@ -100,6 +100,7 @@ public class Parameters {
 	public static final String CMD_PENALTY_IR		=	"--penalty_IR".toLowerCase();
 	public static final String CMD_PENALTY_IGR		=	"--penalty_IGR".toLowerCase();
 	public static final String CMD_PENALTY_asRNA	=	"--penalty_asRNA".toLowerCase();
+	public static final String CMD_PENALTY_SOFTCLIP	=	"--penalty_softclip".toLowerCase();
 	public static final String CMD_PENALTY_UNMAP	=	"--penalty_unknown".toLowerCase();
 	
 	public static double PENALTY_MUTATION			=	1;
