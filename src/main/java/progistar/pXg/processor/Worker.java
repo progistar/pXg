@@ -174,8 +174,8 @@ public class Worker extends Thread {
 					if(i!=0) BW.append("|");
 					// intergenic
 					String senseMarker = "-";
+					mappingStatus = gSeq.getMappingStatus();
 					if(gSeq.tBlocks[i] == null) {
-						mappingStatus = gSeq.getMappingStatus();
 						if(mappingStatus == Constants.MARK_MAPPED || mappingStatus == Constants.MARK_SOFTCLIP) {
 							BW.append("intergenic");
 						} else if (mappingStatus == Constants.MARK_UNMAPPED) {
@@ -190,7 +190,10 @@ public class Worker extends Thread {
 							senseMarker = "antisense";
 						}
 					}
-					char frame = output.getFrame(i);
+					
+					//if the match contains softclip, then the frame information is useless.
+					// for softclip, a user must manually resolve the genomic origin of reliable identifications.
+					char frame = mappingStatus == Constants.MARK_SOFTCLIP ? Constants.NO_FRAME : output.getFrame(i);
 					char as = output.getAS(i); // alternative splicing mark
 					BW.append("(").append(output.getAARegionAnnotation(i)).append(";").append(senseMarker).append(";").append(frame).append(";").append(as).append(")");
 				}

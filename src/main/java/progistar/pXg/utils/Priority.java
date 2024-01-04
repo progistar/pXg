@@ -86,7 +86,7 @@ public class Priority {
 			
 			// Outofframe
 			
-			if(regions[2].charAt(0) != Constants.IN_FRAME) {
+			if(regions[2].charAt(0) == Constants.OUT_OF_FRAME) {
 				rPenalty += Parameters.PENALTY_FS;
 			}
 			
