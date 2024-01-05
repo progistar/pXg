@@ -103,11 +103,11 @@ public class Parameters {
 	public static final String CMD_PENALTY_SOFTCLIP	=	"--penalty_softclip".toLowerCase();
 	public static final String CMD_PENALTY_UNMAP	=	"--penalty_unknown".toLowerCase();
 	
-	public static double PENALTY_MUTATION			=	1;
+	public static double PENALTY_MUTATION			=	0;
 	public static double PENALTY_AS					=	10;
 	public static double PENALTY_5UTR				=	20;
 	public static double PENALTY_3UTR				=	20;
-	public static double PENALTY_FS					=	20;
+	public static double PENALTY_FS					=	0;
 	public static double PENALTY_ncRNA				=	20;
 	public static double PENALTY_IR					=	30;
 	public static double PENALTY_IGR				=	30;

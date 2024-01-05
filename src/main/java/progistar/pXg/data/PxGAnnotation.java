@@ -141,8 +141,10 @@ public class PxGAnnotation {
 			BW.append("InferredPeptide").append("\t");
 			BW.append("GenomicLoci").append("\t");
 			BW.append("Strand").append("\t");
-			BW.append("Nucleotide").append("\t");
+			BW.append("ObservedNucleotide").append("\t");
+			BW.append("ReferenceNucleotide").append("\t");
 			BW.append("Mutations").append("\t");
+			BW.append("MutationStatus").append("\t");
 			BW.append("TranscriptIDs").append("\t");
 			BW.append("TranscriptIDCount").append("\t");
 			BW.append("GeneIDs").append("\t");

@@ -67,6 +67,14 @@ public class Constants {
 	public static final byte INS			=	1;
 	public static final byte DEL			=	2;
 	
+	// Mutation status
+	public static final String MUTATION_MISSENSE		=	"missense";
+	public static final String MUTATION_SILENT	=	"silent";
+	public static final String MUTATION_STOPLOSS		=	"stoploss";
+	public static final String MUTATION_INDELS			=	"indels";
+	public static final String MUTATION_STOPGAIN		=	"nonsense"; // currently, it is not supported.
+	
+	
 	// RNA-Seq parameter
 	public static final byte FORWARD_STRAND_READS	=	0;
 	public static final byte REVERSE_STRAND_READS	=	1;
@@ -115,7 +123,7 @@ public class Constants {
 	
 	/** pXg TSV Parser Constants **/
 	public static final String INFERRED_PEPTIDE_COLUMN_NAME	=	"InferredPeptide";
-	public static final String NUCLEOTIDE_COLUMN_NAME		=	"Nucleotide";
+	public static final String NUCLEOTIDE_COLUMN_NAME		=	"ObservedNucleotide";
 	public static final String STRAND_COLUMN_NAME			=	"Strand";
 	public static final String EVENT_COLUMN_NAME			=	"Events";
 	

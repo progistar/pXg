@@ -20,6 +20,8 @@ public class XBlock {
 	public String genomicLocus		=	null;
 	public String mutations 		=	null;
 	public String genomicSequence	=	null;
+	public String referenceSequence	=	null;
+	public String mutationStatus	=	null;
 	public String peptideSequence	=	null;
 	public String tAnnotations		=	null; // transcript and additional annotations
 	public String[] fastaIDs		=	new String[0];
@@ -91,7 +93,9 @@ public class XBlock {
 			
 			return new StringBuilder(peptideSequence).reverse().toString() +"\t"+genomicLocus+"\t"
 					+strand+"\t"+genomicSequence
+					+"\t"+referenceSequence
 					+"\t"+mutations
+					+"\t"+mutationStatus
 					+"\t"+tAnnotations+"\t"+transCount
 					+"\t"+geneIDs.get("key")+"\t"+geneIDs.get("count")
 					+"\t"+geneNames.get("key")+"\t"+geneNames.get("count")
@@ -107,7 +111,9 @@ public class XBlock {
 			
 			return peptideSequence +"\t"+genomicLocus+"\t"
 					+strand+"\t"+genomicSequence
+					+"\t"+referenceSequence
 					+"\t"+mutations
+					+"\t"+mutationStatus
 					+"\t"+tAnnotations+"\t"+transCount
 					+"\t"+geneIDs.get("key")+"\t"+geneIDs.get("count")
 					+"\t"+geneNames.get("key")+"\t"+geneNames.get("count")
@@ -131,6 +137,8 @@ public class XBlock {
 		
 		return "-\t-\t"
 				+ "-\t-\t"
+				+ "-\t"
+				+ "-\t"
 				+ "-\t-\t0\t"
 				+ "-\t0\t"
 				+ "-\t0\t"

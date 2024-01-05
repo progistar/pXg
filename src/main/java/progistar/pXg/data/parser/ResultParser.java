@@ -57,8 +57,10 @@ public class ResultParser {
 							xBlock.genomicLocus = field[2];
 							xBlock.strand = field[3].charAt(0);
 							xBlock.genomicSequence = field[4];
-							xBlock.mutations = field[5];
-							xBlock.tAnnotations = field[6];
+							xBlock.referenceSequence = field[5];
+							xBlock.mutations = field[6];
+							xBlock.mutationStatus = field[7];
+							xBlock.tAnnotations = field[8];
 							xBlock.fullReadSequence = fullReads;
 							// If unmapped reads, merging xBlocks and making a single contig xBlock.
 							
@@ -69,7 +71,7 @@ public class ResultParser {
 							 */
 							if(Parameters.translationMethod == Constants.THREE_FRAME) {
 								StringBuilder transcriptsWithOutBANlist = new StringBuilder();
-								String[] transcripts = field[6].split("\\|");
+								String[] transcripts = xBlock.tAnnotations.split("\\|");
 								for(String transcript : transcripts) {
 									if(!transcript.contains(";antisense;")) {
 										if(transcriptsWithOutBANlist.length() != 0) {

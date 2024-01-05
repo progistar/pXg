@@ -173,14 +173,16 @@ public class GenomicSequence {
 					Mutation mutation = new Mutation();
 					mutation.relPos = mRelPos - 1; // to zero-based
 					mutation.refSeq = md.charAt(i)+"";
+					mutation.type = Constants.SNP;
 					allMutations.add(mutation);
 				}
 			} 
 			// deletion sequence
 			else if(sign == '^') {
 				Mutation mutation = new Mutation();
-				mutation.relPos = mRelPos - 1; // to zero-based
+				mutation.relPos = mRelPos; // it means that the next position of the current position as a zero-based
 				mutation.refSeq = md.substring(1);
+				mutation.type = Constants.DEL;
 				allMutations.add(mutation);
 			}
 		}
@@ -193,13 +195,11 @@ public class GenomicSequence {
 					if(start <= relPos && relPos <= end) {
 						
 						for(int j=0; j<allMutations.size(); j++) {
-							if(allMutations.get(j).relPos == mRelPos) {
+							if(allMutations.get(j).relPos == mRelPos && allMutations.get(j).type == Constants.SNP) {
 								allMutations.get(j).altSeq = cigar.nucleotides.charAt(i) +"";
 								allMutations.get(j).chrIndex = this.chrIndex;
 								allMutations.get(j).genomicPosition = this.startPosition + cigar.relativePositions[i];
-								allMutations.get(j).type = Constants.SNP;
 								inMutations.add(allMutations.get(j));
-								
 								allMutations.remove(j);
 							}
 						}
@@ -216,8 +216,9 @@ public class GenomicSequence {
 							Mutation mutation = new Mutation();
 							mutation.altSeq = cigar.nucleotides;
 							mutation.chrIndex = this.chrIndex;
+							mutation.relPos = relPos;
 							// the relative position of insertion is shifted by + 1 when parsing Cigar.
-							// this is tiny issue, so just shift by -1.
+							// this is a tiny issue, so just shift by -1.
 							mutation.genomicPosition = this.startPosition + cigar.relativePositions[0] -1;
 							mutation.type = Constants.INS;
 							inMutations.add(mutation);
@@ -228,13 +229,11 @@ public class GenomicSequence {
 				}
 			} else if(cigar.operation == 'D') {
 				for(int i=0; i<cigar.relativePositions.length; i++) {
-					if(start <= relPos && relPos <= end) {
+					if(start < relPos && relPos <= end) {
 						for(int j=0; j<allMutations.size(); j++) {
-							if(allMutations.get(j).relPos == mRelPos) {
+							if(allMutations.get(j).relPos == mRelPos && allMutations.get(j).type == Constants.DEL) {
 								allMutations.get(j).chrIndex = this.chrIndex;
 								allMutations.get(j).genomicPosition = this.startPosition + cigar.relativePositions[0];
-								allMutations.get(j).type = Constants.DEL;
-								
 								inMutations.add(allMutations.get(j));
 								allMutations.remove(j);
 							}

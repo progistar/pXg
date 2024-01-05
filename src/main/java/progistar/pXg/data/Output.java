@@ -41,9 +41,112 @@ public class Output {
 		return PeptideAnnotation.indexedPeptide.get(this.peptideIndex);
 	}
 	
+	public String getMutationStatus () {
+		String mutationStatus = "-";
+		ArrayList<Mutation> mutations = this.getMutations();
+		
+		if(mutations.size() != 0) {
+
+			// '-' indicates insertion.
+			// reference sequence is "lower case".
+			// to translate them, they are converted properly.
+			String referenceSequence = this.getMatchedRefNucleotide().replace("-", "").toUpperCase();
+			String observedSequence = this.getMatchedNucleotide();
+			
+			String refPeptide = null;
+			String obsPeptide = null;
+			
+			if(this.strand) {
+				refPeptide = GenomicSequence.translation(referenceSequence, 0);
+				obsPeptide = GenomicSequence.translation(observedSequence, 0);
+			} else {
+				refPeptide = GenomicSequence.reverseComplementTranslation(referenceSequence, 0);
+				obsPeptide = GenomicSequence.reverseComplementTranslation(observedSequence, 0);
+			}
+			
+			if(refPeptide.equalsIgnoreCase(obsPeptide)) {
+				mutationStatus = Constants.MUTATION_SILENT;
+			} else {
+				mutationStatus = Constants.MUTATION_MISSENSE;
+			}
+			
+			// stop mark
+			if(obsPeptide.contains("X")) {
+				mutationStatus += "|"+Constants.MUTATION_STOPLOSS;
+			}// we cannot determine stop gain. because if it is, then the peptide cannot be detected from MS/MS.
+			
+			boolean isINDEL = false;
+			for(Mutation mutation : mutations) {
+				if(mutation.type == Constants.INS || mutation.type == Constants.DEL) {
+					isINDEL = true;
+				}
+			}
+			
+			if(isINDEL) {
+				mutationStatus += "|"+Constants.MUTATION_INDELS;
+			}
+			
+		}
+		
+		
+		return mutationStatus;
+	}
+	
 	public String getMatchedNucleotide () {
 		String nucleotide = this.gSeq.getNucleotideString();
 		return nucleotide.substring(this.startPosInNGS, this.endPosInNGS+1);
+	}
+	
+	// retrieved reference sequences
+	public String getMatchedRefNucleotide () {
+		StringBuilder matchedNucleotide = new StringBuilder(this.getMatchedNucleotide());
+		StringBuilder refNucleotide = new StringBuilder();
+		ArrayList<Mutation> mutations = this.getMutations();
+		
+		int relPos = 0;
+		for(int i=0; i<matchedNucleotide.length(); i++) {
+			
+			Mutation insOrDelMutation = null;
+			for(Mutation mutation : mutations) {
+				int mPos = mutation.relPos - this.startPosInNGS;
+				
+				if(mPos == relPos) {
+					if(mutation.type == Constants.SNP) {
+						matchedNucleotide.setCharAt(i, mutation.refSeq.toLowerCase().charAt(0));
+					} else {
+						insOrDelMutation = mutation;
+					}
+				}
+			}
+			
+			if(insOrDelMutation == null) {
+				refNucleotide.append(matchedNucleotide.charAt(i));
+			} else {
+				if(insOrDelMutation.type == Constants.INS) {
+					int insSize = insOrDelMutation.altSeq.length();
+					i += insSize - 1;
+					for(int j=0; j<insSize; j++) {
+						refNucleotide.append("-");
+					}
+				} else if(insOrDelMutation.type == Constants.DEL) {
+					refNucleotide.append(insOrDelMutation.refSeq.toLowerCase());
+					refNucleotide.append(matchedNucleotide.charAt(i));
+				}
+			}
+			
+			
+			relPos++;
+		}
+		
+		if(mutations.size() != 0) {
+			System.out.println(matchedNucleotide);
+			System.out.println(refNucleotide.toString());
+			for(Mutation mutation : mutations) {
+				System.out.println(mutation.toString());
+			}
+		}
+		
+		return refNucleotide.toString();
 	}
 	
 	public ArrayList<Mutation> getMutations () {
@@ -66,14 +169,11 @@ public class Output {
 		if(this.strand != tBlock.strand) return Constants.NO_FRAME;
 		
 		int size = this.startGenomicPositions.size();
-		
-		// note that
-		// genomic size cannot be inferred from peptide length in case of INDELs.
+
 		int genomicSize = 0;
 		for(int i=0; i<size; i++) {
 			int startPos = this.startGenomicPositions.get(i);
 			int endPos = this.endGenomicPositions.get(i);
-			
 			genomicSize += endPos - startPos + 1;
 		}
 		byte[] frames = new byte[genomicSize];
@@ -100,6 +200,12 @@ public class Output {
 				targetFrame++;
 				if(targetFrame > Constants.FRAME_2) targetFrame = Constants.FRAME_0;
 			}
+		}
+		
+		// starting from FRAME_0 and ending with FRAME2+1 => FRAME_0.
+		// INDELs can ruin this FRAME rule.
+		if(targetFrame != Constants.FRAME_0) {
+			return Constants.OUT_OF_FRAME;
 		}
 		
 		return Constants.IN_FRAME;

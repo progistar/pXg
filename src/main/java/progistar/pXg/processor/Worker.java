@@ -157,6 +157,8 @@ public class Worker extends Thread {
 				BW.append("\t");
 				BW.append(output.getMatchedNucleotide());
 				BW.append("\t");
+				BW.append(output.getMatchedRefNucleotide());
+				BW.append("\t");
 				
 				// mutation check
 				ArrayList<Mutation> mutations = output.getMutations();
@@ -168,6 +170,10 @@ public class Worker extends Thread {
 						BW.append(mutations.get(i).toString());
 					}
 				}
+				BW.append("\t");
+				
+				// mutation status
+				BW.append(output.getMutationStatus());
 				BW.append("\t");
 				
 				for(int i=0; i<gSeq.matchedTxds; i++) {
