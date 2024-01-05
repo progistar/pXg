@@ -138,14 +138,6 @@ public class Output {
 			relPos++;
 		}
 		
-		if(mutations.size() != 0) {
-			System.out.println(matchedNucleotide);
-			System.out.println(refNucleotide.toString());
-			for(Mutation mutation : mutations) {
-				System.out.println(mutation.toString());
-			}
-		}
-		
 		return refNucleotide.toString();
 	}
 	
