@@ -240,6 +240,8 @@ public class GenomicSequence {
 						}
 					}
 				}
+			} else if(cigar.operation == 'S') {
+				relPos++;
 			}
 		}
 		
