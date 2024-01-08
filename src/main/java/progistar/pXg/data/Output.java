@@ -103,14 +103,14 @@ public class Output {
 		StringBuilder refNucleotide = new StringBuilder();
 		ArrayList<Mutation> mutations = this.getMutations();
 		
-		int relPos = 0;
+		
 		for(int i=0; i<matchedNucleotide.length(); i++) {
 			
 			Mutation insOrDelMutation = null;
 			for(Mutation mutation : mutations) {
 				int mPos = mutation.relPos - this.startPosInNGS;
 				
-				if(mPos == relPos) {
+				if(mPos == i) {
 					if(mutation.type == Constants.SNP) {
 						matchedNucleotide.setCharAt(i, mutation.refSeq.toLowerCase().charAt(0));
 					} else {
@@ -133,9 +133,6 @@ public class Output {
 					refNucleotide.append(matchedNucleotide.charAt(i));
 				}
 			}
-			
-			
-			relPos++;
 		}
 		
 		return refNucleotide.toString();

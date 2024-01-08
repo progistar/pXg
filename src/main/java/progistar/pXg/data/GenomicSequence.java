@@ -196,6 +196,7 @@ public class GenomicSequence {
 						
 						for(int j=0; j<allMutations.size(); j++) {
 							if(allMutations.get(j).relPos == mRelPos && allMutations.get(j).type == Constants.SNP) {
+								allMutations.get(j).relPos = relPos; // because of softclip
 								allMutations.get(j).altSeq = cigar.nucleotides.charAt(i) +"";
 								allMutations.get(j).chrIndex = this.chrIndex;
 								allMutations.get(j).genomicPosition = this.startPosition + cigar.relativePositions[i];
@@ -232,6 +233,7 @@ public class GenomicSequence {
 					if(start < relPos && relPos <= end) {
 						for(int j=0; j<allMutations.size(); j++) {
 							if(allMutations.get(j).relPos == mRelPos && allMutations.get(j).type == Constants.DEL) {
+								allMutations.get(j).relPos = relPos; // because of softclip
 								allMutations.get(j).chrIndex = this.chrIndex;
 								allMutations.get(j).genomicPosition = this.startPosition + cigar.relativePositions[0];
 								inMutations.add(allMutations.get(j));
@@ -241,7 +243,7 @@ public class GenomicSequence {
 					}
 				}
 			} else if(cigar.operation == 'S') {
-				relPos++;
+				relPos += cigar.markerSize;
 			}
 		}
 		
