@@ -171,7 +171,6 @@ public class Worker extends Thread {
 					}
 				}
 				BW.append("\t");
-				
 				// mutation status
 				BW.append(output.getMutationStatus());
 				BW.append("\t");
@@ -181,6 +180,7 @@ public class Worker extends Thread {
 					// intergenic
 					String senseMarker = "-";
 					mappingStatus = gSeq.getMappingStatus();
+					
 					if(gSeq.tBlocks[i] == null) {
 						if(mappingStatus == Constants.MARK_MAPPED || mappingStatus == Constants.MARK_SOFTCLIP) {
 							BW.append("intergenic");
@@ -197,9 +197,10 @@ public class Worker extends Thread {
 						}
 					}
 					
-					//if the match contains softclip, then the frame information is useless.
+					// if the match contains softclip, then the frame information is useless.
 					// for softclip, a user must manually resolve the genomic origin of reliable identifications.
-					char frame = mappingStatus == Constants.MARK_SOFTCLIP ? Constants.NO_FRAME : output.getFrame(i);
+					// char frame = mappingStatus == Constants.MARK_SOFTCLIP ? Constants.NO_FRAME : output.getFrame(i);
+					char frame = output.getFrame(i);
 					char as = output.getAS(i); // alternative splicing mark
 					BW.append("(").append(output.getAARegionAnnotation(i)).append(";").append(senseMarker).append(";").append(frame).append(";").append(as).append(")");
 				}

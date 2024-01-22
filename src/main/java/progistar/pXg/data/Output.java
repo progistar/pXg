@@ -153,7 +153,9 @@ public class Output {
 		TBlock tBlock = gSeq.tBlocks[transcriptNum];
 		// this is intergenic
 		// or non-coding
-		if(tBlock == null || tBlock.transcriptCodingType == Constants.NON_CODING_TRANSCRIPT) return Constants.NO_FRAME;
+		if(tBlock == null || tBlock.transcriptCodingType == Constants.NON_CODING_TRANSCRIPT) {
+			return Constants.NO_FRAME;
+		}
 		// anti-sense
 		if(this.strand != tBlock.strand) return Constants.NO_FRAME;
 		
@@ -177,7 +179,9 @@ public class Output {
 				frames[fIndex++] = frame;
 				
 				// If FRAME_X, it means no meaningful information about frame.
-				if(frame == Constants.FRAME_X) return Constants.NO_FRAME;
+				if(frame == Constants.FRAME_X) {
+					return Constants.NO_FRAME;
+				}
 			}
 		}
 		
@@ -216,7 +220,9 @@ public class Output {
 		if(tBlock == null) return Constants.MARK_CA;
 		// with soft-clip
 		// actually, soft-clip is not allowed.
-		if(this.startGenomicPositions.isEmpty() || this.endGenomicPositions.isEmpty()) return Constants.MARK_CA;
+		if(this.startGenomicPositions.isEmpty() || this.endGenomicPositions.isEmpty()) {
+			return Constants.MARK_CA;
+		}
 		
 		// note that
 		// genomic size cannot be inferred from peptide length in case of INDELs.

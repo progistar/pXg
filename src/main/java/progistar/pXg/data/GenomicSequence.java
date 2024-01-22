@@ -1,7 +1,6 @@
 package progistar.pXg.data;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -122,7 +121,7 @@ public class GenomicSequence {
 				return Constants.MARK_SOFTCLIP;
 			}
 		}
-			
+		
 		return Constants.MARK_MAPPED;
 	}
 	
@@ -152,12 +151,13 @@ public class GenomicSequence {
 		// decoy... has no md string.
 		// OR there is no available MD tag: because of alignment option.
 		// In the case of STAR2, add --outSAMattributes MD
-		if(mdString == null) return inMutations;
+		boolean isMDtag = mdString == null ? false : true;
+		if(!isMDtag) return inMutations;
 		
 		// MD parsing
 		Matcher mdMatcher = EACH_MD_REGEX.matcher(mdString);
-		
 		int mRelPos = 0;
+		
 		while(mdMatcher.find()) {
 			String md = mdMatcher.group();
 			char sign = md.charAt(0);
