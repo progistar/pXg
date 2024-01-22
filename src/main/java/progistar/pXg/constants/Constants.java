@@ -6,8 +6,8 @@ public class Constants {
 	//        plus, basically, this version number intends to upgrade behaviors of tool.
 	// minor: critical bug fix, change in results something like that.
 	// patch: tiny bug fix, typo, and change code styles something like that.
-	public static final String VERSION = "pXg v2.1.1";
-	public static final String RELEASE = "(release 2024-01-08)";
+	public static final String VERSION = "pXg v2.1.2";
+	public static final String RELEASE = "(release 2024-01-22)";
 	public static final String INTRODUCE = "Seunghyuk Choi and Eunok Paek in the Department of Computer Science at Hanyang University in Seoul, South Korea. ";
 	
 	public static long	UNIQUE_RUN_ID	=	0;
