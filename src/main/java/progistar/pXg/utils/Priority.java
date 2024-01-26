@@ -152,13 +152,9 @@ public class Priority {
 				event = Constants.EVENT_INTRON;
 			} else if(regions[2].contains(Constants.OUT_OF_FRAME+"")) {
 				event = Constants.EVENT_FRAMESHIFT;
-			} else if(regions[0].contains(Constants.MARK_UNMAPPED+"")) {
+			} else if(regions[0].contains(Constants.MARK_UNMAPPED+"") || regions[0].contains(Constants.MARK_SOFTCLIP+"")) {
 				event = Constants.EVENT_UNKNOWN;
 			} 
-			// it means that there is no available genome information
-			else if(regions[0].contains(Constants.MARK_SOFTCLIP+"")) {
-				event = Constants.EVENT_UNKNOWN;
-			}
 			
 			// we cannot decide sense/antisense and structural variations against unmapped reads
 			if(!event.equalsIgnoreCase( Constants.EVENT_UNKNOWN)) {
@@ -168,10 +164,6 @@ public class Priority {
 				
 				if(regions[3].charAt(0) == Constants.MARK_AS) {
 					event += ";"+Constants.EVENT_AS;
-				}
-				
-				if(regions[0].contains(Constants.MARK_SOFTCLIP+"")) {
-					event += ";"+Constants.EVENT_SOFTCLIP;
 				}
 			}
 		}
