@@ -97,6 +97,36 @@ public class Output {
 		return nucleotide.substring(this.startPosInNGS, this.endPosInNGS+1);
 	}
 	
+	/**
+	 * Jan. 26, 2024
+	 * Get left flank nucleotide
+	 * 
+	 * @return
+	 */
+	public String getLeftFlankNucleotide () {
+		String nucleotide = this.gSeq.getNucleotideString();
+		int startIdx = this.startPosInNGS - 9;
+		if(startIdx < 0) {
+			startIdx = 0;
+		}
+		return nucleotide.substring(startIdx, this.startPosInNGS);
+	}
+	
+	/**
+	 * Jan. 26, 2024
+	 * Get left flank nucleotide
+	 * 
+	 * @return
+	 */
+	public String getRightFlankNucleotide () {
+		String nucleotide = this.gSeq.getNucleotideString();
+		int endIdx = this.endPosInNGS+10;
+		if(endIdx > nucleotide.length()) {
+			endIdx = nucleotide.length();
+		}
+		return nucleotide.substring(this.endPosInNGS+1, endIdx);
+	}
+	
 	// retrieved reference sequences
 	public String getMatchedRefNucleotide () {
 		StringBuilder matchedNucleotide = new StringBuilder(this.getMatchedNucleotide());
