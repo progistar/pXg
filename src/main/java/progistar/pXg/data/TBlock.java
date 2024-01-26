@@ -307,12 +307,16 @@ public class TBlock implements Comparable<TBlock> {
 	public double getTranscriptExonLength () {
 		double length = 0;
 		for(ABlock aBlock : aBlocks) {
+			if(aBlock.feature == Constants.INTRON || aBlock.feature == Constants.INTERGENIC) {
+				continue;
+			}
 			length += aBlock.getLength();
 		}
 		return length;
 	}
 	
 	/**
+	 * @deprecated
 	 * Jan. 26, 2024
 	 * This method was introduced to estimate a relative position of a peptide.
 	 * 
@@ -327,6 +331,7 @@ public class TBlock implements Comparable<TBlock> {
 		}
 		return length;
 	}
+	
 
 	public int compareTo(TBlock o) {
 		if(this.start < o.start) {
