@@ -175,6 +175,9 @@ public class Worker extends Thread {
 				BW.append(output.getMutationStatus());
 				BW.append("\t");
 				
+				int maxLenTxd = -1;
+				double maxLen = -1;
+				
 				for(int i=0; i<gSeq.matchedTxds; i++) {
 					if(i!=0) BW.append("|");
 					// intergenic
@@ -195,6 +198,11 @@ public class Worker extends Thread {
 						} else {
 							senseMarker = "antisense";
 						}
+						
+						if(gSeq.tBlocks[i].getTranscriptFullLength() > maxLen) {
+							maxLenTxd = i;
+							maxLen = gSeq.tBlocks[i].getTranscriptFullLength();
+						}
 					}
 					
 					// if the match contains softclip, then the frame information is useless.
@@ -204,6 +212,23 @@ public class Worker extends Thread {
 					char as = output.getAS(i); // alternative splicing mark
 					BW.append("(").append(output.getAARegionAnnotation(i)).append(";").append(senseMarker).append(";").append(frame).append(";").append(as).append(")");
 				}
+				
+				
+				// distance proportion
+				BW.append("\t");
+				if(maxLenTxd == -1) {
+					BW.append("-");
+				} else {
+					int pivotPos = -1;
+					if(output.strand) {
+						pivotPos = output.startGenomicPositions.get(0);
+					} else {
+						pivotPos = output.endGenomicPositions.get(output.endGenomicPositions.size()-1);
+					}
+					double dist = gSeq.tBlocks[maxLenTxd].getRelativeFullLengthRatio(pivotPos, output.strand);
+					BW.append(dist+"");
+				}
+				
 				BW.newLine();
 				
 			}

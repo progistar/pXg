@@ -87,7 +87,7 @@ public class Master {
 				int readCount = 0;
 				long readPartitionSize = Parameters.readSize;
 				
-	        	// get records				
+	        	// get records
 	            for (SAMRecord samRecord : samReader) {
 	                // Process each SAMRecord as needed
 	            	String record = samRecord.getSAMString().replace(lineSeparator, "");

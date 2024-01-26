@@ -29,6 +29,7 @@ public class XBlock {
 	public double bestRegionPriority 	= 	Double.MAX_VALUE;
 	public double targetQScore		=	0;
 	public double decoyQScore		=	0;
+	public String percentDistance	=	"-";
 	
 	
 	// with the same key value block
@@ -99,6 +100,7 @@ public class XBlock {
 					+"\t"+tAnnotations+"\t"+transCount
 					+"\t"+geneIDs.get("key")+"\t"+geneIDs.get("count")
 					+"\t"+geneNames.get("key")+"\t"+geneNames.get("count")
+					+"\t"+percentDistance
 					+"\t"+events.get("key")+"\t"+events.get("count")
 					+"\t"+fastaIDs.get("key")+"\t"+fastaIDs.get("count")
 					+"\t"+mockReadCount+"\t"+(qScore);
@@ -117,6 +119,7 @@ public class XBlock {
 					+"\t"+tAnnotations+"\t"+transCount
 					+"\t"+geneIDs.get("key")+"\t"+geneIDs.get("count")
 					+"\t"+geneNames.get("key")+"\t"+geneNames.get("count")
+					+"\t"+percentDistance
 					+"\t"+events.get("key")+"\t"+events.get("count")
 					+"\t"+fastaIDs.get("key")+"\t"+fastaIDs.get("count")
 					+"\t"+targetReadCount+"\t"+(qScore);
@@ -142,6 +145,7 @@ public class XBlock {
 				+ "-\t-\t0\t"
 				+ "-\t0\t"
 				+ "-\t0\t"
+				+ "-\t"
 				+ "-\t0\t"
 				+ ""+fastaIDs+"\t"+fastaIDCount+"\t"
 				+ "0";

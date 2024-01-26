@@ -61,6 +61,7 @@ public class ResultParser {
 							xBlock.mutations = field[6];
 							xBlock.mutationStatus = field[7];
 							xBlock.tAnnotations = field[8];
+							xBlock.percentDistance = field[9];
 							xBlock.fullReadSequence = fullReads;
 							// If unmapped reads, merging xBlocks and making a single contig xBlock.
 							
