@@ -53,19 +53,33 @@ public class XBlock {
 	 */
 	public XBlock getConsensusSequenceXBlock () {
 		XBlock consensusXBlock = this;
-		
-		int[][] leftConsensusScore = new int[9][4];
-		int[][] rightConsensusScore = new int[9][4];
-		
 		ArrayList<XBlock> list = new ArrayList<XBlock>();
 		list.add(this);
 		list.addAll(this.siblingXBlocks);
+		
+		int maxLeftSize = 0;
+		int maxRightSize = 0;
+		for(XBlock xBlock : list) {
+			maxLeftSize = Math.max(xBlock.leftFlankSequence.length(), maxLeftSize);
+			maxRightSize = Math.max(xBlock.rightFlankSequence.length(), maxRightSize);
+		}
+		
+		if(maxLeftSize > Parameters.maxFlankNSize) {
+			maxLeftSize = Parameters.maxFlankNSize;
+		}
+		if(maxRightSize > Parameters.maxFlankNSize) {
+			maxRightSize = Parameters.maxFlankNSize;
+		}
+		
+		int[][] leftConsensusScore = new int[maxLeftSize][4];
+		int[][] rightConsensusScore = new int[maxRightSize][4];
+		
 		
 		// calculate score matrix
 		for(XBlock xBlock : list) {
 			// left
 			String sequence = xBlock.leftFlankSequence;
-			int idx = 8;
+			int idx = maxLeftSize-1;
 			for(int i=sequence.length()-1; i>=0; i--) {
 				char nt = sequence.charAt(i);
 				int ntIdx = -1;
@@ -99,7 +113,7 @@ public class XBlock {
 			int score = 0;
 			// left
 			String sequence = xBlock.leftFlankSequence;
-			int idx = 8;
+			int idx = maxLeftSize-1;
 			for(int i=sequence.length()-1; i>=0; i--) {
 				char nt = sequence.charAt(i);
 				int ntIdx = -1;
@@ -129,6 +143,7 @@ public class XBlock {
 			
 			if(score > bestScore) {
 				consensusXBlock = xBlock;
+				bestScore = score;
 			}
 		}
 		
@@ -170,6 +185,7 @@ public class XBlock {
 	 * 
 	 */
 	public String toString (byte psmStatus) {
+		XBlock consensusXBlock = this.getConsensusSequenceXBlock();
 		Hashtable<String, String> geneIDs = toGeneIDs();
 		Hashtable<String, String> geneNames = toGeneNames();
 		Hashtable<String, String> events = toEvents();
@@ -192,8 +208,13 @@ public class XBlock {
 			}
 			
 			return new StringBuilder(peptideSequence).reverse().toString() +"\t"+genomicLocus+"\t"
-					+strand+"\t"+genomicSequence
+					+strand
+					+"\t"+consensusXBlock.leftFlankSequence
+					+"\t"+genomicSequence
+					+"\t"+consensusXBlock.rightFlankSequence
+					+"\t"+consensusXBlock.leftFlankRefSequence
 					+"\t"+referenceSequence
+					+"\t"+consensusXBlock.rightFlankRefSequence
 					+"\t"+mutations
 					+"\t"+mutationStatus
 					+"\t"+tAnnotations+"\t"+transCount
@@ -211,8 +232,13 @@ public class XBlock {
 			}
 			
 			return peptideSequence +"\t"+genomicLocus+"\t"
-					+strand+"\t"+genomicSequence
+					+strand
+					+"\t"+consensusXBlock.leftFlankSequence
+					+"\t"+genomicSequence
+					+"\t"+consensusXBlock.rightFlankSequence
+					+"\t"+consensusXBlock.leftFlankRefSequence
 					+"\t"+referenceSequence
+					+"\t"+consensusXBlock.rightFlankRefSequence
 					+"\t"+mutations
 					+"\t"+mutationStatus
 					+"\t"+tAnnotations+"\t"+transCount
@@ -223,31 +249,6 @@ public class XBlock {
 					+"\t"+fastaIDs.get("key")+"\t"+fastaIDs.get("count")
 					+"\t"+targetReadCount+"\t"+(qScore);
 		}
-	}
-	
-	/**
-	 * {@link Deprecated}
-	 * Do not print PSM without read mapping.<br>
-	 * -- The original usage is to print out PSMs with no reads.<br>
-	 * @param fastaIDs_
-	 * @return
-	 */
-	public static String toNullString (String[] fastaIDs_) {
-		
-		String fastaIDs = XBlock.toFastaIDs(fastaIDs_);
-		int fastaIDCount = fastaIDs.equalsIgnoreCase("-") ? 0 : fastaIDs.split("\\|").length;
-		
-		return "-\t-\t"
-				+ "-\t-\t"
-				+ "-\t"
-				+ "-\t"
-				+ "-\t-\t0\t"
-				+ "-\t0\t"
-				+ "-\t0\t"
-				+ "-\t"
-				+ "-\t0\t"
-				+ ""+fastaIDs+"\t"+fastaIDCount+"\t"
-				+ "0";
 	}
 	
 	/**

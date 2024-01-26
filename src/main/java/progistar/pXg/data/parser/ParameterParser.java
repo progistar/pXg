@@ -43,6 +43,7 @@ public class ParameterParser {
 				System.out.println("  --ileq                : Controls whether pXg treats isoleucine (I) and leucine (L) as the same/equivalent with respect to a peptide identification. Default is true.");
 				System.out.println("  --lengths             : Range of peptide length to consider. Default is 8-15");
 				System.out.println("                          You can write in this way (min-max, both inclusive) : 8-13");
+				System.out.println("  --max_flank_size      : Specify to print maximum flank nuleotides from matched sequence. Default is 1,000");
 				System.out.println("  --fasta_file          : Canonical sequence database to avoid ambiguous assignment of noncanonical peptides");
 				System.out.println("  --rank                : How many candidates will be considered per a scan. Default is 100 (in other words, use all ranked candidates)");
 				System.out.println("  --out_sam             : Report matched reads as SAM format (true or false). Default is true.");
@@ -270,6 +271,10 @@ public class ParameterParser {
 					Double penalty = Double.parseDouble(args[i+1]);
 					Parameters.PENALTY_SOFTCLIP= penalty;
 				}
+				else if(option.equalsIgnoreCase(Parameters.CMD_MAX_FLANK_SIZE)) {
+					Integer mFlankSize = Integer.parseInt(args[i+1]);
+					Parameters.maxFlankNSize= mFlankSize;
+				}
 				// hidden parameters for revision
 				else if(option.equalsIgnoreCase(Parameters.CMD_PHRED_CAL)) {
 					Parameters.PHRED_CAL = args[i+1].toLowerCase();
@@ -360,6 +365,7 @@ public class ParameterParser {
 		System.out.println("  ADDITIONAL_FEATURE_COLS: "+addFeatCols);
 		System.out.println("  RANK TO CONSIDER: "+Parameters.psmRank);
 		System.out.println("  PEPTIDE_LENGTHS: "+Parameters.minPeptLen+"-"+Parameters.maxPeptLen);
+		System.out.println("  MAX_FLANK_SIZE: "+Parameters.maxFlankNSize);
 		System.out.println(" OUT_RESULT: "+Parameters.outputFilePath);
 		System.out.println("  OUT_PIN.: "+Parameters.pinFilePath);
 		System.out.println("  OUT_UNKNOWN: "+Parameters.unmappedFilePath);
@@ -408,6 +414,8 @@ public class ParameterParser {
 		Logger.append("  RANK TO CONSIDER: "+Parameters.psmRank);
 		Logger.newLine();
 		Logger.append("  PEPTIDE_LENGTHS: "+Parameters.minPeptLen+"-"+Parameters.maxPeptLen);
+		Logger.newLine();
+		Logger.append("  MAX_FLANK_SIZE: "+Parameters.maxFlankNSize);
 		Logger.newLine();
 		Logger.append(" OUT_RESULT: "+Parameters.outputFilePath);
 		Logger.newLine();

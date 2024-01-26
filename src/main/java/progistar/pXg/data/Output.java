@@ -3,6 +3,7 @@ package progistar.pXg.data;
 import java.util.ArrayList;
 
 import progistar.pXg.constants.Constants;
+import progistar.pXg.constants.Parameters;
 import progistar.pXg.utils.Codon;
 import progistar.pXg.utils.IndexConvertor;
 
@@ -105,7 +106,7 @@ public class Output {
 	 */
 	public String getLeftFlankNucleotide () {
 		String nucleotide = this.gSeq.getNucleotideString();
-		int startIdx = this.startPosInNGS - 9;
+		int startIdx = this.startPosInNGS - Parameters.maxFlankNSize;
 		if(startIdx < 0) {
 			startIdx = 0;
 		}
@@ -120,7 +121,7 @@ public class Output {
 	 */
 	public String getRightFlankNucleotide () {
 		String nucleotide = this.gSeq.getNucleotideString();
-		int endIdx = this.endPosInNGS+10;
+		int endIdx = this.endPosInNGS + 1 + Parameters.maxFlankNSize;
 		if(endIdx > nucleotide.length()) {
 			endIdx = nucleotide.length();
 		}
@@ -129,7 +130,7 @@ public class Output {
 	
 	// retrieved reference sequences
 	public String getMatchedRefNucleotide () {
-		return getMatchedRefNucleotide(this.getMatchedRefNucleotide(), this.startPosInNGS);
+		return getMatchedRefNucleotide(this.getMatchedNucleotide(), this.startPosInNGS);
 	}
 	
 	/**
@@ -139,7 +140,7 @@ public class Output {
 	 * @return
 	 */
 	public String getLeftFlankRefNucleotide () {
-		int startIdx = this.startPosInNGS - 9;
+		int startIdx = this.startPosInNGS - Parameters.maxFlankNSize;
 		if(startIdx < 0) {
 			startIdx = 0;
 		}

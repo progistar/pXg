@@ -141,8 +141,15 @@ public class PxGAnnotation {
 			BW.append("InferredPeptide").append("\t");
 			BW.append("GenomicLoci").append("\t");
 			BW.append("Strand").append("\t");
+			
+			BW.append("ObservedLeftFlankNucleotide").append("\t");
 			BW.append("ObservedNucleotide").append("\t");
+			BW.append("ObservedRightFlankNucleotide").append("\t");
+			
+			BW.append("ReferenceLeftFlankNucleotide").append("\t");
 			BW.append("ReferenceNucleotide").append("\t");
+			BW.append("ReferenceRightFlankNucleotide").append("\t");
+			
 			BW.append("Mutations").append("\t");
 			BW.append("MutationStatus").append("\t");
 			BW.append("TranscriptIDs").append("\t");

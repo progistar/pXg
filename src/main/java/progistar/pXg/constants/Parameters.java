@@ -28,8 +28,10 @@ public class Parameters {
 
 	// Peptide length
 	public static final String CMD_LENGTH			=	"--lengths".toLowerCase();
+	public static final String CMD_MAX_FLANK_SIZE	=	"--max_flank_size".toLowerCase();
 	public static int minPeptLen					=	8;
 	public static int maxPeptLen					=	15;
+	public static int maxFlankNSize					=	1000;
 	
 	public static final String CMD_IL				=	"--ileq".toLowerCase();
 	public static boolean leucineIsIsoleucine		=	true;
