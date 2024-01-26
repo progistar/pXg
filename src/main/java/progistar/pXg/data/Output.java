@@ -114,7 +114,7 @@ public class Output {
 	
 	/**
 	 * Jan. 26, 2024
-	 * Get left flank nucleotide
+	 * Get right flank nucleotide
 	 * 
 	 * @return
 	 */
@@ -129,7 +129,36 @@ public class Output {
 	
 	// retrieved reference sequences
 	public String getMatchedRefNucleotide () {
-		StringBuilder matchedNucleotide = new StringBuilder(this.getMatchedNucleotide());
+		return getMatchedRefNucleotide(this.getMatchedRefNucleotide(), this.startPosInNGS);
+	}
+	
+	/**
+	 * Jan. 26, 2024
+	 * Get left flank REFERENCE nucleotide
+	 * 
+	 * @return
+	 */
+	public String getLeftFlankRefNucleotide () {
+		int startIdx = this.startPosInNGS - 9;
+		if(startIdx < 0) {
+			startIdx = 0;
+		}
+		return getMatchedRefNucleotide(this.getLeftFlankNucleotide(), startIdx);
+	}
+	
+	/**
+	 * Jan. 26, 2024
+	 * Get right flank REFERENCE nucleotide
+	 * 
+	 * @return
+	 */
+	public String getRightFlankRefNucleotide () {
+		return getMatchedRefNucleotide(this.getRightFlankNucleotide(), this.endPosInNGS+1);
+	}
+	
+	// retrieved reference sequences
+	private String getMatchedRefNucleotide (String nucleotide, int startPosInNGS) {
+		StringBuilder matchedNucleotide = new StringBuilder(nucleotide);
 		StringBuilder refNucleotide = new StringBuilder();
 		ArrayList<Mutation> mutations = this.getMutations();
 		
@@ -138,7 +167,7 @@ public class Output {
 			
 			Mutation insOrDelMutation = null;
 			for(Mutation mutation : mutations) {
-				int mPos = mutation.relPos - this.startPosInNGS;
+				int mPos = mutation.relPos - startPosInNGS;
 				
 				if(mPos == i) {
 					if(mutation.type == Constants.SNP) {

@@ -56,12 +56,19 @@ public class ResultParser {
 							XBlock xBlock = new XBlock();
 							xBlock.genomicLocus = field[2];
 							xBlock.strand = field[3].charAt(0);
-							xBlock.genomicSequence = field[4];
-							xBlock.referenceSequence = field[5];
-							xBlock.mutations = field[6];
-							xBlock.mutationStatus = field[7];
-							xBlock.tAnnotations = field[8];
-							xBlock.percentDistance = field[9];
+							
+							xBlock.leftFlankSequence = field[4];
+							xBlock.genomicSequence = field[5];
+							xBlock.rightFlankSequence = field[6];
+							
+							xBlock.leftFlankRefSequence = field[7];
+							xBlock.referenceSequence = field[8];
+							xBlock.rightFlankRefSequence = field[9];
+							
+							xBlock.mutations = field[10];
+							xBlock.mutationStatus = field[11];
+							xBlock.tAnnotations = field[12];
+							xBlock.percentDistance = field[13];
 							xBlock.fullReadSequence = fullReads;
 							// If unmapped reads, merging xBlocks and making a single contig xBlock.
 							

@@ -155,9 +155,17 @@ public class Worker extends Thread {
 				BW.append("\t");
 				BW.append(strand);
 				BW.append("\t");
+				BW.append(output.getLeftFlankNucleotide());
+				BW.append("\t");
 				BW.append(output.getMatchedNucleotide());
 				BW.append("\t");
+				BW.append(output.getRightFlankNucleotide());
+				BW.append("\t");
+				BW.append(output.getLeftFlankRefNucleotide());
+				BW.append("\t");
 				BW.append(output.getMatchedRefNucleotide());
+				BW.append("\t");
+				BW.append(output.getRightFlankRefNucleotide());
 				BW.append("\t");
 				
 				// mutation check

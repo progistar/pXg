@@ -3,6 +3,8 @@ package progistar.pXg.data;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import javax.swing.plaf.basic.BasicScrollBarUI;
+
 import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
 import progistar.pXg.utils.ENSTMapper;
@@ -19,8 +21,15 @@ public class XBlock {
 	public char strand				=	'+';
 	public String genomicLocus		=	null;
 	public String mutations 		=	null;
+	
 	public String genomicSequence	=	null;
+	public String leftFlankSequence	=	null;
+	public String rightFlankSequence=	null;
+	
 	public String referenceSequence	=	null;
+	public String leftFlankRefSequence	=	null;
+	public String rightFlankRefSequence	=	null;
+	
 	public String mutationStatus	=	null;
 	public String peptideSequence	=	null;
 	public String tAnnotations		=	null; // transcript and additional annotations
@@ -34,7 +43,97 @@ public class XBlock {
 	
 	// with the same key value block
 	// the block will be null if there is no next sibling.
-	public ArrayList<XBlock> siblingXBlocks	=	new ArrayList<XBlock>();
+	public ArrayList<XBlock> siblingXBlocks	= new ArrayList<XBlock>();
+	
+	/**
+	 * Jan. 26, 2024
+	 * Get consensus XBlock based on left and right flank sequences.
+	 * 
+	 * @return
+	 */
+	public XBlock getConsensusSequenceXBlock () {
+		XBlock consensusXBlock = this;
+		
+		int[][] leftConsensusScore = new int[9][4];
+		int[][] rightConsensusScore = new int[9][4];
+		
+		ArrayList<XBlock> list = new ArrayList<XBlock>();
+		list.add(this);
+		list.addAll(this.siblingXBlocks);
+		
+		// calculate score matrix
+		for(XBlock xBlock : list) {
+			// left
+			String sequence = xBlock.leftFlankSequence;
+			int idx = 8;
+			for(int i=sequence.length()-1; i>=0; i--) {
+				char nt = sequence.charAt(i);
+				int ntIdx = -1;
+				if(nt == 'A') ntIdx = 0;
+				else if(nt == 'C') ntIdx = 1;
+				else if(nt == 'T') ntIdx = 2;
+				else if(nt == 'G') ntIdx = 3;
+				if(ntIdx != -1) {
+					leftConsensusScore[idx][ntIdx] ++;
+				}
+				idx--;
+			}
+			
+			// right
+			sequence = xBlock.rightFlankSequence;
+			for(int i=0; i<sequence.length(); i++) {
+				char nt = sequence.charAt(i);
+				int ntIdx = -1;
+				if(nt == 'A') ntIdx = 0;
+				else if(nt == 'C') ntIdx = 1;
+				else if(nt == 'T') ntIdx = 2;
+				else if(nt == 'G') ntIdx = 3;
+				if(ntIdx != -1) {
+					rightConsensusScore[i][ntIdx] ++;
+				}
+			}
+		}
+		
+		int bestScore = 0;
+		for(XBlock xBlock : list) {
+			int score = 0;
+			// left
+			String sequence = xBlock.leftFlankSequence;
+			int idx = 8;
+			for(int i=sequence.length()-1; i>=0; i--) {
+				char nt = sequence.charAt(i);
+				int ntIdx = -1;
+				if(nt == 'A') ntIdx = 0;
+				else if(nt == 'C') ntIdx = 1;
+				else if(nt == 'T') ntIdx = 2;
+				else if(nt == 'G') ntIdx = 3;
+				if(ntIdx != -1) {
+					score += leftConsensusScore[idx][ntIdx];
+				}
+				idx--;
+			}
+			
+			// right
+			sequence = xBlock.rightFlankSequence;
+			for(int i=0; i<sequence.length(); i++) {
+				char nt = sequence.charAt(i);
+				int ntIdx = -1;
+				if(nt == 'A') ntIdx = 0;
+				else if(nt == 'C') ntIdx = 1;
+				else if(nt == 'T') ntIdx = 2;
+				else if(nt == 'G') ntIdx = 3;
+				if(ntIdx != -1) {
+					score += rightConsensusScore[i][ntIdx];
+				}
+			}
+			
+			if(score > bestScore) {
+				consensusXBlock = xBlock;
+			}
+		}
+		
+		return consensusXBlock;
+	}
 	
 	public boolean isCannonical () {
 		String events = toEvents().get("key");
