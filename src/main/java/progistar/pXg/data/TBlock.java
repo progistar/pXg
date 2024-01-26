@@ -297,6 +297,36 @@ public class TBlock implements Comparable<TBlock> {
 		
 		return isAS;
 	}
+	
+	/**
+	 * Jan. 26, 2024
+	 * This method was introduced to estimate a relative position of a peptide.
+	 * 
+	 * @return
+	 */
+	public double getTranscriptExonLength () {
+		double length = 0;
+		for(ABlock aBlock : aBlocks) {
+			length += aBlock.getLength();
+		}
+		return length;
+	}
+	
+	/**
+	 * Jan. 26, 2024
+	 * This method was introduced to estimate a relative position of a peptide.
+	 * 
+	 * @return
+	 */
+	public double getTranscriptCDSLength () {
+		double length = 0;
+		for(ABlock aBlock : aBlocks) {
+			if(aBlock.feature == Constants.CDS) {
+				length += aBlock.getLength();
+			}
+		}
+		return length;
+	}
 
 	public int compareTo(TBlock o) {
 		if(this.start < o.start) {
