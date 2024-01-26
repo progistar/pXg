@@ -200,6 +200,12 @@ public class XBlock {
 			}
 		}
 		
+		String lfs = consensusXBlock.leftFlankSequence.length() == 0 ? "-" : consensusXBlock.leftFlankSequence;
+		String rfs = consensusXBlock.rightFlankSequence.length() == 0 ? "-" : consensusXBlock.rightFlankSequence;
+		String lfsRef = consensusXBlock.leftFlankRefSequence.length() == 0 ? "-" : consensusXBlock.leftFlankRefSequence;
+		String rfsRef = consensusXBlock.rightFlankRefSequence.length() == 0 ? "-" : consensusXBlock.rightFlankRefSequence;
+		
+		
 		if(psmStatus == Constants.PSM_STATUS_DECOY) {
 			
 			double qScore = this.decoyQScore;
@@ -209,12 +215,12 @@ public class XBlock {
 			
 			return new StringBuilder(peptideSequence).reverse().toString() +"\t"+genomicLocus+"\t"
 					+strand
-					+"\t"+consensusXBlock.leftFlankSequence
+					+"\t"+lfs
 					+"\t"+genomicSequence
-					+"\t"+consensusXBlock.rightFlankSequence
-					+"\t"+consensusXBlock.leftFlankRefSequence
+					+"\t"+rfs
+					+"\t"+lfsRef
 					+"\t"+referenceSequence
-					+"\t"+consensusXBlock.rightFlankRefSequence
+					+"\t"+rfsRef
 					+"\t"+mutations
 					+"\t"+mutationStatus
 					+"\t"+tAnnotations+"\t"+transCount
@@ -233,12 +239,12 @@ public class XBlock {
 			
 			return peptideSequence +"\t"+genomicLocus+"\t"
 					+strand
-					+"\t"+consensusXBlock.leftFlankSequence
+					+"\t"+lfs
 					+"\t"+genomicSequence
-					+"\t"+consensusXBlock.rightFlankSequence
-					+"\t"+consensusXBlock.leftFlankRefSequence
+					+"\t"+rfs
+					+"\t"+lfsRef
 					+"\t"+referenceSequence
-					+"\t"+consensusXBlock.rightFlankRefSequence
+					+"\t"+rfsRef
 					+"\t"+mutations
 					+"\t"+mutationStatus
 					+"\t"+tAnnotations+"\t"+transCount
