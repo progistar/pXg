@@ -344,21 +344,6 @@ public class TBlock implements Comparable<TBlock> {
 		}
 		return length;
 	}
-	
-	private double getRelativeFullLengthOfPosition (int pos) {
-		double length = 0;
-		for(ABlock aBlock : aBlocks) {
-			double exonLength = aBlock.getLength();
-			if(aBlock.start <= pos && pos <= aBlock.end) {
-				exonLength = pos - aBlock.start + 1;
-				length += exonLength;
-				break;
-			}
-			length += exonLength;
-		}
-		return length;
-	}
-	
 	/**
 	 * Jan. 26, 2024
 	 * It does not use transcript's strand so that antisense RNA can be used this method.
@@ -367,16 +352,14 @@ public class TBlock implements Comparable<TBlock> {
 	 * @param strand
 	 * @return
 	 */
-	public double getRelativeFullLengthRatio (int pos, boolean strand) {
-		double relPos = getRelativeFullLengthOfPosition(pos);
+	public double getRelativeFullLengthRatio (int peptStart, int peptEnd, boolean strand) {
 		double fullLength = getTranscriptFullLength();
 		double ratio = -1;
 		
 		if(strand) {
-			ratio = relPos / fullLength;
+			ratio = (peptStart - this.start + 1) / fullLength;
 		} else {
-			ratio = (relPos - 1) / fullLength;
-			ratio = 1 - ratio;
+			ratio = (this.end - peptEnd) / fullLength;
 		}
 		
 		return ratio;

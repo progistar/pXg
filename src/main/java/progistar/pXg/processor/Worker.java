@@ -227,13 +227,8 @@ public class Worker extends Thread {
 				if(maxLenTxd == -1) {
 					BW.append("-");
 				} else {
-					int pivotPos = -1;
-					if(output.strand) {
-						pivotPos = output.startGenomicPositions.get(0);
-					} else {
-						pivotPos = output.endGenomicPositions.get(output.endGenomicPositions.size()-1);
-					}
-					double dist = gSeq.tBlocks[maxLenTxd].getRelativeFullLengthRatio(pivotPos, output.strand);
+					double dist = gSeq.tBlocks[maxLenTxd].getRelativeFullLengthRatio(output.startGenomicPositions.get(0),
+							output.endGenomicPositions.get(output.endGenomicPositions.size()-1), output.strand);
 					BW.append(dist+"");
 				}
 				
