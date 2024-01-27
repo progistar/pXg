@@ -27,7 +27,7 @@ public class ABlock implements Comparable<ABlock>{
 		return 0;
 	}
 	
-	public double getLength () {
-		return (double) (end - start + 1);
+	public int getLength () {
+		return (end - start + 1);
 	}
 }

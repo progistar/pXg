@@ -70,61 +70,8 @@ public class Mapper {
 		// matched transcripts...
 		// if the size of matched transcripts is zero, then this is intergenic mapping or unmapped
 		if(txdIndexer.size() == 0) {
-			genomicSequence.matchedTxds = 1;
-			genomicSequence.tBlocks = new TBlock[1];
-			genomicSequence.tBlocks[0] = null;
-			
-			for(Cigar cigar : genomicSequence.cigars) {
-				char op = cigar.operation;
-				
-				switch (op) {
-		    	case 'M': // match or mismatch
-		    		cigar.annotations = new char[cigar.relativePositions.length][1];
-		    		
-		    		for(int i=0; i<cigar.annotations.length; i++) {
-		    			cigar.annotations[i][0] = Constants.MARK_INTERGENIC;
-		    		}
-		    		
-		    		break;
-		    		
-		    	case 'I': // insertion
-		    		cigar.annotations = new char[cigar.relativePositions.length][1];
-		    		
-		    		for(int i=0; i<cigar.annotations.length; i++) {
-		    			cigar.annotations[i][0] = Constants.MARK_INTERGENIC;
-		    		}
-		    		
-		    		break;
-		    		
-		    	case 'D': // deletion
-		    		break;	
-		    		
-		    	case 'N': // skip (ex> exon junction)
-		    		break;
-		    		
-		    	case '*': // unmapped
-		    		cigar.annotations = new char[cigar.relativePositions.length][1];
-		    		
-		    		for(int i=0; i<cigar.annotations.length; i++) {
-		    			cigar.annotations[i][0] = Constants.MARK_UNMAPPED;
-		    		}
-		    		
-		    		break;
-		    		
-		    	case 'S': // soft-clip
-		    		cigar.annotations = new char[cigar.relativePositions.length][1];
-		    		
-		    		for(int i=0; i<cigar.annotations.length; i++) {
-		    			cigar.annotations[i][0] = Constants.MARK_SOFTCLIP;
-		    		}
-		    		
-		    		break;
-	    		default :
-	    			break;
-		    	}
-			}
+			genomicSequence.setNonTranscripts();
 		}
-		
 		else {
 			// enumerate txd index into tBlocks
 			TBlock[] tBlocks = new TBlock[txdIndexer.size()];

@@ -158,7 +158,10 @@ public class PxGAnnotation {
 			BW.append("GeneIDCount").append("\t");
 			BW.append("GeneNames").append("\t");
 			BW.append("GeneNameCount").append("\t");
-			BW.append("PercentDistance").append("\t");
+			
+			BW.append("PercentFullDistance").append("\t");
+			BW.append("PercentExonDistance").append("\t");
+			
 			BW.append("Events").append("\t");
 			BW.append("EventCount").append("\t");
 			BW.append("FastaIDs").append("\t");

@@ -68,7 +68,8 @@ public class ResultParser {
 							xBlock.mutations = field[10];
 							xBlock.mutationStatus = field[11];
 							xBlock.tAnnotations = field[12];
-							xBlock.percentDistance = field[13];
+							
+							String[] dists = field[13].split("\\|");
 							xBlock.fullReadSequence = fullReads;
 							// If unmapped reads, merging xBlocks and making a single contig xBlock.
 							
@@ -79,24 +80,63 @@ public class ResultParser {
 							 */
 							if(Parameters.translationMethod == Constants.THREE_FRAME) {
 								StringBuilder transcriptsWithOutBANlist = new StringBuilder();
+								StringBuilder distsWithOutBANlist = new StringBuilder();
+								
 								String[] transcripts = xBlock.tAnnotations.split("\\|");
-								for(String transcript : transcripts) {
+								for(int i=0; i<transcripts.length; i++) {
+									String transcript = transcripts[i];
 									if(!transcript.contains(";antisense;")) {
 										if(transcriptsWithOutBANlist.length() != 0) {
 											transcriptsWithOutBANlist.append("|");
+											distsWithOutBANlist.append("|");
 										}
 										transcriptsWithOutBANlist.append(transcript);
+										distsWithOutBANlist.append(dists[i]);
 									}
 								}
 								
-								// skip! there is no available event.
-								if(transcriptsWithOutBANlist.length() == 0) {
-									// discard the ID result
-									continue;
-								} else {
+								// If all transcripts were discarded, then it means only possible interpretation is antisense
+								// in this case, we accept antisense even three-frame translation.
+								if(transcriptsWithOutBANlist.length() != 0) {
 									xBlock.tAnnotations = transcriptsWithOutBANlist.toString();
+									field[13] = distsWithOutBANlist.toString();
 								}
 							}
+							
+							// calculate dists (longest exon length)
+							dists = field[13].split("\\|");
+							String percentFullDist = "-";
+							String percentExonDist = "-";
+							
+							int longestValue = 0;
+							for(int i=0; i<dists.length; i++) {
+								String[] values = dists[i].split("\\;");
+								if(!values[1].equalsIgnoreCase("-")) {
+									String exonLength = values[1].split("\\/")[1];
+									int value = Integer.parseInt(exonLength);
+									
+									if(value > longestValue) {
+										longestValue = value;
+										percentFullDist = values[0];
+										percentExonDist = values[1];
+									}
+								}
+							}
+							
+							if(!percentFullDist.equalsIgnoreCase("-")) {
+								double v1 = Double.parseDouble(percentFullDist.split("\\/")[0]);
+								double v2 = Double.parseDouble(percentFullDist.split("\\/")[1]);
+								percentFullDist = (v1/v2)+"";
+							}
+							
+							if(!percentExonDist.equalsIgnoreCase("-")) {
+								double v1 = Double.parseDouble(percentExonDist.split("\\/")[0]);
+								double v2 = Double.parseDouble(percentExonDist.split("\\/")[1]);
+								percentExonDist = (v1/v2)+"";
+							}
+							
+							xBlock.percentFullDist = percentFullDist;
+							xBlock.percentExonDist = percentExonDist;
 							
 							if(xBlock.strand == '+') {
 								xBlock.peptideSequence = GenomicSequence.translation(xBlock.genomicSequence, 0);

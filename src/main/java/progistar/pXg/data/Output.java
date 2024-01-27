@@ -333,6 +333,8 @@ public class Output {
 	 * 
 	 * get genomic regional information at AA level. <br>
 	 * 
+	 * 
+	 * 
 	 * @param transcriptNum
 	 * @return
 	 */

@@ -99,6 +99,62 @@ public class GenomicSequence {
 		}
 	}
 	
+	public void setNonTranscripts () {
+		this.matchedTxds = 1;
+		this.tBlocks = new TBlock[1];
+		this.tBlocks[0] = null;
+		
+		for(Cigar cigar : this.cigars) {
+			char op = cigar.operation;
+			
+			switch (op) {
+	    	case 'M': // match or mismatch
+	    		cigar.annotations = new char[cigar.relativePositions.length][1];
+	    		
+	    		for(int i=0; i<cigar.annotations.length; i++) {
+	    			cigar.annotations[i][0] = Constants.MARK_INTERGENIC;
+	    		}
+	    		
+	    		break;
+	    		
+	    	case 'I': // insertion
+	    		cigar.annotations = new char[cigar.relativePositions.length][1];
+	    		
+	    		for(int i=0; i<cigar.annotations.length; i++) {
+	    			cigar.annotations[i][0] = Constants.MARK_INTERGENIC;
+	    		}
+	    		
+	    		break;
+	    		
+	    	case 'D': // deletion
+	    		break;	
+	    		
+	    	case 'N': // skip (ex> exon junction)
+	    		break;
+	    		
+	    	case '*': // unmapped
+	    		cigar.annotations = new char[cigar.relativePositions.length][1];
+	    		
+	    		for(int i=0; i<cigar.annotations.length; i++) {
+	    			cigar.annotations[i][0] = Constants.MARK_UNMAPPED;
+	    		}
+	    		
+	    		break;
+	    		
+	    	case 'S': // soft-clip
+	    		cigar.annotations = new char[cigar.relativePositions.length][1];
+	    		
+	    		for(int i=0; i<cigar.annotations.length; i++) {
+	    			cigar.annotations[i][0] = Constants.MARK_SOFTCLIP;
+	    		}
+	    		
+	    		break;
+    		default :
+    			break;
+	    	}
+		}
+	}
+	
 	/**
 	 * Check unmapped/softclip status by cigar string.<br>
 	 * 

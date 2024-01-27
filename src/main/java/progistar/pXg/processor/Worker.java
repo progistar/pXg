@@ -112,6 +112,13 @@ public class Worker extends Thread {
 	 */
 	public void writeTmpOutput (BufferedWriter BW, ArrayList<Output> outputs, GenomicSequence gSeq, String prefixID) {
 		try {
+			
+			ArrayList<Byte> exonTypes = new ArrayList<Byte>();
+			exonTypes.add(Constants.CDS); exonTypes.add(Constants.UTR5); exonTypes.add(Constants.UTR3);
+			
+			ArrayList<Byte> fullTypes = new ArrayList<Byte>();
+			fullTypes.addAll(exonTypes); fullTypes.add(Constants.INTRON);
+			
 			BW.append(Constants.OUTPUT_G_UNIQUE_ID+"\t"+prefixID+gSeq.uniqueID+"@"+gSeq.getLocus());
 			BW.newLine();
 			
@@ -126,18 +133,6 @@ public class Worker extends Thread {
 			// write average QScore.
 			BW.append(Constants.OUTPUT_G_QSCORE+"\t"+gSeq.meanQScore);
 			BW.newLine();
-			
-			/*
-			 * These information are needed to confirm.
-			 * Not informative for the last result.
-			BW.append(Constants.OUTPUT_G_SEQUENCE+gSeq.getNucleotideString());
-			BW.newLine();
-			
-			for(int i=0; i<gSeq.matchedTxds; i++) {
-				BW.append(Constants.OUTPUT_G_REGION+gSeq.getGenomieRegion(i));
-				BW.newLine();
-			}
-			*/
 			
 			for(Output output : outputs) {
 				String strand = null;
@@ -183,13 +178,17 @@ public class Worker extends Thread {
 				BW.append(output.getMutationStatus());
 				BW.append("\t");
 				
-				int maxLenTxd = -1;
-				double maxLen = -1;
-				
+				// exon and full distance of identified genomic regions
+				ArrayList<String> dists = new ArrayList<String>();
 				for(int i=0; i<gSeq.matchedTxds; i++) {
 					if(i!=0) BW.append("|");
 					// intergenic
 					String senseMarker = "-";
+					// percent distance for only exons
+					String percentExonDistance = "-";
+					// percent distance for both exons and introns
+					String percentFullDistance = "-";
+					
 					mappingStatus = gSeq.getMappingStatus();
 					
 					if(gSeq.tBlocks[i] == null) {
@@ -207,29 +206,53 @@ public class Worker extends Thread {
 							senseMarker = "antisense";
 						}
 						
-						if(gSeq.tBlocks[i].getTranscriptFullLength() > maxLen) {
-							maxLenTxd = i;
-							maxLen = gSeq.tBlocks[i].getTranscriptFullLength();
+						int pos = output.strand ? 
+								output.startGenomicPositions.get(0) : 
+									output.endGenomicPositions.get(output.endGenomicPositions.size()-1)-1;
+						
+						
+						int fullLength = gSeq.tBlocks[i].getTranscriptLength(fullTypes);
+						int exonLength = gSeq.tBlocks[i].getTranscriptLength(exonTypes);
+						
+						int fullDist = gSeq.tBlocks[i].getRelativeLengthOfPosition(pos, fullTypes);
+						int exonDist = gSeq.tBlocks[i].getRelativeLengthOfPosition(pos, exonTypes);
+						
+						if(fullLength != -1 && fullDist != -1) {
+							
+							if(!output.strand) {
+								fullDist = fullLength - fullDist;
+							}
+							percentFullDistance = fullDist+"/"+fullLength;
+						}
+						if(exonLength != -1 && exonDist != -1) {
+							if(!output.strand) {
+								exonDist = exonLength - exonDist;
+							}
+							percentExonDistance = exonDist+"/"+exonLength;
 						}
 					}
+					// add dist information
+					dists.add(percentFullDistance+";"+percentExonDistance);
+					
 					
 					// if the match contains softclip, then the frame information is useless.
 					// for softclip, a user must manually resolve the genomic origin of reliable identifications.
 					// char frame = mappingStatus == Constants.MARK_SOFTCLIP ? Constants.NO_FRAME : output.getFrame(i);
 					char frame = output.getFrame(i);
 					char as = output.getAS(i); // alternative splicing mark
-					BW.append("(").append(output.getAARegionAnnotation(i)).append(";").append(senseMarker).append(";").append(frame).append(";").append(as).append(")");
+					BW.append("(").append(output.getAARegionAnnotation(i)).append(";")
+					.append(senseMarker).append(";")
+					.append(frame).append(";")
+					.append(as).append(";")
+					.append(")");
+					
 				}
 				
-				
-				// distance proportion
+				// distance information
 				BW.append("\t");
-				if(maxLenTxd == -1) {
-					BW.append("-");
-				} else {
-					double dist = gSeq.tBlocks[maxLenTxd].getRelativeFullLengthRatio(output.startGenomicPositions.get(0),
-							output.endGenomicPositions.get(output.endGenomicPositions.size()-1), output.strand);
-					BW.append(dist+"");
+				for(int i=0; i<dists.size(); i++) {
+					if(i != 0) BW.append("|");
+					BW.append(dists.get(i));
 				}
 				
 				BW.newLine();

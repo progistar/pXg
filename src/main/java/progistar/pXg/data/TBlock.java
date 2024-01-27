@@ -302,48 +302,55 @@ public class TBlock implements Comparable<TBlock> {
 	 * Jan. 26, 2024
 	 * This method was introduced to estimate a relative position of a peptide.
 	 * 
-	 * It returns full length of transcript including introns.
-	 * 
 	 * @return
 	 */
-	public double getTranscriptFullLength () {
-		return (double) (end - start + 1);
-	}
-	
-	/**
-	 * @deprecated
-	 * Jan. 26, 2024
-	 * This method was introduced to estimate a relative position of a peptide.
-	 * 
-	 * @return
-	 */
-	public double getTranscriptExonLength () {
-		double length = 0;
+	public int getTranscriptLength (ArrayList<Byte> targets) {
+		int length = -1;
 		for(ABlock aBlock : aBlocks) {
-			if(aBlock.feature == Constants.INTRON || aBlock.feature == Constants.INTERGENIC) {
-				continue;
-			}
-			length += aBlock.getLength();
-		}
-		return length;
-	}
-	
-	/**
-	 * @deprecated
-	 * Jan. 26, 2024
-	 * This method was introduced to estimate a relative position of a peptide.
-	 * 
-	 * @return
-	 */
-	public double getTranscriptCDSLength () {
-		double length = 0;
-		for(ABlock aBlock : aBlocks) {
-			if(aBlock.feature == Constants.CDS) {
-				length += aBlock.getLength();
+			for(Byte t : targets) {
+				if(t == aBlock.feature) {
+					if(length == -1) {
+						length = 0;
+					}
+					
+					length += aBlock.getLength();
+				}
 			}
 		}
 		return length;
 	}
+	
+	public int getRelativeLengthOfPosition (int pos, ArrayList<Byte> targets) {
+		int length = -1;
+		boolean isFound = false;
+		
+		for(ABlock aBlock : aBlocks) {
+			boolean hasTarget = false;
+			for(Byte t : targets) {
+				if(t == aBlock.feature) {
+					hasTarget = true;
+				}
+			}
+			
+			if(hasTarget) {
+				int exonLength = aBlock.getLength();
+				if(aBlock.start <= pos && pos <= aBlock.end) {
+					exonLength = pos - aBlock.start + 1;
+					length += exonLength;
+					isFound = true;
+					break;
+				}
+				length += exonLength;
+			}
+		
+		}
+		
+		if(!isFound) {
+			length = -1;
+		}
+		return length;
+	}
+	
 	/**
 	 * Jan. 26, 2024
 	 * It does not use transcript's strand so that antisense RNA can be used this method.
@@ -352,18 +359,6 @@ public class TBlock implements Comparable<TBlock> {
 	 * @param strand
 	 * @return
 	 */
-	public double getRelativeFullLengthRatio (int peptStart, int peptEnd, boolean strand) {
-		double fullLength = getTranscriptFullLength();
-		double ratio = -1;
-		
-		if(strand) {
-			ratio = (peptStart - this.start + 1) / fullLength;
-		} else {
-			ratio = (this.end - peptEnd) / fullLength;
-		}
-		
-		return ratio;
-	}
 
 	public int compareTo(TBlock o) {
 		if(this.start < o.start) {
