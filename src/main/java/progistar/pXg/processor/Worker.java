@@ -2,7 +2,6 @@ package progistar.pXg.processor;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -13,8 +12,8 @@ import progistar.pXg.data.GenomicSequence;
 import progistar.pXg.data.Mutation;
 import progistar.pXg.data.Output;
 import progistar.pXg.data.PeptideAnnotation;
+import progistar.pXg.data.TBlock;
 import progistar.pXg.data.parser.SamParser;
-import progistar.pXg.utils.Logger;
 
 public class Worker extends Thread {
 
@@ -112,9 +111,11 @@ public class Worker extends Thread {
 	 */
 	public void writeTmpOutput (BufferedWriter BW, ArrayList<Output> outputs, GenomicSequence gSeq, String prefixID) {
 		try {
+			ArrayList<Byte> cdsTypes = new ArrayList<Byte>();
+			cdsTypes.add(Constants.CDS);
 			
 			ArrayList<Byte> exonTypes = new ArrayList<Byte>();
-			exonTypes.add(Constants.CDS); exonTypes.add(Constants.UTR5); exonTypes.add(Constants.UTR3);
+			exonTypes.addAll(cdsTypes); exonTypes.add(Constants.UTR5); exonTypes.add(Constants.UTR3); exonTypes.add(Constants.NCDS);
 			
 			ArrayList<Byte> fullTypes = new ArrayList<Byte>();
 			fullTypes.addAll(exonTypes); fullTypes.add(Constants.INTRON);
@@ -179,15 +180,27 @@ public class Worker extends Thread {
 				BW.append("\t");
 				
 				// exon and full distance of identified genomic regions
-				ArrayList<String> dists = new ArrayList<String>();
+				ArrayList<String> exonLengths = new ArrayList<String>();
+				ArrayList<String> percentFullDistances = new ArrayList<String>();
+				ArrayList<String> percentExonDistances = new ArrayList<String>();
+				ArrayList<String> percentCDSDistances = new ArrayList<String>();
+				ArrayList<String> fromStartDistances = new ArrayList<String>();
+				ArrayList<String> fromStopDistances = new ArrayList<String>();
+				
 				for(int i=0; i<gSeq.matchedTxds; i++) {
 					if(i!=0) BW.append("|");
 					// intergenic
 					String senseMarker = "-";
-					// percent distance for only exons
-					String percentExonDistance = "-";
+					
+					String exonLength = "-";
 					// percent distance for both exons and introns
 					String percentFullDistance = "-";
+					// percent distance for only exons
+					String percentExonDistance = "-";
+					// percent distance for only CDSs
+					String percentCDSDistance = "-";
+					String fromStartDistance = "-";
+					String fromStopDistance = "-";
 					
 					mappingStatus = gSeq.getMappingStatus();
 					
@@ -206,33 +219,32 @@ public class Worker extends Thread {
 							senseMarker = "antisense";
 						}
 						
-						int pos = output.strand ? 
-								output.startGenomicPositions.get(0) : 
-									output.endGenomicPositions.get(output.endGenomicPositions.size()-1)-1;
+						int startPos = output.startGenomicPositions.get(0);
+						int endPos = output.endGenomicPositions.get(output.endGenomicPositions.size()-1);
+						int pos = output.strand ? startPos : endPos;
 						
 						
-						int fullLength = gSeq.tBlocks[i].getTranscriptLength(fullTypes);
-						int exonLength = gSeq.tBlocks[i].getTranscriptLength(exonTypes);
+						// -1 means that there is no matched exons or introns
+						percentFullDistance = getPercentDistance(pos, fullTypes, gSeq.tBlocks[i], output.strand);
+						percentExonDistance = getPercentDistance(pos, exonTypes, gSeq.tBlocks[i], output.strand);
 						
-						int fullDist = gSeq.tBlocks[i].getRelativeLengthOfPosition(pos, fullTypes);
-						int exonDist = gSeq.tBlocks[i].getRelativeLengthOfPosition(pos, exonTypes);
-						
-						if(fullLength != -1 && fullDist != -1) {
-							
-							if(!output.strand) {
-								fullDist = fullLength - fullDist;
-							}
-							percentFullDistance = fullDist+"/"+fullLength;
+						if(senseMarker.equalsIgnoreCase("sense")) {
+							percentCDSDistance = getPercentDistance(pos, cdsTypes, gSeq.tBlocks[i], output.strand);
+							fromStartDistance = distFromStartSite(startPos, endPos, gSeq.tBlocks[i], output.strand);
+							fromStopDistance = distFromStopSite(startPos, endPos, gSeq.tBlocks[i], output.strand);
 						}
-						if(exonLength != -1 && exonDist != -1) {
-							if(!output.strand) {
-								exonDist = exonLength - exonDist;
-							}
-							percentExonDistance = exonDist+"/"+exonLength;
-						}
+						
+						int exonLen = gSeq.tBlocks[i].getTranscriptLength(exonTypes);
+						exonLength = exonLen == -1 ? "-" : exonLen+"";
+						
 					}
 					// add dist information
-					dists.add(percentFullDistance+";"+percentExonDistance);
+					exonLengths.add(exonLength);
+					percentFullDistances.add(percentFullDistance);
+					percentExonDistances.add(percentExonDistance);
+					percentCDSDistances.add(percentCDSDistance);
+					fromStartDistances.add(fromStartDistance);
+					fromStopDistances.add(fromStopDistance);
 					
 					
 					// if the match contains softclip, then the frame information is useless.
@@ -250,9 +262,39 @@ public class Worker extends Thread {
 				
 				// distance information
 				BW.append("\t");
-				for(int i=0; i<dists.size(); i++) {
+				for(int i=0; i<exonLengths.size(); i++) {
 					if(i != 0) BW.append("|");
-					BW.append(dists.get(i));
+					BW.append(exonLengths.get(i));
+				}
+				
+				BW.append("\t");
+				for(int i=0; i<percentFullDistances.size(); i++) {
+					if(i != 0) BW.append("|");
+					BW.append(percentFullDistances.get(i));
+				}
+				
+				BW.append("\t");
+				for(int i=0; i<percentExonDistances.size(); i++) {
+					if(i != 0) BW.append("|");
+					BW.append(percentExonDistances.get(i));
+				}
+				
+				BW.append("\t");
+				for(int i=0; i<percentCDSDistances.size(); i++) {
+					if(i != 0) BW.append("|");
+					BW.append(percentCDSDistances.get(i));
+				}
+				
+				BW.append("\t");
+				for(int i=0; i<fromStartDistances.size(); i++) {
+					if(i != 0) BW.append("|");
+					BW.append(fromStartDistances.get(i));
+				}
+				
+				BW.append("\t");
+				for(int i=0; i<fromStopDistances.size(); i++) {
+					if(i != 0) BW.append("|");
+					BW.append(fromStopDistances.get(i));
 				}
 				
 				BW.newLine();
@@ -263,4 +305,115 @@ public class Worker extends Thread {
 		}
 	}
 	
+	
+	
+	
+	
+	// #TODO: more proper Class for those methods.
+
+	private String distFromStartSite (int start, int end, TBlock tBlock, boolean strand) {
+		ArrayList<Byte> targets = new ArrayList<Byte>();
+		targets.add(Constants.CDS); targets.add(Constants.UTR5); targets.add(Constants.UTR3);
+		int peptStart = tBlock.getRelativeLengthOfPosition(start, targets);
+		int peptEnd = tBlock.getRelativeLengthOfPosition(end, targets);
+		int startSite = tBlock.getStartSite();
+		
+		// return "-"
+		// when 1) intron, 2) noncoding, 3) intergenic, 4) antisense, 5) unmapped
+		if(peptStart == -1 || peptEnd == -1 || startSite == -1 || (strand != tBlock.strand)) {
+			return "-";
+		}
+		
+		if(strand) {
+			peptStart = peptStart - startSite;
+			peptEnd = peptEnd - startSite;
+		} else {
+			peptStart = startSite - peptStart;
+			peptEnd = startSite - peptEnd;
+			int swap = peptStart;
+			peptStart = peptEnd;
+			peptEnd = swap;
+		}
+		
+
+		if(peptStart >= 0) {
+			peptStart++;
+		}
+		if(peptEnd >= 0) {
+			peptEnd++;
+		}
+		
+		String out = "";
+		if(peptStart > 0) {
+			out += "+";
+		}
+		out += peptStart +"~";
+		if(peptEnd > 0) {
+			out += "+";
+		}
+		out += peptEnd;
+		
+		return out;
+	}
+	
+	private String distFromStopSite (int start, int end, TBlock tBlock, boolean strand) {
+		ArrayList<Byte> targets = new ArrayList<Byte>();
+		targets.add(Constants.CDS); targets.add(Constants.UTR5); targets.add(Constants.UTR3);
+		int peptStart = tBlock.getRelativeLengthOfPosition(start, targets);
+		int peptEnd = tBlock.getRelativeLengthOfPosition(end, targets);
+		int endSite = tBlock.getStopSite();
+		
+		// return "-"
+		// when 1) intron, 2) noncoding, 3) intergenic, 4) antisense, 5) unmapped
+		if(peptStart == -1 || peptEnd == -1 || endSite == -1 || (strand != tBlock.strand)) {
+			return "-";
+		}
+		
+		if(strand) {
+			peptStart = peptStart - endSite;
+			peptEnd = peptEnd - endSite;
+		} else {
+			peptStart = endSite - peptStart;
+			peptEnd = endSite - peptEnd;
+			int swap = peptStart;
+			peptStart = peptEnd;
+			peptEnd = swap;
+		}
+		
+		if(peptStart <= 0) {
+			peptStart--;
+		}
+		if(peptEnd <= 0) {
+			peptEnd--;
+		}
+		
+		String out = "";
+		if(peptStart > 0) {
+			out += "+";
+		}
+		out += peptStart +"~";
+		if(peptEnd > 0) {
+			out += "+";
+		}
+		out += peptEnd;
+		
+		return out;
+	}
+	
+	private String getPercentDistance (int pos, ArrayList<Byte> targets, TBlock tBlock, boolean strand) {
+		int length = tBlock.getTranscriptLength(targets);
+		int dist = tBlock.getRelativeLengthOfPosition(pos, targets);
+		String percentDistance = "-";
+		
+		if(dist == -1 || length == -1) {
+			percentDistance ="-";
+		} else {
+			if(!strand) {
+				dist = length - dist + 1;
+			}
+			percentDistance = String.format("%.3f",(double)dist/length);
+		}
+		
+		return percentDistance;
+	}
 }

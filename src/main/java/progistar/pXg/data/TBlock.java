@@ -328,6 +328,9 @@ public class TBlock implements Comparable<TBlock> {
 			boolean hasTarget = false;
 			for(Byte t : targets) {
 				if(t == aBlock.feature) {
+					if(length == -1) {
+						length = 0;
+					}
 					hasTarget = true;
 				}
 			}
@@ -349,6 +352,53 @@ public class TBlock implements Comparable<TBlock> {
 			length = -1;
 		}
 		return length;
+	}
+	
+	public int getStartSite () {
+		int site = -1;
+		if(this.strand) {
+			for(ABlock aBlock : aBlocks) {
+				if(aBlock.feature == Constants.UTR5) {
+					if(site == -1) site = 1;
+					site += aBlock.getLength();
+				} else if(aBlock.feature == Constants.CDS) {
+					if(site == -1) site = 1;
+					break;
+				}
+			}
+		} else {
+			for(ABlock aBlock : aBlocks) {
+				if(aBlock.feature == Constants.UTR3 || aBlock.feature == Constants.CDS) {
+					if(site == -1) site = 0;
+					site += aBlock.getLength();
+				}
+			}
+		}
+		return site;
+	}
+	
+	public int getStopSite () {
+		int site = -1;
+		if(this.strand) {
+			for(ABlock aBlock : aBlocks) {
+				if(aBlock.feature == Constants.UTR5 || aBlock.feature == Constants.CDS) {
+					if(site == -1) site = 0;
+					site += aBlock.getLength();
+				}
+			}
+		} else {
+			for(ABlock aBlock : aBlocks) {
+				if(aBlock.feature == Constants.UTR3) {
+					if(site == -1) site = 1;
+					site += aBlock.getLength();
+				} else if(aBlock.feature == Constants.CDS) {
+					if(site == -1) site = 0;
+					break;
+				}
+					
+			}
+		}
+		return site;
 	}
 	
 	/**

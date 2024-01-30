@@ -161,6 +161,10 @@ public class PxGAnnotation {
 			
 			BW.append("PercentFullDistance").append("\t");
 			BW.append("PercentExonDistance").append("\t");
+			BW.append("PercentCDSDistance").append("\t");
+			// TODO: It needs more test.
+			//BW.append("FromCDSStartSite").append("\t");
+			//BW.append("FromCDSStopSite").append("\t");
 			
 			BW.append("Events").append("\t");
 			BW.append("EventCount").append("\t");
@@ -206,7 +210,7 @@ public class PxGAnnotation {
 							
 							// we treated unmapped reads as '0' genomic loci count.
 							String gLociCount = "0";
-							if(xBlock.isMapped()) {
+							if(xBlock.isMappedAmbiguous()) {
 								gLociCount = xBlocks.size()+"";
 							}
 							
@@ -220,7 +224,7 @@ public class PxGAnnotation {
 							BW.newLine();
 							
 							// if this is unmapped, then store.
-							if(!xBlock.isMapped()) {
+							if(!xBlock.isMappedAmbiguous()) {
 								ArrayList<XBlock> unmappedXBlocks = new ArrayList<XBlock>();
 								unmappedXBlocks.add(xBlock);
 								unmappedXBlocks.addAll(xBlock.siblingXBlocks);

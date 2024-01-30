@@ -7,6 +7,7 @@ import javax.swing.plaf.basic.BasicScrollBarUI;
 
 import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
+import progistar.pXg.data.parser.ResultParser;
 import progistar.pXg.utils.ENSTMapper;
 import progistar.pXg.utils.Priority;
 
@@ -38,9 +39,13 @@ public class XBlock {
 	public double bestRegionPriority 	= 	Double.MAX_VALUE;
 	public double targetQScore		=	0;
 	public double decoyQScore		=	0;
-	public String percentExonDist	=	"-";
-	public String percentFullDist	=	"-";
 	
+	public String[] exonLenghts = null;
+	public String[] percentFullDistances	=	null;
+	public String[] percentExonDistances	=	null;
+	public String[] percentCDSDistances	=	null;
+	public String[] fromStartDistances	=	null;
+	public String[] fromStopDistances	=	null;
 	
 	// with the same key value block
 	// the block will be null if there is no next sibling.
@@ -170,11 +175,13 @@ public class XBlock {
 		return isCannonical;
 	}
 	
-	public boolean isMapped () {
-		if(this.fullReadSequence == null) {
-			return true;
+	public boolean isMappedAmbiguous () {
+		Hashtable<String, String> events = toEvents();
+		String event = events.get("key");
+		if(event.contains(Constants.EVENT_UNKNOWN)) {
+			return false;
 		}
-		return false;
+		return true;
 	}
 	
 	public String getKey () {
@@ -227,8 +234,7 @@ public class XBlock {
 					+"\t"+tAnnotations+"\t"+transCount
 					+"\t"+geneIDs.get("key")+"\t"+geneIDs.get("count")
 					+"\t"+geneNames.get("key")+"\t"+geneNames.get("count")
-					+"\t"+percentFullDist
-					+"\t"+percentExonDist
+					+"\t"+this.toDist()
 					+"\t"+events.get("key")+"\t"+events.get("count")
 					+"\t"+fastaIDs.get("key")+"\t"+fastaIDs.get("count")
 					+"\t"+mockReadCount+"\t"+(qScore);
@@ -252,8 +258,7 @@ public class XBlock {
 					+"\t"+tAnnotations+"\t"+transCount
 					+"\t"+geneIDs.get("key")+"\t"+geneIDs.get("count")
 					+"\t"+geneNames.get("key")+"\t"+geneNames.get("count")
-					+"\t"+percentFullDist
-					+"\t"+percentExonDist
+					+"\t"+this.toDist()
 					+"\t"+events.get("key")+"\t"+events.get("count")
 					+"\t"+fastaIDs.get("key")+"\t"+fastaIDs.get("count")
 					+"\t"+targetReadCount+"\t"+(qScore);
@@ -271,6 +276,26 @@ public class XBlock {
 			return false;
 		}
 		return true;
+	}
+	
+	private String toDist () {
+		int longestIdx = 0;
+		int longestVal = 0;
+		for(int i=0; i<this.exonLenghts.length; i++) {
+			if(this.exonLenghts[i].equalsIgnoreCase("-")) continue;
+			
+			int exonLength = Integer.parseInt(this.exonLenghts[i]);
+			if(exonLength > longestVal) {
+				longestIdx = i;
+				longestVal = exonLength;
+			}
+		}
+		
+		return percentFullDistances[longestIdx] + "\t" + 
+		percentExonDistances[longestIdx] + "\t" +
+		percentCDSDistances[longestIdx] + "\t" +
+		fromStartDistances[longestIdx] + "\t" +
+		fromStopDistances[longestIdx];
 	}
 	
 	/**
@@ -462,11 +487,22 @@ public class XBlock {
 		
 		StringBuilder filteredAnnotations = new StringBuilder();
 		
+		Boolean[] bans = new Boolean[regions.length];
 		for(int i=0; i<regions.length; i++) {
 			if(penalties[i] == bestRegionPriority) {
 				filteredAnnotations.append("|").append(regions[i]);
+				bans[i] = false;
+			} else {
+				bans[i] = true;
 			}
 		}
+		
+		this.exonLenghts = ResultParser.getWithoutBanList(this.exonLenghts, bans);
+		this.percentFullDistances = ResultParser.getWithoutBanList(this.percentFullDistances, bans);
+		this.percentExonDistances = ResultParser.getWithoutBanList(this.percentExonDistances, bans);
+		this.percentCDSDistances = ResultParser.getWithoutBanList(this.percentCDSDistances, bans);
+		this.fromStartDistances = ResultParser.getWithoutBanList(this.fromStartDistances, bans);
+		this.fromStopDistances = ResultParser.getWithoutBanList(this.fromStopDistances, bans);
 		
 		this.tAnnotations = filteredAnnotations.substring(1);
 	}

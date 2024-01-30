@@ -69,7 +69,13 @@ public class ResultParser {
 							xBlock.mutationStatus = field[11];
 							xBlock.tAnnotations = field[12];
 							
-							String[] dists = field[13].split("\\|");
+							String[] exonLengths = field[13].split("\\|");
+							String[] percentFullDistances = field[14].split("\\|");
+							String[] percentExonDistances = field[15].split("\\|");
+							String[] percentCDSDistances = field[16].split("\\|");
+							String[] fromStartDistances = field[17].split("\\|");
+							String[] fromStopDistances = field[18].split("\\|");
+							
 							xBlock.fullReadSequence = fullReads;
 							// If unmapped reads, merging xBlocks and making a single contig xBlock.
 							
@@ -80,18 +86,19 @@ public class ResultParser {
 							 */
 							if(Parameters.translationMethod == Constants.THREE_FRAME) {
 								StringBuilder transcriptsWithOutBANlist = new StringBuilder();
-								StringBuilder distsWithOutBANlist = new StringBuilder();
 								
 								String[] transcripts = xBlock.tAnnotations.split("\\|");
+								Boolean[] bans = new Boolean[transcripts.length];
 								for(int i=0; i<transcripts.length; i++) {
 									String transcript = transcripts[i];
 									if(!transcript.contains(";antisense;")) {
 										if(transcriptsWithOutBANlist.length() != 0) {
 											transcriptsWithOutBANlist.append("|");
-											distsWithOutBANlist.append("|");
 										}
 										transcriptsWithOutBANlist.append(transcript);
-										distsWithOutBANlist.append(dists[i]);
+										bans[i] = false;
+									} else {
+										bans[i] = true;
 									}
 								}
 								
@@ -99,44 +106,22 @@ public class ResultParser {
 								// in this case, we accept antisense even three-frame translation.
 								if(transcriptsWithOutBANlist.length() != 0) {
 									xBlock.tAnnotations = transcriptsWithOutBANlist.toString();
-									field[13] = distsWithOutBANlist.toString();
-								}
-							}
-							
-							// calculate dists (longest exon length)
-							dists = field[13].split("\\|");
-							String percentFullDist = "-";
-							String percentExonDist = "-";
-							
-							int longestValue = 0;
-							for(int i=0; i<dists.length; i++) {
-								String[] values = dists[i].split("\\;");
-								if(!values[1].equalsIgnoreCase("-")) {
-									String exonLength = values[1].split("\\/")[1];
-									int value = Integer.parseInt(exonLength);
 									
-									if(value > longestValue) {
-										longestValue = value;
-										percentFullDist = values[0];
-										percentExonDist = values[1];
-									}
+									exonLengths = getWithoutBanList(exonLengths, bans);
+									percentFullDistances = getWithoutBanList(percentFullDistances, bans);
+									percentExonDistances = getWithoutBanList(percentExonDistances, bans);
+									percentCDSDistances = getWithoutBanList(percentCDSDistances, bans);
+									fromStartDistances = getWithoutBanList(fromStartDistances, bans);
+									fromStopDistances = getWithoutBanList(fromStopDistances, bans);
 								}
 							}
 							
-							if(!percentFullDist.equalsIgnoreCase("-")) {
-								double v1 = Double.parseDouble(percentFullDist.split("\\/")[0]);
-								double v2 = Double.parseDouble(percentFullDist.split("\\/")[1]);
-								percentFullDist = (v1/v2)+"";
-							}
-							
-							if(!percentExonDist.equalsIgnoreCase("-")) {
-								double v1 = Double.parseDouble(percentExonDist.split("\\/")[0]);
-								double v2 = Double.parseDouble(percentExonDist.split("\\/")[1]);
-								percentExonDist = (v1/v2)+"";
-							}
-							
-							xBlock.percentFullDist = percentFullDist;
-							xBlock.percentExonDist = percentExonDist;
+							xBlock.exonLenghts = exonLengths;
+							xBlock.percentFullDistances = percentFullDistances;
+							xBlock.percentExonDistances = percentExonDistances;
+							xBlock.percentCDSDistances = percentCDSDistances;
+							xBlock.fromStartDistances = fromStartDistances;
+							xBlock.fromStopDistances = fromStopDistances;
 							
 							if(xBlock.strand == '+') {
 								xBlock.peptideSequence = GenomicSequence.translation(xBlock.genomicSequence, 0);
@@ -200,5 +185,20 @@ public class ResultParser {
 		
 		
 		return annotation;
+	}
+	
+	public static String[] getWithoutBanList (String[] list, Boolean[] isBan) {
+		StringBuilder str = new StringBuilder();
+		
+		for(int i=0; i<list.length; i++) {
+			if(!isBan[i]) {
+				if(str.length() != 0) {
+					str.append("|");
+				}
+				str.append(list[i]);
+			}
+		}
+		
+		return str.toString().split("\\|");
 	}
 }

@@ -40,27 +40,39 @@ public class Priority {
 				mPenalty = mutations.split("\\|").length * Parameters.PENALTY_MUTATION;
 			}
 			
+			// antisense = asRNA
+			if(regions[1].equalsIgnoreCase("antisense")) {
+				rPenalty += Parameters.PENALTY_asRNA;
+			} 
+			// 5`-UTR, 3`-UTR, ncRNA, FS are relevant events for sense
+			else {
+				// region score
+				// F = 5`-UTR
+				// T = 3`-UTR
+				// N = non-coding such as ncRNAs
+				if(regions[0].contains(Constants.MARK_5UTR+"")) {
+					rPenalty += Parameters.PENALTY_5UTR;
+				}
+				
+				if(regions[0].contains(Constants.MARK_3UTR+"")) {
+					rPenalty += Parameters.PENALTY_3UTR;
+				}
+				
+				if(regions[0].contains(Constants.MARK_NCDS+"")) {
+					rPenalty += Parameters.PENALTY_ncRNA;
+				}
+
+				// Outofframe
+				if(regions[2].charAt(0) == Constants.OUT_OF_FRAME) {
+					rPenalty += Parameters.PENALTY_FS;
+				}
+			}
+
 			// alternative splicing
 			if(regions[3].charAt(0) == Constants.MARK_AS) {
 				rPenalty += Parameters.PENALTY_AS;
 			}
-			
-			// region score
-			// F = 5`-UTR
-			// T = 3`-UTR
-			// N = non-coding such as ncRNAs
-			if(regions[0].contains(Constants.MARK_5UTR+"")) {
-				rPenalty += Parameters.PENALTY_5UTR;
-			}
-			
-			if(regions[0].contains(Constants.MARK_3UTR+"")) {
-				rPenalty += Parameters.PENALTY_3UTR;
-			}
-			
-			if(regions[0].contains(Constants.MARK_NCDS+"")) {
-				rPenalty += Parameters.PENALTY_ncRNA;
-			}
-			
+
 			// strvar
 			// I = intron
 			// - = intergenic
@@ -84,15 +96,6 @@ public class Priority {
 				}
 			}
 			
-			// Outofframe
-			if(regions[2].charAt(0) == Constants.OUT_OF_FRAME) {
-				rPenalty += Parameters.PENALTY_FS;
-			}
-			
-			// antisense = asRNA
-			if(regions[1].equalsIgnoreCase("antisense")) {
-				rPenalty += Parameters.PENALTY_asRNA;
-			}
 			
 			// worst-case... unmapped
 			if(regions[0].contains(Constants.MARK_UNMAPPED+"")) {
@@ -152,14 +155,16 @@ public class Priority {
 				event = Constants.EVENT_INTRON;
 			} else if(regions[2].contains(Constants.OUT_OF_FRAME+"")) {
 				event = Constants.EVENT_FRAMESHIFT;
-			} else if(regions[0].contains(Constants.MARK_UNMAPPED+"") || regions[0].contains(Constants.MARK_SOFTCLIP+"")) {
+			}
+			
+			if(regions[0].contains(Constants.MARK_UNMAPPED+"") || regions[0].contains(Constants.MARK_SOFTCLIP+"")) {
 				event = Constants.EVENT_UNKNOWN;
 			} 
 			
 			// we cannot decide sense/antisense and structural variations against unmapped reads
 			if(!event.equalsIgnoreCase( Constants.EVENT_UNKNOWN)) {
 				if(regions[1].equalsIgnoreCase("antisense")) {
-					event += ";"+Constants.EVENT_ANTISENSE;
+					event = Constants.EVENT_ANTISENSE;
 				}
 				
 				if(regions[3].charAt(0) == Constants.MARK_AS) {
