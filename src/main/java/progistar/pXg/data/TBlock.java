@@ -312,7 +312,6 @@ public class TBlock implements Comparable<TBlock> {
 					if(length == -1) {
 						length = 0;
 					}
-					
 					length += aBlock.getLength();
 				}
 			}

@@ -162,9 +162,8 @@ public class PxGAnnotation {
 			BW.append("PercentFullDistance").append("\t");
 			BW.append("PercentExonDistance").append("\t");
 			BW.append("PercentCDSDistance").append("\t");
-			// TODO: It needs more test.
-			//BW.append("FromCDSStartSite").append("\t");
-			//BW.append("FromCDSStopSite").append("\t");
+			BW.append("FromCDSStartSite").append("\t");
+			BW.append("FromCDSStopSite").append("\t");
 			
 			BW.append("Events").append("\t");
 			BW.append("EventCount").append("\t");
