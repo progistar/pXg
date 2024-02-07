@@ -48,28 +48,37 @@ public class Output {
 		
 		if(mutations.size() != 0) {
 
-			// '-' indicates insertion.
-			// reference sequence is "lower case".
-			// to translate them, they are converted properly.
-			String referenceSequence = this.getMatchedRefNucleotide().replaceAll("[actg-]", "").toUpperCase();
-			String observedSequence = this.getMatchedNucleotide();
-			
-			String refPeptide = null;
-			String obsPeptide = null;
-			
-			if(this.strand) {
-				refPeptide = GenomicSequence.translation(referenceSequence, 0);
-				obsPeptide = GenomicSequence.translation(observedSequence, 0);
-			} else {
-				refPeptide = GenomicSequence.reverseComplementTranslation(referenceSequence, 0);
-				obsPeptide = GenomicSequence.reverseComplementTranslation(observedSequence, 0);
+			// if the sequence has INDEL, then it is annotated as altered.
+			for(Mutation mutation : mutations) {
+				if(mutation.type == Constants.INS || mutation.type == Constants.DEL) {
+					mutationStatus = Constants.MUTATION_ALTERED;
+				}
 			}
 			
-			if(refPeptide.equalsIgnoreCase(obsPeptide)) {
-				mutationStatus = Constants.MUTATION_SAME;
-			} else {
-				mutationStatus = Constants.MUTATION_ALTER;
+			if(mutationStatus.equalsIgnoreCase("-")) {
+				// reference sequence is "lower case".
+				// to translate them, they are converted properly.
+				String referenceSequence = this.getMatchedRefNucleotide().toUpperCase();
+				String observedSequence = this.getMatchedNucleotide();
+				
+				String refPeptide = null;
+				String obsPeptide = null;
+				
+				if(this.strand) {
+					refPeptide = GenomicSequence.translation(referenceSequence, 0);
+					obsPeptide = GenomicSequence.translation(observedSequence, 0);
+				} else {
+					refPeptide = GenomicSequence.reverseComplementTranslation(referenceSequence, 0);
+					obsPeptide = GenomicSequence.reverseComplementTranslation(observedSequence, 0);
+				}
+				
+				if(refPeptide.equalsIgnoreCase(obsPeptide)) {
+					mutationStatus = Constants.MUTATION_SAME;
+				} else {
+					mutationStatus = Constants.MUTATION_ALTERED;
+				}
 			}
+			
 		}
 		
 		return mutationStatus;
@@ -149,6 +158,7 @@ public class Output {
 		for(int i=0; i<matchedNucleotide.length(); i++) {
 			
 			Mutation insOrDelMutation = null;
+			// SNP
 			for(Mutation mutation : mutations) {
 				int mPos = mutation.relPos - startPosInNGS;
 				
@@ -161,6 +171,8 @@ public class Output {
 				}
 			}
 			
+			
+			// INDEL
 			if(insOrDelMutation == null) {
 				refNucleotide.append(matchedNucleotide.charAt(i));
 			} else {

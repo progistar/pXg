@@ -68,7 +68,7 @@ public class Constants {
 	public static final byte DEL			=	2;
 	
 	// Mutation status
-	public static final String MUTATION_ALTER		=	"Altered";
+	public static final String MUTATION_ALTERED		=	"Altered";
 	public static final String MUTATION_SAME		=	"Same";
 	
 	
