@@ -46,7 +46,7 @@ public class ParameterParser {
 				System.out.println("  --max_flank_size      : Specify to print maximum flank nuleotides from matched sequence. Default is 1,000");
 				System.out.println("  --fasta_file          : Canonical sequence database to avoid ambiguous assignment of noncanonical peptides");
 				System.out.println("  --rank                : How many candidates will be considered per a scan. Default is 100 (in other words, use all ranked candidates)");
-				System.out.println("  --out_sam             : Report matched reads as SAM format (true or false). Default is true.");
+				System.out.println("  --out_sam             : Report matched reads as SAM format (true or false). Default is false.");
 				System.out.println("  --out_gtf             : Report matched peptides as GTF format (true or false). Default is true.");
 				System.out.println("  --out_noncanonial     : Report noncaonical peptides for SAM and/or GTF formats (true or false). Default is true.");
 				System.out.println("  --out_canonial        : Report caonical peptides for SAM and/or GTF formats (true or false). Default is true.");
@@ -194,8 +194,8 @@ public class ParameterParser {
 				} 
 				// -out_sam (optional)
 				else if(option.equalsIgnoreCase(Parameters.CMD_SAM_FORMAT)) {
-					if(args[i+1].equalsIgnoreCase("false")) {
-						Parameters.EXPORT_SAM = false;
+					if(args[i+1].equalsIgnoreCase("true")) {
+						Parameters.EXPORT_SAM = true;
 					}
 				}
 				// -out_gtf (optional)

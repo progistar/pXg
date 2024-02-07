@@ -120,7 +120,7 @@ public class Parameters {
 	// Export option
 	public static boolean EXPORT_TSV				=	true;
 	public static boolean EXPORT_GTF				=	true;
-	public static boolean EXPORT_SAM				=	true;
+	public static boolean EXPORT_SAM				=	false;
 	public static boolean EXPORT_NONCANONICAL		=	true;
 	public static boolean EXPORT_CANONICAL			=	true;
 	
