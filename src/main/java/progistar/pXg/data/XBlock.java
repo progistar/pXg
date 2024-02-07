@@ -160,16 +160,11 @@ public class XBlock {
 		String events = toEvents().get("key");
 		boolean isCannonical = false;
 		
-		// if there is matched known sequences.
-		if(fastaIDs.length != 0) {
-			isCannonical = true;
-		}
 		// wildtype
-		if(mutations.equalsIgnoreCase("-")) {
-			// proteincoding;sense
-			if(events.equalsIgnoreCase(Constants.EVENT_PROTEINCODING)) {
-				isCannonical = true;
-			}
+		if(events.equalsIgnoreCase(Constants.EVENT_PROTEINCODING) && 
+				!mutationStatus.equalsIgnoreCase(Constants.MUTATION_ALTER)) {
+			// PC
+			isCannonical = true;
 		}
 		
 		return isCannonical;

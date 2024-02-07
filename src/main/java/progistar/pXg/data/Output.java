@@ -51,7 +51,7 @@ public class Output {
 			// '-' indicates insertion.
 			// reference sequence is "lower case".
 			// to translate them, they are converted properly.
-			String referenceSequence = this.getMatchedRefNucleotide().replace("-", "").toUpperCase();
+			String referenceSequence = this.getMatchedRefNucleotide().replaceAll("[actg-]", "").toUpperCase();
 			String observedSequence = this.getMatchedNucleotide();
 			
 			String refPeptide = null;
@@ -66,29 +66,11 @@ public class Output {
 			}
 			
 			if(refPeptide.equalsIgnoreCase(obsPeptide)) {
-				mutationStatus = Constants.MUTATION_SILENT;
+				mutationStatus = Constants.MUTATION_SAME;
 			} else {
-				mutationStatus = Constants.MUTATION_MISSENSE;
+				mutationStatus = Constants.MUTATION_ALTER;
 			}
-			
-			// stop mark
-			if(obsPeptide.contains("X")) {
-				mutationStatus += "|"+Constants.MUTATION_STOPLOSS;
-			}// we cannot determine stop gain. because if it is, then the peptide cannot be detected from MS/MS.
-			
-			boolean isINDEL = false;
-			for(Mutation mutation : mutations) {
-				if(mutation.type == Constants.INS || mutation.type == Constants.DEL) {
-					isINDEL = true;
-				}
-			}
-			
-			if(isINDEL) {
-				mutationStatus += "|"+Constants.MUTATION_INDELS;
-			}
-			
 		}
-		
 		
 		return mutationStatus;
 	}

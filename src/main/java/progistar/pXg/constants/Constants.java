@@ -68,11 +68,8 @@ public class Constants {
 	public static final byte DEL			=	2;
 	
 	// Mutation status
-	public static final String MUTATION_MISSENSE		=	"missense";
-	public static final String MUTATION_SILENT	=	"silent";
-	public static final String MUTATION_STOPLOSS		=	"stoploss";
-	public static final String MUTATION_INDELS			=	"indels";
-	public static final String MUTATION_STOPGAIN		=	"nonsense"; // currently, it is not supported.
+	public static final String MUTATION_ALTER		=	"Altered";
+	public static final String MUTATION_SAME		=	"Same";
 	
 	
 	// RNA-Seq parameter
