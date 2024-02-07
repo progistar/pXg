@@ -55,6 +55,7 @@ public class Output {
 				}
 			}
 			
+			// only SNPs are included
 			if(mutationStatus.equalsIgnoreCase("-")) {
 				// reference sequence is "lower case".
 				// to translate them, they are converted properly.

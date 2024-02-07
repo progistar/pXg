@@ -162,7 +162,7 @@ public class XBlock {
 		
 		// wildtype
 		if(events.equalsIgnoreCase(Constants.EVENT_PROTEINCODING) && 
-				!mutationStatus.equalsIgnoreCase(Constants.MUTATION_ALTER)) {
+				!mutationStatus.equalsIgnoreCase(Constants.MUTATION_ALTERED)) {
 			// PC
 			isCannonical = true;
 		}
