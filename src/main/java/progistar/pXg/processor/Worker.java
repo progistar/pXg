@@ -100,7 +100,7 @@ public class Worker extends Thread {
 		 
 		
 		long endTime = System.currentTimeMillis();
-		System.out.println("Worker "+this.workerID+" was done with task"+task.taskID +"\tElapsed time: "+((endTime-startTime)/1000)+" sec");
+		System.out.println("Worker "+this.workerID+" was done with task"+task.taskID +"\telapsed time: "+((endTime-startTime)/1000)+" sec");
 	}
 	/**
 	 * Write temporary output file. <br>

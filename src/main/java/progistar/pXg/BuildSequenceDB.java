@@ -58,7 +58,7 @@ public class BuildSequenceDB {
 		}
 		System.out.println("A total of "+writeCnt+" were written in the sequence database");
 		long endTime = System.currentTimeMillis();
-		System.out.println("A total elapsed time: "+(endTime - startTime)/1000 +" sec");
+		System.out.println("Total elapsed time: "+(endTime - startTime)/1000 +" sec");
 		BW.close();
 	}
 	

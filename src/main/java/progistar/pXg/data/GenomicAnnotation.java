@@ -90,7 +90,7 @@ public class GenomicAnnotation {
 	 * @return
 	 */
 	public int[][] getIndexingBlocks (int chrIndex, int start, int end) {
-		System.out.print("Get indexing tBlocks from the annotation... ("+IndexConvertor.indexToChr(chrIndex)+":"+start+"-"+end+")");
+		System.out.println("Get indexing tBlocks from the annotation... ("+IndexConvertor.indexToChr(chrIndex)+":"+start+"-"+end+")");
 		long startTime = System.currentTimeMillis();
 		
 		int size = end - start + 1;
