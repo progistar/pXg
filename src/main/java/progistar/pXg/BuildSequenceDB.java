@@ -22,6 +22,7 @@ import progistar.pXg.data.parser.pXgParser;
 public class BuildSequenceDB {
 
 	public static void main(String[] args) throws IOException {
+		long startTime = System.currentTimeMillis();
 		System.out.println(Constants.VERSION+" "+Constants.RELEASE);
 		System.out.println(Constants.INTRODUCE);
 		System.out.println();
@@ -36,6 +37,7 @@ public class BuildSequenceDB {
 		System.out.println("write "+output.getName());
 		BufferedWriter BW = new BufferedWriter(new FileWriter(output));
 		
+		int writeCnt = 0;
 		for(int i=0; i<records.size(); i++) {
 			pXgRecord record = records.get(i);
 			boolean isWrite = false;
@@ -47,13 +49,16 @@ public class BuildSequenceDB {
 			}
 			
 			if(isWrite) {
+				writeCnt++;
 				BW.append(record.getHeader());
 				BW.newLine();
 				BW.append(record.getTranslatedSequence());
 				BW.newLine();
 			}
 		}
-		
+		System.out.println("A total of "+writeCnt+" were written in the sequence database");
+		long endTime = System.currentTimeMillis();
+		System.out.println("A total elapsed time: "+(endTime - startTime)/1000 +" sec");
 		BW.close();
 	}
 	
