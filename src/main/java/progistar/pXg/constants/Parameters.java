@@ -146,4 +146,18 @@ public class Parameters {
 	// hidden parameters for revision
 	public static String CMD_PHRED_CAL					=	"--cal_phred";
 	public static String PHRED_CAL						=	Constants.CAL_PHRED_AVG;
+	
+	
+	
+	
+	
+	///////////////////// Parameters for "Build Sequence Database" /////////////////////
+	public static String sequencedbInputPath		=	null;
+	public static String sequencedbOutputPath		=	null;
+	public static boolean isIncludedCanonical		=	false;
+	public static boolean isIncludedNoncanonical	=	false;
+	public static boolean isIncludedFlankSequence	=	false;
+	
+	////////////////////////////////////////////////////////////////////////////////////
+	
 }

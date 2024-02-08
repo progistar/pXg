@@ -1,7 +1,6 @@
 package progistar.pXg.data;
 
+@Deprecated
 public class FastaEntry {
 
-	public String header;
-	public String sequence;
 }
