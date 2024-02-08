@@ -4,7 +4,6 @@ import progistar.pXg.constants.Parameters;
 import progistar.pXg.data.parser.pXgParser;
 
 public class pXgRecord {
-	public static final int PE = 2;
 	private String[] fields = null;
 	
 	public pXgRecord (String[] fields) {
@@ -18,7 +17,7 @@ public class pXgRecord {
 		String isCanonical = getValueByFieldName("isCanonical").equalsIgnoreCase("true") ? "Canonical" : "Noncanonical";
 		String gn = getValueByFieldName("GeneNames");
 		String ev = getValueByFieldName("Events");
-		String pe = PE+"";
+		String pe = getValueByFieldName("isCanonical").equalsIgnoreCase("true") ? "1" : "2";
 		String pep = getValueByFieldName("InferredPeptide");
 		String exp = getValueByFieldName("Reads");
 		String var = getValueByFieldName("Mutations");

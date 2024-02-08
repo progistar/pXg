@@ -1,10 +1,14 @@
 package progistar.pXg;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -57,6 +61,37 @@ public class BuildSequenceDB {
 			}
 		}
 		System.out.println("A total of "+writeCnt+" were written in the sequence database");
+		System.out.println();
+		
+		// write reference file
+		if(Parameters.referenceSequencePath != null) {
+			File referenceFile = new File(Parameters.referenceSequencePath);
+			System.out.println("Read and write reference file: "+referenceFile.getName());
+			System.out.println("All entries in the reference file enforce to have PE=1 at header section");
+			
+			Pattern PE = Pattern.compile("PE=[0-9]+");
+			BufferedReader BR = new BufferedReader(new FileReader(referenceFile));
+			String line = null;
+			int refCnt = 0;
+			while((line = BR.readLine()) != null) {
+				if(line.startsWith(">")) {
+					refCnt++;
+					Matcher matcher = PE.matcher(line);
+					if(matcher.find()) {
+						line = line.replace(matcher.group(), "PE=1");
+					} else {
+						line += " PE=1";
+					}
+				}
+				BW.append(line);
+				BW.newLine();
+			}
+			
+			BR.close();
+			System.out.println("A total of "+refCnt +" were written in the sequence database");
+			System.out.println();
+			
+		}
 		long endTime = System.currentTimeMillis();
 		System.out.println("Total elapsed time: "+(endTime - startTime)/1000 +" sec");
 		BW.close();
@@ -101,13 +136,20 @@ public class BuildSequenceDB {
 				.required(false)
 				.desc("Include flank sequences")
 				.build();
+		Option optionReference = Option.builder("r")
+				.longOpt("reference").argName("Reference protein sequence database")
+				.hasArg()
+				.required(false)
+				.desc("Include the given reference sequence database")
+				.build();
 		
 		
 		options.addOption(optionInput)
 		.addOption(optionOutput)
 		.addOption(optionCanonical)
 		.addOption(optionNoncanonical)
-		.addOption(optionFlank);
+		.addOption(optionFlank)
+		.addOption(optionReference);
 		
 		CommandLineParser parser = new DefaultParser();
 	    HelpFormatter helper = new HelpFormatter();
@@ -139,6 +181,10 @@ public class BuildSequenceDB {
 		    if(cmd.hasOption("o")) {
 		    	Parameters.sequencedbOutputPath = cmd.getOptionValue("o");
 		    	System.out.println("Output the generated sequence database: "+Parameters.sequencedbOutputPath);
+		    }
+		    if(cmd.hasOption("r")) {
+		    	Parameters.referenceSequencePath = cmd.getOptionValue("r");
+		    	System.out.println("Reference sequence file: "+Parameters.referenceSequencePath);
 		    }
 		} catch (ParseException e) {
 			System.out.println(e.getMessage());
