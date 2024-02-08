@@ -142,6 +142,11 @@ public class BuildSequenceDB {
 				.required(false)
 				.desc("Include the given reference sequence database")
 				.build();
+		Option optionStringent = Option.builder("s")
+				.longOpt("stringent").argName("Non-ambiguous non-canonical peptides")
+				.required(false)
+				.desc("Exclude non-canonical peptides with FastaIDs")
+				.build();
 		
 		
 		options.addOption(optionInput)
@@ -149,7 +154,8 @@ public class BuildSequenceDB {
 		.addOption(optionCanonical)
 		.addOption(optionNoncanonical)
 		.addOption(optionFlank)
-		.addOption(optionReference);
+		.addOption(optionReference)
+		.addOption(optionStringent);
 		
 		CommandLineParser parser = new DefaultParser();
 	    HelpFormatter helper = new HelpFormatter();
@@ -173,6 +179,10 @@ public class BuildSequenceDB {
 		    if(cmd.hasOption("f")) {
 		    	Parameters.isIncludedFlankSequence = true;
 		    	System.out.println("Flank sequences are included in the sequence database.");
+		    }
+		    if(cmd.hasOption("s")) {
+		    	Parameters.isStringent = true;
+		    	System.out.println("Excluding non-canonical peptides with FastaIDs.");
 		    }
 		    if(cmd.hasOption("i")) {
 		    	Parameters.sequencedbInputPath = cmd.getOptionValue("i");

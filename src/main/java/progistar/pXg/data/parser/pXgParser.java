@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import progistar.pXg.constants.Parameters;
 import progistar.pXg.data.pXgRecord;
 
 public class pXgParser {
@@ -49,7 +50,23 @@ public class pXgParser {
 		BR.close();
 		
 		System.out.println("A total of "+totalPRSM+" PRSMs were parsed");
-		System.out.println("A total of "+checkDuplicates.size()+" unique entries were saved (canonical: "+canonical+", non-canonical:"+noncanonical+")");
+		
+		if(Parameters.isStringent) {
+			System.out.println("Exclude non-canonical peptides with FastaIDs...");
+			ArrayList<pXgRecord> selectedRecords = new ArrayList<pXgRecord>();
+			for(pXgRecord record : records) {
+				if(record.isCanonical() || !record.hasFastaID()) {
+					selectedRecords.add(record);
+				}
+			}
+			
+			int excluded = records.size() - selectedRecords.size();
+			noncanonical -= excluded;
+			System.out.println(excluded +" non-canonical peptides were excluded");
+			records = selectedRecords;
+		}
+		
+		System.out.println("A total of "+records.size()+" unique entries were saved (canonical: "+canonical+", non-canonical:"+noncanonical+")");
 		
 		long endTime = System.currentTimeMillis();
 		System.out.println("Elapsed time: "+(endTime - startTime)/1000 +" sec");

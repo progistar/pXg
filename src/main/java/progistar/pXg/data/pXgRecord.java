@@ -52,6 +52,10 @@ public class pXgRecord {
 		return id;
 	}
 	
+	public boolean hasFastaID () {
+		return getValueByFieldName("FastaIDs").equalsIgnoreCase("-") ? false : true;
+	}
+	
 	public String getTranslatedSequence () {
 		String strand = getValueByFieldName("Strand");
 		String nucleotide = getNucleotideSequence();

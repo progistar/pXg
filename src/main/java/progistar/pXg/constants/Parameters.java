@@ -158,6 +158,7 @@ public class Parameters {
 	public static boolean isIncludedCanonical			=	false;
 	public static boolean isIncludedNoncanonical		=	false;
 	public static boolean isIncludedFlankSequence		=	false;
+	public static boolean isStringent					=	false;
 	////////////////////////////////////////////////////////////////////////////////////
 	
 }
