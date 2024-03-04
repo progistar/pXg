@@ -1,1 +1,15 @@
-java -Xmx2G -jar pXg.v2.0.1.jar --gtf_file toy.gtf --sam_file toy.sorted.sam --psm_file toy.psm.csv --fasta_file toy.fasta --output toy --scan_col 5 --file_col 2 --pept_col 4 --score_col 8 --charge_col 11 --add_feat_cols 15 --sep csv --mode 6 --threads 2
+java -Xmx4G -jar pXg.v2.2.1.jar \
+    --gtf_file toy_datasets/toy.gtf \
+    --sam_file toy_datasets/toy.sorted.sam \
+    --psm_file toy_datasets/toy.psm.csv \
+    --fasta_file toy_datasets/toy.fasta \
+    --output toy \
+    --file_col 2 \
+    --pept_col 4 \
+    --scan_col 5 \
+    --score_col 8 \
+    --charge_col 11 \
+    --add_feat_cols 15 \
+    --sep csv \
+    --mode 3 \
+    --threads 2
