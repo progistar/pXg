@@ -143,7 +143,7 @@ public class BuildSequenceDB {
 				.desc("Include the given reference sequence database")
 				.build();
 		Option optionStringent = Option.builder("s")
-				.longOpt("stringent").argName("Non-ambiguous non-canonical peptides")
+				.longOpt("stringent").argName("Unambiguous non-canonical peptides")
 				.required(false)
 				.desc("Exclude non-canonical peptides with FastaIDs")
 				.build();

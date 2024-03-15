@@ -200,7 +200,7 @@ public class PxGAnnotation {
 							// assign fastaIDs.
 							xBlock.fastaIDs = pBlock.fastaIDs;
 							// assigne genomic ID
-							String genomicIDKey = xBlock.genomicLocus+"|"+xBlock.strand+"|"+xBlock.genomicSequence;
+							String genomicIDKey = xBlock.genomicLocus+"|"+xBlock.strand+"|"+Global.SEQUENCE_ARRAY[xBlock.genomicSequenceIdx];
 							Integer genomicID = genomicIDMapper.get(genomicIDKey);
 							if(genomicID == null) {
 								genomicID = genomicIDMapper.size()+1;
@@ -233,7 +233,7 @@ public class PxGAnnotation {
 								for(XBlock thisXBlock : unmappedXBlocks) {
 									BWUnmapped.append(thisXBlock.sequenceID).append("\t")
 									.append(thisXBlock.fullReadSequence).append("\t")
-									.append(thisXBlock.genomicSequence);
+									.append(Global.SEQUENCE_ARRAY[thisXBlock.genomicSequenceIdx]);
 									BWUnmapped.newLine();
 								}
  							} else {

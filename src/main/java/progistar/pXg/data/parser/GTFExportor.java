@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import progistar.pXg.constants.Constants;
+import progistar.pXg.data.Global;
 import progistar.pXg.data.PBlock;
 import progistar.pXg.data.XBlock;
 
@@ -19,7 +20,7 @@ public class GTFExportor {
 		if(pBlock.psmStatus == Constants.PSM_STATUS_DECOY) {
 			peptide = new StringBuilder(peptide).reverse().toString();
 		}
-		String nucleotide = xBlock.genomicSequence;
+		String nucleotide = Global.SEQUENCE_ARRAY[xBlock.genomicSequenceIdx];
 		String[] genomicLoci = xBlock.genomicLocus.split("\\|");
 		char strand = xBlock.strand;
 		String score = pBlock.score+"";

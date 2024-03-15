@@ -23,13 +23,13 @@ public class XBlock {
 	public String genomicLocus		=	null;
 	public String mutations 		=	null;
 	
-	public String genomicSequence	=	null;
-	public String leftFlankSequence	=	null;
-	public String rightFlankSequence=	null;
+	public int genomicSequenceIdx	=	-1;
+	public int leftFlankSequenceIdx	=	-1;
+	public int rightFlankSequenceIdx =	-1;
 	
-	public String referenceSequence	=	null;
-	public String leftFlankRefSequence	=	null;
-	public String rightFlankRefSequence	=	null;
+	public int referenceSequenceIdx	=	-1;
+	public int leftFlankRefSequenceIdx	=	-1;
+	public int rightFlankRefSequenceIdx	=	-1;
 	
 	public String mutationStatus	=	null;
 	public String peptideSequence	=	null;
@@ -66,8 +66,11 @@ public class XBlock {
 		int maxLeftSize = 0;
 		int maxRightSize = 0;
 		for(XBlock xBlock : list) {
-			maxLeftSize = Math.max(xBlock.leftFlankSequence.length(), maxLeftSize);
-			maxRightSize = Math.max(xBlock.rightFlankSequence.length(), maxRightSize);
+			String leftFlankSequence = Global.SEQUENCE_ARRAY[xBlock.leftFlankRefSequenceIdx];
+			String rightFlankSequence = Global.SEQUENCE_ARRAY[xBlock.rightFlankSequenceIdx];
+			
+			maxLeftSize = Math.max(leftFlankSequence.length(), maxLeftSize);
+			maxRightSize = Math.max(rightFlankSequence.length(), maxRightSize);
 		}
 		
 		if(maxLeftSize > Parameters.maxFlankNSize) {
@@ -84,7 +87,7 @@ public class XBlock {
 		// calculate score matrix
 		for(XBlock xBlock : list) {
 			// left
-			String sequence = xBlock.leftFlankSequence;
+			String sequence = Global.SEQUENCE_ARRAY[xBlock.leftFlankRefSequenceIdx];
 			int idx = maxLeftSize-1;
 			for(int i=sequence.length()-1; i>=0; i--) {
 				char nt = sequence.charAt(i);
@@ -100,7 +103,7 @@ public class XBlock {
 			}
 			
 			// right
-			sequence = xBlock.rightFlankSequence;
+			sequence = Global.SEQUENCE_ARRAY[xBlock.rightFlankSequenceIdx];
 			for(int i=0; i<sequence.length(); i++) {
 				char nt = sequence.charAt(i);
 				int ntIdx = -1;
@@ -118,7 +121,7 @@ public class XBlock {
 		for(XBlock xBlock : list) {
 			int score = 0;
 			// left
-			String sequence = xBlock.leftFlankSequence;
+			String sequence = Global.SEQUENCE_ARRAY[xBlock.leftFlankRefSequenceIdx];
 			int idx = maxLeftSize-1;
 			for(int i=sequence.length()-1; i>=0; i--) {
 				char nt = sequence.charAt(i);
@@ -134,7 +137,7 @@ public class XBlock {
 			}
 			
 			// right
-			sequence = xBlock.rightFlankSequence;
+			sequence = Global.SEQUENCE_ARRAY[xBlock.rightFlankSequenceIdx];
 			for(int i=0; i<sequence.length(); i++) {
 				char nt = sequence.charAt(i);
 				int ntIdx = -1;
@@ -180,7 +183,8 @@ public class XBlock {
 	}
 	
 	public String getKey () {
-		return this.genomicSequence+"_"+this.genomicLocus;
+		String genomicSequence = Global.SEQUENCE_ARRAY[this.genomicSequenceIdx];
+		return genomicSequence+"_"+this.genomicLocus;
 	}
 	
 	/**
@@ -203,11 +207,20 @@ public class XBlock {
 			}
 		}
 		
-		String lfs = consensusXBlock.leftFlankSequence.length() == 0 ? "-" : consensusXBlock.leftFlankSequence;
-		String rfs = consensusXBlock.rightFlankSequence.length() == 0 ? "-" : consensusXBlock.rightFlankSequence;
-		String lfsRef = consensusXBlock.leftFlankRefSequence.length() == 0 ? "-" : consensusXBlock.leftFlankRefSequence;
-		String rfsRef = consensusXBlock.rightFlankRefSequence.length() == 0 ? "-" : consensusXBlock.rightFlankRefSequence;
+		String lfs = Global.SEQUENCE_ARRAY[consensusXBlock.leftFlankSequenceIdx].length() == 0 ? 
+				"-" : Global.SEQUENCE_ARRAY[consensusXBlock.leftFlankSequenceIdx];
 		
+		String rfs = Global.SEQUENCE_ARRAY[consensusXBlock.rightFlankSequenceIdx].length() == 0 ? 
+				"-" : Global.SEQUENCE_ARRAY[consensusXBlock.rightFlankSequenceIdx];
+		
+		String lfsRef = Global.SEQUENCE_ARRAY[consensusXBlock.leftFlankRefSequenceIdx].length() == 0 ? 
+				"-" : Global.SEQUENCE_ARRAY[consensusXBlock.leftFlankRefSequenceIdx];
+		
+		String rfsRef = Global.SEQUENCE_ARRAY[consensusXBlock.rightFlankRefSequenceIdx].length() == 0 ? 
+				"-" : Global.SEQUENCE_ARRAY[consensusXBlock.rightFlankRefSequenceIdx];
+		
+		String genomicSequence = Global.SEQUENCE_ARRAY[this.genomicSequenceIdx];
+		String referenceSequence = Global.SEQUENCE_ARRAY[this.referenceSequenceIdx];
 		
 		if(psmStatus == Constants.PSM_STATUS_DECOY) {
 			

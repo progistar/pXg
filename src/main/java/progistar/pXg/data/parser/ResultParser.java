@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
 import progistar.pXg.data.GenomicSequence;
+import progistar.pXg.data.Global;
 import progistar.pXg.data.PxGAnnotation;
 import progistar.pXg.data.XBlock;
 
@@ -32,7 +33,11 @@ public class ResultParser {
 				
 				// for unmapped reads
 				String fullReads = null;
+				StringBuilder transcriptsWithOutBANlist = new StringBuilder();
 				while((line = BR.readLine()) != null) {
+					// initialize transcript buffer
+					transcriptsWithOutBANlist.setLength(0);
+					
 					String[] field = line.split("\t");
 					if(field[0].equalsIgnoreCase(Constants.OUTPUT_G_UNIQUE_ID)) {
 						uniqueID = field[1];
@@ -54,16 +59,17 @@ public class ResultParser {
 						try {
 							String pSeq = field[1]; // peptide sequence without I/L consideration
 							XBlock xBlock = new XBlock();
+							String genomicSequence = field[5];
 							xBlock.genomicLocus = field[2];
 							xBlock.strand = field[3].charAt(0);
 							
-							xBlock.leftFlankSequence = field[4];
-							xBlock.genomicSequence = field[5];
-							xBlock.rightFlankSequence = field[6];
+							xBlock.leftFlankSequenceIdx = Global.getSequenceValue(field[4]);
+							xBlock.genomicSequenceIdx = Global.getSequenceValue(field[5]);
+							xBlock.rightFlankSequenceIdx = Global.getSequenceValue(field[6]);
 							
-							xBlock.leftFlankRefSequence = field[7];
-							xBlock.referenceSequence = field[8];
-							xBlock.rightFlankRefSequence = field[9];
+							xBlock.leftFlankRefSequenceIdx = Global.getSequenceValue(field[7]);
+							xBlock.referenceSequenceIdx = Global.getSequenceValue(field[8]);
+							xBlock.rightFlankRefSequenceIdx = Global.getSequenceValue(field[9]);
 							
 							xBlock.mutations = field[10];
 							xBlock.mutationStatus = field[11];
@@ -85,7 +91,7 @@ public class ResultParser {
 							 * TODO: More events can be added in future.
 							 */
 							if(Parameters.translationMethod == Constants.THREE_FRAME) {
-								StringBuilder transcriptsWithOutBANlist = new StringBuilder();
+								
 								
 								String[] transcripts = xBlock.tAnnotations.split("\\|");
 								Boolean[] bans = new Boolean[transcripts.length];
@@ -124,9 +130,9 @@ public class ResultParser {
 							xBlock.fromStopDistances = fromStopDistances;
 							
 							if(xBlock.strand == '+') {
-								xBlock.peptideSequence = GenomicSequence.translation(xBlock.genomicSequence, 0);
+								xBlock.peptideSequence = GenomicSequence.translation(genomicSequence, 0);
 							} else {
-								xBlock.peptideSequence = GenomicSequence.reverseComplementTranslation(xBlock.genomicSequence, 0);
+								xBlock.peptideSequence = GenomicSequence.reverseComplementTranslation(genomicSequence, 0);
 							}
 							
 							if(xBlock.mockReadCount != 0 || xBlock.targetReadCount != 0 || xBlock.decoyQScore != 0 || xBlock.targetQScore != 0) {
