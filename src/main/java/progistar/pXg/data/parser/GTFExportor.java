@@ -20,7 +20,7 @@ public class GTFExportor {
 		if(pBlock.psmStatus == Constants.PSM_STATUS_DECOY) {
 			peptide = new StringBuilder(peptide).reverse().toString();
 		}
-		String nucleotide = Global.SEQUENCE_ARRAY[xBlock.genomicSequenceIdx];
+		String nucleotide = Global.SEQUENCE_ARRAYLIST.get(xBlock.genomicSequenceIdx);
 		String[] genomicLoci = xBlock.genomicLocus.split("\\|");
 		char strand = xBlock.strand;
 		String score = pBlock.score+"";

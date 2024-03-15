@@ -34,6 +34,7 @@ public class ResultParser {
 				// for unmapped reads
 				String fullReads = null;
 				StringBuilder transcriptsWithOutBANlist = new StringBuilder();
+				
 				while((line = BR.readLine()) != null) {
 					// initialize transcript buffer
 					transcriptsWithOutBANlist.setLength(0);
@@ -59,7 +60,6 @@ public class ResultParser {
 						try {
 							String pSeq = field[1]; // peptide sequence without I/L consideration
 							XBlock xBlock = new XBlock();
-							String genomicSequence = field[5];
 							xBlock.genomicLocus = field[2];
 							xBlock.strand = field[3].charAt(0);
 							
@@ -91,7 +91,6 @@ public class ResultParser {
 							 * TODO: More events can be added in future.
 							 */
 							if(Parameters.translationMethod == Constants.THREE_FRAME) {
-								
 								
 								String[] transcripts = xBlock.tAnnotations.split("\\|");
 								Boolean[] bans = new Boolean[transcripts.length];
@@ -130,9 +129,9 @@ public class ResultParser {
 							xBlock.fromStopDistances = fromStopDistances;
 							
 							if(xBlock.strand == '+') {
-								xBlock.peptideSequence = GenomicSequence.translation(genomicSequence, 0);
+								xBlock.peptideSequence = GenomicSequence.translation(Global.SEQUENCE_ARRAYLIST.get(xBlock.genomicSequenceIdx), 0);
 							} else {
-								xBlock.peptideSequence = GenomicSequence.reverseComplementTranslation(genomicSequence, 0);
+								xBlock.peptideSequence = GenomicSequence.reverseComplementTranslation(Global.SEQUENCE_ARRAYLIST.get(xBlock.genomicSequenceIdx), 0);
 							}
 							
 							if(xBlock.mockReadCount != 0 || xBlock.targetReadCount != 0 || xBlock.decoyQScore != 0 || xBlock.targetQScore != 0) {
@@ -181,8 +180,6 @@ public class ResultParser {
 			annotation.putXBlock(pSeq, xBlock);
 		});
 		*/
-		
-		Global.updateSequenceArray();
 		
 		return annotation;
 	}

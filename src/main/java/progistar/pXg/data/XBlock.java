@@ -66,8 +66,8 @@ public class XBlock {
 		int maxLeftSize = 0;
 		int maxRightSize = 0;
 		for(XBlock xBlock : list) {
-			String leftFlankSequence = Global.SEQUENCE_ARRAY[xBlock.leftFlankRefSequenceIdx];
-			String rightFlankSequence = Global.SEQUENCE_ARRAY[xBlock.rightFlankSequenceIdx];
+			String leftFlankSequence = Global.SEQUENCE_ARRAYLIST.get(xBlock.leftFlankRefSequenceIdx);
+			String rightFlankSequence = Global.SEQUENCE_ARRAYLIST.get(xBlock.rightFlankSequenceIdx);
 			
 			maxLeftSize = Math.max(leftFlankSequence.length(), maxLeftSize);
 			maxRightSize = Math.max(rightFlankSequence.length(), maxRightSize);
@@ -87,7 +87,7 @@ public class XBlock {
 		// calculate score matrix
 		for(XBlock xBlock : list) {
 			// left
-			String sequence = Global.SEQUENCE_ARRAY[xBlock.leftFlankRefSequenceIdx];
+			String sequence = Global.SEQUENCE_ARRAYLIST.get(xBlock.leftFlankRefSequenceIdx);
 			int idx = maxLeftSize-1;
 			for(int i=sequence.length()-1; i>=0; i--) {
 				char nt = sequence.charAt(i);
@@ -103,7 +103,7 @@ public class XBlock {
 			}
 			
 			// right
-			sequence = Global.SEQUENCE_ARRAY[xBlock.rightFlankSequenceIdx];
+			sequence = Global.SEQUENCE_ARRAYLIST.get(xBlock.rightFlankSequenceIdx);
 			for(int i=0; i<sequence.length(); i++) {
 				char nt = sequence.charAt(i);
 				int ntIdx = -1;
@@ -121,7 +121,7 @@ public class XBlock {
 		for(XBlock xBlock : list) {
 			int score = 0;
 			// left
-			String sequence = Global.SEQUENCE_ARRAY[xBlock.leftFlankRefSequenceIdx];
+			String sequence = Global.SEQUENCE_ARRAYLIST.get(xBlock.leftFlankRefSequenceIdx);
 			int idx = maxLeftSize-1;
 			for(int i=sequence.length()-1; i>=0; i--) {
 				char nt = sequence.charAt(i);
@@ -137,7 +137,7 @@ public class XBlock {
 			}
 			
 			// right
-			sequence = Global.SEQUENCE_ARRAY[xBlock.rightFlankSequenceIdx];
+			sequence = Global.SEQUENCE_ARRAYLIST.get(xBlock.rightFlankSequenceIdx);
 			for(int i=0; i<sequence.length(); i++) {
 				char nt = sequence.charAt(i);
 				int ntIdx = -1;
@@ -183,7 +183,7 @@ public class XBlock {
 	}
 	
 	public String getKey () {
-		String genomicSequence = Global.SEQUENCE_ARRAY[this.genomicSequenceIdx];
+		String genomicSequence = Global.SEQUENCE_ARRAYLIST.get(this.genomicSequenceIdx);
 		return genomicSequence+"_"+this.genomicLocus;
 	}
 	
@@ -207,20 +207,20 @@ public class XBlock {
 			}
 		}
 		
-		String lfs = Global.SEQUENCE_ARRAY[consensusXBlock.leftFlankSequenceIdx].length() == 0 ? 
-				"-" : Global.SEQUENCE_ARRAY[consensusXBlock.leftFlankSequenceIdx];
+		String lfs = Global.SEQUENCE_ARRAYLIST.get(consensusXBlock.leftFlankSequenceIdx).length() == 0 ? 
+				"-" : Global.SEQUENCE_ARRAYLIST.get(consensusXBlock.leftFlankSequenceIdx);
 		
-		String rfs = Global.SEQUENCE_ARRAY[consensusXBlock.rightFlankSequenceIdx].length() == 0 ? 
-				"-" : Global.SEQUENCE_ARRAY[consensusXBlock.rightFlankSequenceIdx];
+		String rfs = Global.SEQUENCE_ARRAYLIST.get(consensusXBlock.rightFlankSequenceIdx).length() == 0 ? 
+				"-" : Global.SEQUENCE_ARRAYLIST.get(consensusXBlock.rightFlankSequenceIdx);
 		
-		String lfsRef = Global.SEQUENCE_ARRAY[consensusXBlock.leftFlankRefSequenceIdx].length() == 0 ? 
-				"-" : Global.SEQUENCE_ARRAY[consensusXBlock.leftFlankRefSequenceIdx];
+		String lfsRef = Global.SEQUENCE_ARRAYLIST.get(consensusXBlock.leftFlankRefSequenceIdx).length() == 0 ? 
+				"-" : Global.SEQUENCE_ARRAYLIST.get(consensusXBlock.leftFlankRefSequenceIdx);
 		
-		String rfsRef = Global.SEQUENCE_ARRAY[consensusXBlock.rightFlankRefSequenceIdx].length() == 0 ? 
-				"-" : Global.SEQUENCE_ARRAY[consensusXBlock.rightFlankRefSequenceIdx];
+		String rfsRef = Global.SEQUENCE_ARRAYLIST.get(consensusXBlock.rightFlankRefSequenceIdx).length() == 0 ? 
+				"-" : Global.SEQUENCE_ARRAYLIST.get(consensusXBlock.rightFlankRefSequenceIdx);
 		
-		String genomicSequence = Global.SEQUENCE_ARRAY[this.genomicSequenceIdx];
-		String referenceSequence = Global.SEQUENCE_ARRAY[this.referenceSequenceIdx];
+		String genomicSequence = Global.SEQUENCE_ARRAYLIST.get(this.genomicSequenceIdx);
+		String referenceSequence = Global.SEQUENCE_ARRAYLIST.get(this.referenceSequenceIdx);
 		
 		if(psmStatus == Constants.PSM_STATUS_DECOY) {
 			
@@ -307,7 +307,7 @@ public class XBlock {
 	}
 	
 	/**
-	 * {@link Deprecated}
+	 * @deprecated
 	 * Do not print PSM without read mapping.<br>
 	 * -- The original usage is to print out PSMs with no reads.<br>
 	 * @param fastaIDs
