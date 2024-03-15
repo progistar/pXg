@@ -182,13 +182,7 @@ public class ResultParser {
 		});
 		*/
 		
-
-		// TODO: v2.0.0
-		// NetMHCpan option!
-		if(true) {
-			
-		}
-		
+		Global.updateSequenceArray();
 		
 		return annotation;
 	}
