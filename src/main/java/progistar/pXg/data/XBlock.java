@@ -40,13 +40,6 @@ public class XBlock {
 	public double targetQScore		=	0;
 	public double decoyQScore		=	0;
 	
-	public String[] exonLenghts = null;
-	public String[] percentFullDistances	=	null;
-	public String[] percentExonDistances	=	null;
-	public String[] percentCDSDistances	=	null;
-	public String[] fromStartDistances	=	null;
-	public String[] fromStopDistances	=	null;
-	
 	// with the same key value block
 	// the block will be null if there is no next sibling.
 	public ArrayList<XBlock> siblingXBlocks	= new ArrayList<XBlock>();
@@ -289,10 +282,18 @@ public class XBlock {
 	private String toDist () {
 		int longestIdx = 0;
 		int longestVal = 0;
-		for(int i=0; i<this.exonLenghts.length; i++) {
-			if(this.exonLenghts[i].equalsIgnoreCase("-")) continue;
+		
+		String[] exonLengths = Global.EXON_LENGTH_HASH.get(this.getRelInfoKey());
+		String[] percentFullDistances = Global.PERCENT_FULL_DIST_HASH.get(this.getRelInfoKey());
+		String[] percentExonDistances = Global.PERCENT_EXON_DIST_HASH.get(this.getRelInfoKey());
+		String[] percentCDSDistances = Global.PERCENT_CDS_DIST_HASH.get(this.getRelInfoKey());
+		String[] fromStartDistances = Global.FROM_START_DIST_HASH.get(this.getRelInfoKey());
+		String[] fromStopDistances = Global.FROM_STOP_DIST_HASH.get(this.getRelInfoKey());
+		
+		for(int i=0; i<exonLengths.length; i++) {
+			if(exonLengths[i].equalsIgnoreCase("-")) continue;
 			
-			int exonLength = Integer.parseInt(this.exonLenghts[i]);
+			int exonLength = Integer.parseInt(exonLengths[i]);
 			if(exonLength > longestVal) {
 				longestIdx = i;
 				longestVal = exonLength;
@@ -505,13 +506,44 @@ public class XBlock {
 			}
 		}
 		
-		this.exonLenghts = ResultParser.getWithoutBanList(this.exonLenghts, bans);
-		this.percentFullDistances = ResultParser.getWithoutBanList(this.percentFullDistances, bans);
-		this.percentExonDistances = ResultParser.getWithoutBanList(this.percentExonDistances, bans);
-		this.percentCDSDistances = ResultParser.getWithoutBanList(this.percentCDSDistances, bans);
-		this.fromStartDistances = ResultParser.getWithoutBanList(this.fromStartDistances, bans);
-		this.fromStopDistances = ResultParser.getWithoutBanList(this.fromStopDistances, bans);
+		String[] exonLengths = Global.EXON_LENGTH_HASH.get(this.getRelInfoKey());
+		String[] percentFullDistances = Global.PERCENT_FULL_DIST_HASH.get(this.getRelInfoKey());
+		String[] percentExonDistances = Global.PERCENT_EXON_DIST_HASH.get(this.getRelInfoKey());
+		String[] percentCDSDistances = Global.PERCENT_CDS_DIST_HASH.get(this.getRelInfoKey());
+		String[] fromStartDistances = Global.FROM_START_DIST_HASH.get(this.getRelInfoKey());
+		String[] fromStopDistances = Global.FROM_STOP_DIST_HASH.get(this.getRelInfoKey());
+		
+		exonLengths = ResultParser.getWithoutBanList(exonLengths, bans);
+		percentFullDistances = ResultParser.getWithoutBanList(percentFullDistances, bans);
+		percentExonDistances = ResultParser.getWithoutBanList(percentExonDistances, bans);
+		percentCDSDistances = ResultParser.getWithoutBanList(percentCDSDistances, bans);
+		fromStartDistances = ResultParser.getWithoutBanList(fromStartDistances, bans);
+		fromStopDistances = ResultParser.getWithoutBanList(fromStopDistances, bans);
+		
+		// enforce to update
+		if(exonLengths.length != bans.length) {
+			Global.putExonLengths(this.getRelInfoKey(), exonLengths, true);
+		}
+		if(percentFullDistances.length != bans.length) {
+			Global.putPercentFullDist(this.getRelInfoKey(), percentFullDistances, true);
+		}
+		if(percentCDSDistances.length != bans.length) {
+			Global.putPercentCDSDist(this.getRelInfoKey(), percentCDSDistances, true);
+		}
+		if(percentExonDistances.length != bans.length) {
+			Global.putPercentExonDist(this.getRelInfoKey(), percentExonDistances, true);
+		}
+		if(fromStartDistances.length != bans.length) {
+			Global.putStartDist(this.getRelInfoKey(), fromStartDistances, true);
+		}
+		if(fromStopDistances.length != bans.length) {
+			Global.putStopDist(this.getRelInfoKey(), fromStopDistances, true);
+		}
 		
 		this.tAnnotations = filteredAnnotations.substring(1);
+	}
+	
+	public String getRelInfoKey () {
+		return this.genomicLocus + "_" + this.strand;
 	}
 }

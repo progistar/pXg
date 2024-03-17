@@ -35,11 +35,12 @@ public class ResultParser {
 				String fullReads = null;
 				StringBuilder transcriptsWithOutBANlist = new StringBuilder();
 				
+				String[] field = null;
 				while((line = BR.readLine()) != null) {
 					// initialize transcript buffer
 					transcriptsWithOutBANlist.setLength(0);
 					
-					String[] field = line.split("\t");
+					field = line.split("\t");
 					if(field[0].equalsIgnoreCase(Constants.OUTPUT_G_UNIQUE_ID)) {
 						uniqueID = field[1];
 						// decoy decision
@@ -121,12 +122,13 @@ public class ResultParser {
 								}
 							}
 							
-							xBlock.exonLenghts = exonLengths;
-							xBlock.percentFullDistances = percentFullDistances;
-							xBlock.percentExonDistances = percentExonDistances;
-							xBlock.percentCDSDistances = percentCDSDistances;
-							xBlock.fromStartDistances = fromStartDistances;
-							xBlock.fromStopDistances = fromStopDistances;
+							// If two records share the same genomic loci, their relative genomic information should be the same. 
+							Global.putExonLengths(xBlock.getRelInfoKey(), exonLengths, false);
+							Global.putPercentFullDist(xBlock.getRelInfoKey(), percentFullDistances, false);
+							Global.putPercentCDSDist(xBlock.getRelInfoKey(), percentCDSDistances, false);
+							Global.putPercentExonDist(xBlock.getRelInfoKey(), percentExonDistances, false);
+							Global.putStartDist(xBlock.getRelInfoKey(), fromStartDistances, false);
+							Global.putStopDist(xBlock.getRelInfoKey(), fromStopDistances, false);
 							
 							if(xBlock.strand == '+') {
 								xBlock.peptideSequence = GenomicSequence.translation(Global.SEQUENCE_ARRAYLIST.get(xBlock.genomicSequenceIdx), 0);
@@ -185,6 +187,11 @@ public class ResultParser {
 	}
 	
 	public static String[] getWithoutBanList (String[] list, Boolean[] isBan) {
+		// if the list has been already updated by other records,
+		if(list.length != isBan.length) {
+			return list;
+		}
+		
 		StringBuilder str = new StringBuilder();
 		
 		for(int i=0; i<list.length; i++) {
