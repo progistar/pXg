@@ -506,39 +506,46 @@ public class XBlock {
 			}
 		}
 		
-		String[] exonLengths = Global.EXON_LENGTH_HASH.get(this.getRelInfoKey());
-		String[] percentFullDistances = Global.PERCENT_FULL_DIST_HASH.get(this.getRelInfoKey());
-		String[] percentExonDistances = Global.PERCENT_EXON_DIST_HASH.get(this.getRelInfoKey());
-		String[] percentCDSDistances = Global.PERCENT_CDS_DIST_HASH.get(this.getRelInfoKey());
-		String[] fromStartDistances = Global.FROM_START_DIST_HASH.get(this.getRelInfoKey());
-		String[] fromStopDistances = Global.FROM_STOP_DIST_HASH.get(this.getRelInfoKey());
+		try {
+
+			String[] exonLengths = Global.EXON_LENGTH_HASH.get(this.getRelInfoKey());
+			String[] percentFullDistances = Global.PERCENT_FULL_DIST_HASH.get(this.getRelInfoKey());
+			String[] percentExonDistances = Global.PERCENT_EXON_DIST_HASH.get(this.getRelInfoKey());
+			String[] percentCDSDistances = Global.PERCENT_CDS_DIST_HASH.get(this.getRelInfoKey());
+			String[] fromStartDistances = Global.FROM_START_DIST_HASH.get(this.getRelInfoKey());
+			String[] fromStopDistances = Global.FROM_STOP_DIST_HASH.get(this.getRelInfoKey());
+			
+			exonLengths = ResultParser.getWithoutBanList(exonLengths, bans);
+			percentFullDistances = ResultParser.getWithoutBanList(percentFullDistances, bans);
+			percentExonDistances = ResultParser.getWithoutBanList(percentExonDistances, bans);
+			percentCDSDistances = ResultParser.getWithoutBanList(percentCDSDistances, bans);
+			fromStartDistances = ResultParser.getWithoutBanList(fromStartDistances, bans);
+			fromStopDistances = ResultParser.getWithoutBanList(fromStopDistances, bans);
+			
+			// enforce to update
+			if(exonLengths.length != bans.length) {
+				Global.putExonLengths(this.getRelInfoKey(), exonLengths, true);
+			}
+			if(percentFullDistances.length != bans.length) {
+				Global.putPercentFullDist(this.getRelInfoKey(), percentFullDistances, true);
+			}
+			if(percentCDSDistances.length != bans.length) {
+				Global.putPercentCDSDist(this.getRelInfoKey(), percentCDSDistances, true);
+			}
+			if(percentExonDistances.length != bans.length) {
+				Global.putPercentExonDist(this.getRelInfoKey(), percentExonDistances, true);
+			}
+			if(fromStartDistances.length != bans.length) {
+				Global.putStartDist(this.getRelInfoKey(), fromStartDistances, true);
+			}
+			if(fromStopDistances.length != bans.length) {
+				Global.putStopDist(this.getRelInfoKey(), fromStopDistances, true);
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+			System.out.println(this.toString(Constants.PSM_STATUS_TARGET));
+		}
 		
-		exonLengths = ResultParser.getWithoutBanList(exonLengths, bans);
-		percentFullDistances = ResultParser.getWithoutBanList(percentFullDistances, bans);
-		percentExonDistances = ResultParser.getWithoutBanList(percentExonDistances, bans);
-		percentCDSDistances = ResultParser.getWithoutBanList(percentCDSDistances, bans);
-		fromStartDistances = ResultParser.getWithoutBanList(fromStartDistances, bans);
-		fromStopDistances = ResultParser.getWithoutBanList(fromStopDistances, bans);
-		
-		// enforce to update
-		if(exonLengths.length != bans.length) {
-			Global.putExonLengths(this.getRelInfoKey(), exonLengths, true);
-		}
-		if(percentFullDistances.length != bans.length) {
-			Global.putPercentFullDist(this.getRelInfoKey(), percentFullDistances, true);
-		}
-		if(percentCDSDistances.length != bans.length) {
-			Global.putPercentCDSDist(this.getRelInfoKey(), percentCDSDistances, true);
-		}
-		if(percentExonDistances.length != bans.length) {
-			Global.putPercentExonDist(this.getRelInfoKey(), percentExonDistances, true);
-		}
-		if(fromStartDistances.length != bans.length) {
-			Global.putStartDist(this.getRelInfoKey(), fromStartDistances, true);
-		}
-		if(fromStopDistances.length != bans.length) {
-			Global.putStopDist(this.getRelInfoKey(), fromStopDistances, true);
-		}
 		
 		this.tAnnotations = filteredAnnotations.substring(1);
 	}

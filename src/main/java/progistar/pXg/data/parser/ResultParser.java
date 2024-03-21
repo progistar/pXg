@@ -122,14 +122,6 @@ public class ResultParser {
 								}
 							}
 							
-							// If two records share the same genomic loci, their relative genomic information should be the same. 
-							Global.putExonLengths(xBlock.getRelInfoKey(), exonLengths, false);
-							Global.putPercentFullDist(xBlock.getRelInfoKey(), percentFullDistances, false);
-							Global.putPercentCDSDist(xBlock.getRelInfoKey(), percentCDSDistances, false);
-							Global.putPercentExonDist(xBlock.getRelInfoKey(), percentExonDistances, false);
-							Global.putStartDist(xBlock.getRelInfoKey(), fromStartDistances, false);
-							Global.putStopDist(xBlock.getRelInfoKey(), fromStopDistances, false);
-							
 							if(xBlock.strand == '+') {
 								xBlock.peptideSequence = GenomicSequence.translation(Global.SEQUENCE_ARRAYLIST.get(xBlock.genomicSequenceIdx), 0);
 							} else {
@@ -155,6 +147,14 @@ public class ResultParser {
 								// TODO: assembly?
 								// Assembler.addXBlock(pSeq, xBlock);
 							}
+
+							// If two records share the same genomic loci, their relative genomic information should be the same. 
+							Global.putExonLengths(xBlock.getRelInfoKey(), exonLengths, false);
+							Global.putPercentFullDist(xBlock.getRelInfoKey(), percentFullDistances, false);
+							Global.putPercentCDSDist(xBlock.getRelInfoKey(), percentCDSDistances, false);
+							Global.putPercentExonDist(xBlock.getRelInfoKey(), percentExonDistances, false);
+							Global.putStartDist(xBlock.getRelInfoKey(), fromStartDistances, false);
+							Global.putStopDist(xBlock.getRelInfoKey(), fromStopDistances, false);
 							
 							annotation.putXBlock(pSeq, xBlock);
 						}catch(Exception e) {
