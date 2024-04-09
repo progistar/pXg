@@ -26,7 +26,8 @@ public class ParameterParser {
 				System.out.println();
 				System.out.println("Mandatory Fields");
 				System.out.println("  --gtf_file            : GTF file path. We recommand to use the same gtf corresponding to alignment.");
-				System.out.println("  --sam_file            : SAM file path. The sam file must be sorted by coordinate.");
+				System.out.println("  --sam_file            : SAM/BAM file path. The sam/bam file must be sorted by coordinate.");
+				System.out.println("                          Multiple sam/bam files should be separated by comma (,).");
 				System.out.println("  --psm_file            : PSM file path. It is expected that the psm file is derived from proteomics search by de novo or database search engine.");
 				System.out.println("  --pept_col            : Peptide column index in the psm file. One-based!");
 				System.out.println("  --scan_col            : Scan number index (the value is expected as integer > 0). One-based!");
@@ -47,7 +48,6 @@ public class ParameterParser {
 				System.out.println("  --fasta_file          : Canonical sequence database to avoid ambiguous assignment of noncanonical peptides");
 				System.out.println("  --rank                : How many candidates will be considered per a scan. Default is 100 (in other words, use all ranked candidates)");
 				System.out.println("  --out_sam             : Report matched reads as SAM format (true or false). Default is false.");
-				System.out.println("  --out_gtf             : Report matched peptides as GTF format (true or false). Default is true.");
 				System.out.println("  --out_noncanonial     : Report noncaonical peptides for SAM and/or GTF formats (true or false). Default is true.");
 				System.out.println("  --out_canonial        : Report caonical peptides for SAM and/or GTF formats (true or false). Default is true.");
 				System.out.println("  --penalty_mutation    : Penalty per a mutation. Default is 1.");
@@ -66,10 +66,43 @@ public class ParameterParser {
 				System.out.println("  --threads             : The number of threads. Default is 4");
 				System.out.println();
 				System.out.println("Example1");
-				System.out.println("java -Xmx30G -jar pXg.jar -gtf_file gencode.gtf -sam_file aligned.sorted.sam -psm_file peaks.result -scan_col 5 -file_col 2 -pept_col 4 -charge_col 11 -score_col 8 -add_feat_cols 14,15  -out_canonical false -out test");
+				System.out.println("java -Xmx30G -jar pXg.jar -gtf_file gencode.gtf -sam_file aligned.sorted.bam -psm_file peaks.result -scan_col 5 -file_col 2 -pept_col 4 -charge_col 11 -score_col 8 -add_feat_cols 14,15  -out_canonical false -out test");
 				System.out.println("Example2");
 				System.out.println("java -Xmx30G -jar pXg.jar -gtf_file gencode.gtf -sam_file aligned.sorted.sam -psm_file peaks.result -scan_col 5 -file_col 2 -pept_col 4 -charge_col 11 -score_col 8 -add_feat_cols 14,15 -lengths 8-11 -out test");
 				return -1;
+			}
+			
+			// sam file first
+			for(int i=0; i<args.length; i+=2) {
+				String option = args[i].toLowerCase();
+				// --sam_file (mandatory)
+				if(option.equalsIgnoreCase(Parameters.CMD_GENOMIC_SEQUENCE_PATH)) {
+					String[] paths = args[i+1].split(",");
+					Parameters.NUM_OF_SAM_FILES = paths.length;
+					Parameters.sequenceFilePaths = new String[Parameters.NUM_OF_SAM_FILES];
+					Parameters.unmappedFilePaths = new String[Parameters.NUM_OF_SAM_FILES];
+					Parameters.exportSAMPaths	 = new String[Parameters.NUM_OF_SAM_FILES];
+					Parameters.tmpOutputFilePaths= new String[Parameters.NUM_OF_SAM_FILES];
+					
+					for(int idx=0; idx < Parameters.NUM_OF_SAM_FILES; idx++) {
+						Parameters.sequenceFilePaths[idx] = paths[idx];
+						if(!(Parameters.sequenceFilePaths[idx].toLowerCase().endsWith(".bam") || 
+								Parameters.sequenceFilePaths[idx].toLowerCase().endsWith(".sam"))) {
+							System.out.println(Parameters.sequenceFilePaths[idx] +" must be .sam or .bam file.");
+							return -1;
+						}
+						
+						int lastIdx = Parameters.sequenceFilePaths[idx].lastIndexOf(".");
+						
+						Parameters.unmappedFilePaths[idx] = Parameters.sequenceFilePaths[idx].substring(0, lastIdx) + ".unknown.seq";
+						Parameters.exportSAMPaths[idx]	  = Parameters.sequenceFilePaths[idx].substring(0, lastIdx) + ".ided.sam";
+						Parameters.tmpOutputFilePaths[idx]= Parameters.sequenceFilePaths[idx].substring(0, lastIdx) + "."+Constants.UNIQUE_RUN_ID;
+						if(!isExist(Parameters.sequenceFilePaths[idx])) {
+							printNoSuchFileOrDirectory(Parameters.sequenceFilePaths[idx]);
+							return -1;
+						}
+					}
+				}
 			}
 			
 			for(int i=0; i<args.length; i+=2) {
@@ -80,14 +113,6 @@ public class ParameterParser {
 					Parameters.genomicAnnotationFilePath = args[i+1];
 					if(!isExist(Parameters.genomicAnnotationFilePath)) {
 						printNoSuchFileOrDirectory(Parameters.genomicAnnotationFilePath);
-						return -1;
-					}
-				} 
-				// --sam_file (mandatory)
-				else if(option.equalsIgnoreCase(Parameters.CMD_GENOMIC_SEQUENCE_PATH)) {
-					Parameters.sequenceFilePath = args[i+1];
-					if(!isExist(Parameters.sequenceFilePath)) {
-						printNoSuchFileOrDirectory(Parameters.sequenceFilePath);
 						return -1;
 					}
 				}
@@ -126,10 +151,6 @@ public class ParameterParser {
 				else if(option.equalsIgnoreCase(Parameters.CMD_OUTPUT_PATH)) {
 					Parameters.outputFilePath = args[i+1] +".pXg";
 					Parameters.pinFilePath = Parameters.outputFilePath +".pin";
-					Parameters.unmappedFilePath = Parameters.outputFilePath +".unknown.seq";
-					Parameters.exportGTFPath = Parameters.outputFilePath +".gtf";
-					Parameters.exportSAMPath = Parameters.outputFilePath +".sam";
-					
 					if(isExist(Parameters.outputFilePath)) {
 						printAlreadyExistFileOrDirectory(Parameters.outputFilePath);
 						return -1;
@@ -198,10 +219,10 @@ public class ParameterParser {
 						Parameters.EXPORT_SAM = true;
 					}
 				}
-				// -out_gtf (optional)
-				else if(option.equalsIgnoreCase(Parameters.CMD_GTF_FORMAT)) {
+				// -out_sam (optional)
+				else if(option.equalsIgnoreCase(Parameters.CMD_UNMAPPED)) {
 					if(args[i+1].equalsIgnoreCase("false")) {
-						Parameters.EXPORT_GTF = false;
+						Parameters.EXPORT_SAM = false;
 					}
 				}
 				// -out_canonical (optional)
@@ -309,7 +330,6 @@ public class ParameterParser {
 			}
 		}
 		
-		
 		return 0;
 	}
 	
@@ -334,7 +354,11 @@ public class ParameterParser {
 		System.out.println("Running info");
 		System.out.println(" GTF: "+Parameters.genomicAnnotationFilePath);
 		System.out.println("  GTF_PARTITION_SIZE: "+Parameters.partitionSize);
-		System.out.println(" SAM: "+Parameters.sequenceFilePath);
+		String samPaths = Parameters.sequenceFilePaths[0];
+		for(int i=1; i<Parameters.sequenceFilePaths.length; i++) {
+			samPaths += "," + Parameters.sequenceFilePaths[i];
+		}
+		System.out.println(" SAM: "+samPaths);
 		System.out.println("  SAM_PARTITION_SIZE: "+Parameters.readSize);
 		
 		String translation = "NA";
@@ -368,9 +392,8 @@ public class ParameterParser {
 		System.out.println("  MAX_FLANK_SIZE: "+Parameters.maxFlankNSize);
 		System.out.println(" OUT_RESULT: "+Parameters.outputFilePath);
 		System.out.println("  OUT_PIN.: "+Parameters.pinFilePath);
-		System.out.println("  OUT_UNKNOWN: "+Parameters.unmappedFilePath);
+		System.out.println("  OUT_UNKNOWN: "+Parameters.EXPORT_UNMAPPED_SEQ);
 		System.out.println("  OUT_SAM: "+Parameters.EXPORT_SAM);
-		System.out.println("  OUT_GTF: "+Parameters.EXPORT_GTF);
 		System.out.println("  OUT_CANONICAL: "+Parameters.EXPORT_CANONICAL);
 		System.out.println("  OUT_NONCANONICAL: "+Parameters.EXPORT_NONCANONICAL);
 		System.out.println(" penalty_mutation: "+Parameters.PENALTY_MUTATION);
@@ -393,7 +416,7 @@ public class ParameterParser {
 		Logger.newLine();
 		Logger.append("  GTF_PARTITION_SIZE: "+Parameters.partitionSize);
 		Logger.newLine();
-		Logger.append(" SAM: "+Parameters.sequenceFilePath);
+		Logger.append(" SAM: "+samPaths);
 		Logger.newLine();
 		Logger.append("  SAM_PARTITION_SIZE: "+Parameters.readSize);
 		Logger.newLine();
@@ -421,11 +444,9 @@ public class ParameterParser {
 		Logger.newLine();
 		Logger.append("  OUT_PIN: "+Parameters.pinFilePath);
 		Logger.newLine();
-		Logger.append("  OUT_UNMAPPED: "+Parameters.unmappedFilePath);
+		Logger.append("  OUT_UNMAPPED: "+Parameters.EXPORT_UNMAPPED_SEQ);
 		Logger.newLine();
 		Logger.append("  OUT_SAM: "+Parameters.EXPORT_SAM);
-		Logger.newLine();
-		Logger.append("  OUT_GTF: "+Parameters.EXPORT_GTF);
 		Logger.newLine();
 		Logger.append("  OUT_CANONICAL: "+Parameters.EXPORT_CANONICAL);
 		Logger.newLine();
@@ -464,7 +485,7 @@ public class ParameterParser {
 			pass = false;
 		}
 		// --sam_file
-		if(Parameters.sequenceFilePath == null) {
+		if(Parameters.sequenceFilePaths == null) {
 			System.out.println("mandatory option -sam is missing...");
 			pass = false;
 		}

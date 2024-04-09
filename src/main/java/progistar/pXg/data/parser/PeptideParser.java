@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,6 +28,7 @@ public class PeptideParser {
 	 * @param peptideFilePath
 	 */
 	public static void parseResult (String peptideFilePath) {
+		PeptideAnnotation.pBlocks = new ArrayList<PBlock>();
 		System.out.print("Parsing peptide file: "+peptideFilePath);
 		long startTime = System.currentTimeMillis();
 		

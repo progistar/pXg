@@ -1,9 +1,16 @@
 package progistar.pXg;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+
 import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
 import progistar.pXg.constants.RunInfo;
+import progistar.pXg.data.PIN;
+import progistar.pXg.data.pXgRecord;
 import progistar.pXg.data.parser.ParameterParser;
+import progistar.pXg.data.parser.pXgParser;
 import progistar.pXg.processor.Master;
 import progistar.pXg.utils.Logger;
 
@@ -27,20 +34,45 @@ public class Starter
     		System.exit(1);
     	}
     	
-    	Master.ready(Parameters.genomicAnnotationFilePath, Parameters.sequenceFilePath, Parameters.peptideFilePath);
-    	Master.run();
+    	int samFileSize = Parameters.sequenceFilePaths.length;
     	
-    	long endTime = System.currentTimeMillis();
-    	
-    	RunInfo.printProcessedChromosomes();
-    	RunInfo.printFilterStat();
-    	System.out.println("\tTotal elapsed time: "+((endTime-startTime)/1000) + " sec with "+RunInfo.totalProcessedPeptides +" peptides and " +RunInfo.totalProcessedReads+" reads");
-    	
-    	Logger.append("\tTotal elapsed time: "+((endTime-startTime)/1000) + " sec with "+RunInfo.totalProcessedPeptides +" peptides and " +RunInfo.totalProcessedReads+" reads");
-    	Logger.newLine();
+    	for(int si=0; si<samFileSize; si++) {
+    		Parameters.CURRENT_FILE_INDEX = si;
+    		Master.ready(Parameters.genomicAnnotationFilePath, Parameters.sequenceFilePaths[Parameters.CURRENT_FILE_INDEX], Parameters.peptideFilePath);
+        	Master.run();
+        	
+        	long endTime = System.currentTimeMillis();
+        	
+        	RunInfo.printProcessedChromosomes();
+        	RunInfo.printFilterStat();
+        	System.out.println("\tTotal elapsed time: "+((endTime-startTime)/1000) + " sec with "+RunInfo.totalProcessedPeptides +" peptides and " +RunInfo.totalProcessedReads+" reads");
+        	System.out.println();
+        	
+        	Logger.append("\tTotal elapsed time: "+((endTime-startTime)/1000) + " sec with "+RunInfo.totalProcessedPeptides +" peptides and " +RunInfo.totalProcessedReads+" reads");
+        	Logger.newLine();
+        	Logger.newLine();
+    	}
     	Logger.close();
     	
-    	// TODO: third-party runner
+    	// merge pXg tmp outputs
+    	ArrayList<pXgRecord>[] tmpOutputs = new ArrayList[samFileSize];
+    	Parameters.isStringent = false; // allow all identified peptides
+    	for(int i=0; i<samFileSize; i++) {
+    		try {
+    			File tmpOutput = new File(Parameters.tmpOutputFilePaths[i]);
+				tmpOutputs[i] = pXgParser.parse(tmpOutput);
+				// delete tmp file
+				tmpOutput.delete();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+    	
+    	pXgParser.writeMergedResult(tmpOutputs, Parameters.outputFilePath);
+    	
+		// parser to PIN
+		PIN.parseOutput();
     	
     }
 }

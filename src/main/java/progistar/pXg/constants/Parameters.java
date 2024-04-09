@@ -1,12 +1,17 @@
 package progistar.pXg.constants;
 
 public class Parameters {
+	// Number of SMA/BAM files
+	public static int NUM_OF_SAM_FILES									=	1;
+	public static int CURRENT_FILE_INDEX								=	0;
+	
+	
 	// Input file paths
 	public static final String CMD_GENOMIC_ANNOTATION_PATH				=	"--gtf_file".toLowerCase();
 	public static String genomicAnnotationFilePath	=	null;
 	
 	public static final String CMD_GENOMIC_SEQUENCE_PATH				=	"--sam_file".toLowerCase();
-	public static String sequenceFilePath			=	null;
+	public static String[] sequenceFilePaths		=	null;
 	
 	public static final String CMD_PEPTIDE_ANNOTATION_PATH				=	"--psm_file".toLowerCase();
 	public static String peptideFilePath			=	null;
@@ -20,10 +25,9 @@ public class Parameters {
 	public static final String CMD_OUTPUT_PATH				=	"--output".toLowerCase();
 	public static String outputFilePath					=	null;
 	public static String pinFilePath					=	null;
-	public static String unmappedFilePath				=	null;
-	public static String exportGTFPath					=	null;
-	public static String exportSAMPath					=	null;
-	public static String exportVCFPath					=	null;
+	public static String[] unmappedFilePaths				=	null;
+	public static String[] exportSAMPaths					=	null;
+	public static String[] tmpOutputFilePaths				=	null;
 	
 
 	// Peptide length
@@ -46,6 +50,7 @@ public class Parameters {
 	public static final String CMD_GTF_FORMAT		=	"--out_gtf".toLowerCase();
 	public static final String CMD_NONCANONICAL		=	"--out_noncanonical".toLowerCase();
 	public static final String CMD_CANONICAL		=	"--out_canonical".toLowerCase();
+	public static final String CMD_UNMAPPED			=	"--out_unmapped".toLowerCase();
 	
 	// GTF partition size
 	public static final String CMD_GENOMIC_ANNOTATION_PARTITION_SIZE		=	"--gtf_partition_size".toLowerCase();
@@ -119,7 +124,7 @@ public class Parameters {
 	
 	// Export option
 	public static boolean EXPORT_TSV				=	true;
-	public static boolean EXPORT_GTF				=	true;
+	public static boolean EXPORT_UNMAPPED_SEQ		=	true;
 	public static boolean EXPORT_SAM				=	false;
 	public static boolean EXPORT_NONCANONICAL		=	true;
 	public static boolean EXPORT_CANONICAL			=	true;
@@ -146,8 +151,6 @@ public class Parameters {
 	// hidden parameters for revision
 	public static String CMD_PHRED_CAL					=	"--cal_phred";
 	public static String PHRED_CAL						=	Constants.CAL_PHRED_AVG;
-	
-	
 	
 	
 	

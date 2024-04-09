@@ -76,6 +76,7 @@ public class Master {
 		// Auto detection of already made index files.
 		
 		try {
+			RunInfo.totalProcessedReads = 0;
 			RunInfo.workerProcessedReads = new long[Parameters.nThreads+1];
 			Worker[] workers = new Worker[Parameters.nThreads];
 			
@@ -164,10 +165,7 @@ public class Master {
 			// marking target PSMs
 			pXgA.assignXBlocks();
 			
-			pXgA.write(Parameters.outputFilePath);
-			
-			// parser to PIN
-			PIN.parseOutput();
+			pXgA.write(Parameters.tmpOutputFilePaths[Parameters.CURRENT_FILE_INDEX]);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

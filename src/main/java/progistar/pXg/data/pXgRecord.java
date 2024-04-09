@@ -98,7 +98,7 @@ public class pXgRecord {
 	}
 	
 
-	private String getValueByFieldName (String fieldName) {
+	public String getValueByFieldName (String fieldName) {
 		String[] header = pXgParser.header;
 		String value = null;
 		for(int i=0; i<header.length; i++) {
@@ -111,5 +111,27 @@ public class pXgRecord {
 			}
 		}
 		return value;
+	}
+	
+	public void setValueByFieldName (String fieldName, String value) {
+		String[] header = pXgParser.header;
+		for(int i=0; i<header.length; i++) {
+			if(header[i].equalsIgnoreCase(fieldName)) {
+				fields[i] = value;
+			}
+		}
+	}
+	
+	public String toString() {
+		StringBuilder str = new StringBuilder();
+		
+		for(int i=0; i<fields.length; i++) {
+			if(i != 0) {
+				str.append("\t");
+			}
+			str.append(fields[i]);
+		}
+		
+		return str.toString();
 	}
 }

@@ -112,21 +112,11 @@ public class PxGAnnotation {
 			// TSV output
 			File tsvFile = new File(fileName);
 			BufferedWriter BW = new BufferedWriter(new FileWriter(tsvFile));
-			
-			File gtfFile = null;
-			BufferedWriter BWGTF = null;
-			
-			if(Parameters.EXPORT_GTF) {
-				gtfFile = new File(Parameters.exportGTFPath);
-				BWGTF = new BufferedWriter(new FileWriter(gtfFile));
-			}
-			final BufferedWriter BWGTF_ = BWGTF;
-			
 			File samFile = null;
 			BufferedWriter BWSAM = null;
 			
 			if(Parameters.EXPORT_SAM) {
-				samFile = new File(Parameters.exportSAMPath);
+				samFile = new File(Parameters.exportSAMPaths[Parameters.CURRENT_FILE_INDEX]);
 				BWSAM = new BufferedWriter(new FileWriter(samFile));
 			}
 			
@@ -174,7 +164,7 @@ public class PxGAnnotation {
 			BW.append("IsCanonical");
 			BW.newLine();
 			
-			File outFile = new File(Parameters.unmappedFilePath);
+			File outFile = new File(Parameters.unmappedFilePaths[Parameters.CURRENT_FILE_INDEX]);
 			BufferedWriter BWUnmapped = new BufferedWriter(new FileWriter(outFile));
 			
 			// calculate genomic ID
@@ -237,17 +227,9 @@ public class PxGAnnotation {
 									BWUnmapped.newLine();
 								}
  							} else {
-								// GTF writer
- 								if(Parameters.EXPORT_GTF) {
- 									if(			(Parameters.EXPORT_CANONICAL && pBlock.isCannonical) ||
- 											(Parameters.EXPORT_NONCANONICAL && !pBlock.isCannonical)) {
- 										GTFExportor.writeGTF(pBlock, xBlock, BWGTF_);
- 									}
- 								}
- 								
  								// SAM ID Mapper
  								if(Parameters.EXPORT_SAM) {
- 									if(			(Parameters.EXPORT_CANONICAL && pBlock.isCannonical) ||
+ 									if(		(Parameters.EXPORT_CANONICAL && pBlock.isCannonical) ||
  											(Parameters.EXPORT_NONCANONICAL && !pBlock.isCannonical)) {
  										SAMExportor.putSequenceID(xBlock);
  									}
@@ -263,10 +245,6 @@ public class PxGAnnotation {
 			// write exportSAM
 			BW.close();
 			BWUnmapped.close();
-			
-			if(Parameters.EXPORT_GTF) {
-				BWGTF.close();
-			}
 			if(Parameters.EXPORT_SAM) {
 				SAMExportor.writeSAM(BWSAM);
 				BWSAM.close();

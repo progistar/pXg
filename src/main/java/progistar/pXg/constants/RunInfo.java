@@ -48,13 +48,15 @@ public class RunInfo {
 	}
 	
 	public static void printFilterStat () {
+		System.out.println(Parameters.sequenceFilePaths[Parameters.CURRENT_FILE_INDEX]);
 		System.out.println("Step\tScans\tPeptides");
 		System.out.println("Initial\t"+initialScanNum+"\t"+initialPeptideNum);
 		System.out.println("Rank Filter\t"+rankFilterScanNum1+"\t"+rankFilterPeptideNum1);
 		System.out.println("Length Filter\t"+lengthFilterScanNum2+"\t"+lengthFilterPeptideNum2);
-		
 		System.out.println("RNA-matched Candidates\t"+mappingFilterScanNum3+"\t"+mappingFilterPeptideNum3);
 		// append to logger
+		Logger.append(Parameters.sequenceFilePaths[Parameters.CURRENT_FILE_INDEX]);
+		Logger.newLine();
 		Logger.append("Step\tScans\tPeptides");
 		Logger.newLine();
 		Logger.append("Initial\t"+initialScanNum+"\t"+initialPeptideNum);

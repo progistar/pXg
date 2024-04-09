@@ -28,10 +28,11 @@ public class SAMExportor {
 	
 	public static void writeSAM (BufferedWriter BW) throws IOException {
 		
-		try (SamReader samReader = SamReaderFactory.makeDefault().open(new File(Parameters.sequenceFilePath))) {
+		try (SamReader samReader = SamReaderFactory.makeDefault().open(new File(Parameters.sequenceFilePaths[Parameters.CURRENT_FILE_INDEX]))) {
 			
 			String lineSeparator = System.getProperty("line.separator");
-        	// get records				
+			
+        	// get records
             for (SAMRecord samRecord : samReader) {
                 // Process each SAMRecord as needed
             	String record = samRecord.getSAMString().replace(lineSeparator, "");
