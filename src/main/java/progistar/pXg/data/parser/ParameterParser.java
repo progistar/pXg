@@ -133,8 +133,8 @@ public class ParameterParser {
 					String sixFT= String.valueOf(Constants.SIX_FRAME);
 					String threeFT= String.valueOf(Constants.THREE_FRAME);
 					if(!args[i+1].equalsIgnoreCase(sixFT) && !args[i+1].equalsIgnoreCase(threeFT)) {
-						System.out.println(args[i+1] +" is wrong value. Enforce to six-frame translation.");
-						args[i+1] = sixFT;
+						System.out.println(args[i+1] +" is wrong value. Enforce to three-frame translation.");
+						args[i+1] = threeFT;
 					}
 					
 					Parameters.translationMethod = Integer.parseInt(args[i+1]);
@@ -481,47 +481,47 @@ public class ParameterParser {
 		
 		// --gtf_file
 		if(Parameters.genomicAnnotationFilePath == null) {
-			System.out.println("mandatory option -gtf is missing...");
+			System.out.println("mandatory option --gtf_file is missing...");
 			pass = false;
 		}
 		// --sam_file
 		if(Parameters.sequenceFilePaths == null) {
-			System.out.println("mandatory option -sam is missing...");
+			System.out.println("mandatory option --sam_file is missing...");
 			pass = false;
 		}
 		// --psm_file
 		if(Parameters.peptideFilePath == null) {
-			System.out.println("mandatory option -psm is missing...");
+			System.out.println("mandatory option --psm_file is missing...");
 			pass = false;
 		}
 		// --out_file
 		if(Parameters.outputFilePath == null) {
-			System.out.println("mandatory option -out is missing...");
+			System.out.println("mandatory option --out_file is missing...");
 			pass = false;
 		}
 		// -pept_col
 		if(Parameters.peptideColumnIndex == -1) {
-			System.out.println("mandatory option -pept_col is missing...");
+			System.out.println("mandatory option --pept_col is missing...");
 			pass = false;
 		}
 		// -score_col
 		if(Parameters.scoreColumnIndex == -1) {
-			System.out.println("mandatory option -score_col is missing...");
+			System.out.println("mandatory option --score_col is missing...");
 			pass = false;
 		}
 		// -scan_col
 		if(Parameters.scanColumnIndex == -1) {
-			System.out.println("mandatory option -scan_col is missing...");
+			System.out.println("mandatory option --scan_col is missing...");
 			pass = false;
 		}
 		// -file_col
 		if(Parameters.fileColumnIndex == -1) {
-			System.out.println("mandatory option -file_col is missing...");
+			System.out.println("mandatory option --file_col is missing...");
 			pass = false;
 		}
 		// -charge_col
 		if(Parameters.chargeColumnIndex == -1) {
-			System.out.println("mandatory option -charge_col is missing...");
+			System.out.println("mandatory option --charge_col is missing...");
 			pass = false;
 		}
 		

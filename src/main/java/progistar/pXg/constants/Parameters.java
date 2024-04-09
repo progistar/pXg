@@ -138,7 +138,7 @@ public class Parameters {
 	public static final String CMD_TRANSLATION		=	"--mode";
 
 	// Three or Six frame translation
-	public static int translationMethod				=	Constants.SIX_FRAME;
+	public static int translationMethod				=	Constants.THREE_FRAME;
 	
 	public static final String CMD_REMOVE_QUOTES	=	"--rm_quotes";
 	public static boolean rmQuotes					=	true;
