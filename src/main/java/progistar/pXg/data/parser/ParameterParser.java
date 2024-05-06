@@ -10,7 +10,7 @@ public class ParameterParser {
 
 	/**
 	 * If parsing successfully, return 0. else -1.
-	 * 
+	 *
 	 * @param args
 	 * @return
 	 */
@@ -19,7 +19,7 @@ public class ParameterParser {
 			System.out.println(Constants.VERSION+" "+Constants.RELEASE);
 			System.out.println(Constants.INTRODUCE);
 			System.out.println();
-			
+
 			// print parameter description
 			if(args.length == 0) {
 				System.out.println("Usage");
@@ -39,7 +39,7 @@ public class ParameterParser {
 				System.out.println("Optional Fields");
 				System.out.println("  --add_feat_cols       : Specify the indices for additional features to generate PIN file. One-based!");
 				System.out.println("                          Several features can be added by comma separator. ex> 5,6,7");
-				System.out.println("  --sep                 : Specify the column separator. Possible values are csv or tsv. Default is csv");
+				System.out.println("  --sep                 : Specify the column separator. Possible values are csv or tsv. Default is tsv");
 				System.out.println("  --mode                : Specify the method of translation nucleotides. 3 for three-frame and 6 for six-frame. Default is 3");
 				System.out.println("  --ileq                : Controls whether pXg treats isoleucine (I) and leucine (L) as the same/equivalent with respect to a peptide identification. Default is true.");
 				System.out.println("  --lengths             : Range of peptide length to consider. Default is 8-15");
@@ -71,7 +71,7 @@ public class ParameterParser {
 				System.out.println("java -Xmx30G -jar pXg.jar -gtf_file gencode.gtf -sam_file aligned.sorted.sam -psm_file peaks.result -scan_col 5 -file_col 2 -pept_col 4 -charge_col 11 -score_col 8 -add_feat_cols 14,15 -lengths 8-11 -out test");
 				return -1;
 			}
-			
+
 			// sam file first
 			for(int i=0; i<args.length; i+=2) {
 				String option = args[i].toLowerCase();
@@ -83,17 +83,17 @@ public class ParameterParser {
 					Parameters.unmappedFilePaths = new String[Parameters.NUM_OF_SAM_FILES];
 					Parameters.exportSAMPaths	 = new String[Parameters.NUM_OF_SAM_FILES];
 					Parameters.tmpOutputFilePaths= new String[Parameters.NUM_OF_SAM_FILES];
-					
+
 					for(int idx=0; idx < Parameters.NUM_OF_SAM_FILES; idx++) {
 						Parameters.sequenceFilePaths[idx] = paths[idx];
-						if(!(Parameters.sequenceFilePaths[idx].toLowerCase().endsWith(".bam") || 
+						if(!(Parameters.sequenceFilePaths[idx].toLowerCase().endsWith(".bam") ||
 								Parameters.sequenceFilePaths[idx].toLowerCase().endsWith(".sam"))) {
 							System.out.println(Parameters.sequenceFilePaths[idx] +" must be .sam or .bam file.");
 							return -1;
 						}
-						
+
 						int lastIdx = Parameters.sequenceFilePaths[idx].lastIndexOf(".");
-						
+
 						Parameters.unmappedFilePaths[idx] = Parameters.sequenceFilePaths[idx].substring(0, lastIdx) + ".unknown.seq";
 						Parameters.exportSAMPaths[idx]	  = Parameters.sequenceFilePaths[idx].substring(0, lastIdx) + ".ided.sam";
 						Parameters.tmpOutputFilePaths[idx]= Parameters.sequenceFilePaths[idx].substring(0, lastIdx) + "."+Constants.UNIQUE_RUN_ID;
@@ -104,10 +104,10 @@ public class ParameterParser {
 					}
 				}
 			}
-			
+
 			for(int i=0; i<args.length; i+=2) {
 				String option = args[i].toLowerCase();
-				
+
 				// --gtf_file (mandatory)
 				if(option.equalsIgnoreCase(Parameters.CMD_GENOMIC_ANNOTATION_PATH)) {
 					Parameters.genomicAnnotationFilePath = args[i+1];
@@ -136,7 +136,7 @@ public class ParameterParser {
 						System.out.println(args[i+1] +" is wrong value. Enforce to three-frame translation.");
 						args[i+1] = threeFT;
 					}
-					
+
 					Parameters.translationMethod = Integer.parseInt(args[i+1]);
 				}
 				// --fasta_file (optional)
@@ -212,7 +212,7 @@ public class ParameterParser {
 				// -sam_partition_size (optional)
 				else if(option.equalsIgnoreCase(Parameters.CMD_THREADS)) {
 					Parameters.nThreads = Integer.parseInt(args[i+1]);
-				} 
+				}
 				// -out_sam (optional)
 				else if(option.equalsIgnoreCase(Parameters.CMD_SAM_FORMAT)) {
 					if(args[i+1].equalsIgnoreCase("true")) {
@@ -307,17 +307,17 @@ public class ParameterParser {
 			System.out.println("Wrong parameter was detected. Please check the parameters.");
 			return -1;
 		}
-		
-		
+
+
 		if(!isMandatoryOkay()) {
 			return -1;
 		}
-		
+
 		// open logger
     	Logger.create(Parameters.outputFilePath+".log");
 
 		printSetting();
-		
+
 		// change one-based to zero-based
 		Parameters.peptideColumnIndex--;
 		Parameters.scoreColumnIndex--;
@@ -329,10 +329,10 @@ public class ParameterParser {
 				Parameters.additionalFeatureIndices[i]--;
 			}
 		}
-		
+
 		return 0;
 	}
-	
+
 	/**
 	 * GTF
 	 * SAM
@@ -360,7 +360,7 @@ public class ParameterParser {
 		}
 		System.out.println(" SAM: "+samPaths);
 		System.out.println("  SAM_PARTITION_SIZE: "+Parameters.readSize);
-		
+
 		String translation = "NA";
 		if(Parameters.translationMethod == Constants.THREE_FRAME) {
 			translation = "three-frame translation";
@@ -381,8 +381,8 @@ public class ParameterParser {
 		String addFeatCols = "NA";
 		if(Parameters.additionalFeatureIndices != null) {
 			addFeatCols = "";
-			for(int i=0; i<Parameters.additionalFeatureIndices.length; i++) {
-				addFeatCols += "," + Parameters.additionalFeatureIndices[i];
+			for (int additionalFeatureIndex : Parameters.additionalFeatureIndices) {
+				addFeatCols += "," + additionalFeatureIndex;
 			}
 			addFeatCols = addFeatCols.substring(1);
 		}
@@ -408,7 +408,7 @@ public class ParameterParser {
 		System.out.println(" penalty_softclip: "+Parameters.PENALTY_SOFTCLIP);
 		System.out.println(" penalty_unknown: "+Parameters.PENALTY_UNMAP);
 		System.out.println(" THREADS: "+Parameters.nThreads);
-		
+
 		// append to logger
 		Logger.append("Running info");
 		Logger.newLine();
@@ -475,10 +475,10 @@ public class ParameterParser {
 		Logger.append(" THREADS: "+Parameters.nThreads);
 		Logger.newLine();
 	}
-	
+
 	private static boolean isMandatoryOkay () {
 		boolean pass = true;
-		
+
 		// --gtf_file
 		if(Parameters.genomicAnnotationFilePath == null) {
 			System.out.println("mandatory option --gtf_file is missing...");
@@ -524,18 +524,18 @@ public class ParameterParser {
 			System.out.println("mandatory option --charge_col is missing...");
 			pass = false;
 		}
-		
+
 		return pass;
 	}
-	
+
 	private static void printNoSuchFileOrDirectory (String fileName) {
 		System.out.println("No such file or directory: "+fileName);
 	}
-	
+
 	private static void printAlreadyExistFileOrDirectory (String fileName) {
 		System.out.println("The file already exists: "+fileName);
 	}
-	
+
 	private static boolean isExist (String fileName) {
 		File file = new File(fileName);
 		return file.exists();

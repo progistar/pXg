@@ -8,22 +8,22 @@ import progistar.pXg.constants.Parameters;
 
 public class NetMHCpanRunner {
 
-	private NetMHCpanRunner() {};
-	
-	private static Hashtable<String, Boolean> peptides = new Hashtable<String, Boolean>();
-	
+	private NetMHCpanRunner() {}
+
+	private static Hashtable<String, Boolean> peptides = new Hashtable<>();
+
 	public static void putPeptide(String peptide) {
 		peptides.put(peptide, true);
 	}
-	
+
 	public static void run (String option) {
 		try {
 			StringBuilder command = new StringBuilder();
-			
+
 			command.append(Parameters.netMHCpanPath).append(" ").append(option);
-			
+
 			Process netMHCpan = Runtime.getRuntime().exec(command.toString());
-			
+
 			try(BufferedReader input = new BufferedReader(new InputStreamReader(netMHCpan.getInputStream()))) {
 	            String line;
 
@@ -32,12 +32,12 @@ public class NetMHCpanRunner {
 	            }
 	        }
 
-			
+
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void main(String args[]) {
 		run("");
 	}

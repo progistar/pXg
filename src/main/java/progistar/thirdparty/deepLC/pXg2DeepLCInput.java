@@ -19,17 +19,17 @@ class DeepLCData implements Comparable<DeepLCData> {
 	public double rt = 0;
 	@Override
 	public int compareTo(DeepLCData o) {
-		
+
 		if(this.score > o.score) {
 			return -1;
 		} else if(this.score < o.score) {
 			return 1;
 		}
-		
+
 		return 0;
 	}
-	
-	
+
+
 }
 
 public class pXg2DeepLCInput {
@@ -40,16 +40,16 @@ public class pXg2DeepLCInput {
 	public static String CARBAM = "Carbamidomethyl";
 	public static String PHOSPHO = "Phospho";
 	public static String CYSTEINLY = "Cysteinyl";
-	
+
 	public static void main(String[] args) throws IOException {
-		
-		Hashtable<String, String> massToModName = new Hashtable<String, String>();
+
+		Hashtable<String, String> massToModName = new Hashtable<>();
 		massToModName.put("+15.99", MET);
 		massToModName.put("+.98", DEAMI);
 		massToModName.put("+119.00", CYSTEINLY);
 		massToModName.put("+79.97", PHOSPHO);
 		massToModName.put("+58.01", CARBAM);
-		
+
 		int calSize = 25;
 		int peaksPeptideIndex = 3;
 		int rtIndex = 11;
@@ -57,43 +57,43 @@ public class pXg2DeepLCInput {
 		int scanIndex = 4;
 		int peptideIndex = 3;
 		int peaksScoreIndex = 7;
-		
+
 		String fileName = "/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/deepLC/S4.RAW.PEAKS.csv.top1.unided.peptideLevel.BA.tsv";
 		String line = null;
 		File file = new File(fileName);
 		BufferedReader BR = new BufferedReader(new FileReader(file));
 		BufferedWriter BWpXgNew = new BufferedWriter(new FileWriter(fileName.replace(".tsv", ".pept85.tsv")));
-		
-		
+
+
 		BWpXgNew.append(BR.readLine());
 		BWpXgNew.newLine();
-		Hashtable<String, String> rmDuplications = new Hashtable<String, String>();
-		Hashtable<String, String> rmDuplicatedPeptides = new Hashtable<String, String>();
-		Hashtable<String, ArrayList<DeepLCData>> fractions = new Hashtable<String, ArrayList<DeepLCData>>();
-		
-		ArrayList<String[]> pXgRecords = new ArrayList<String[]>();
+		Hashtable<String, String> rmDuplications = new Hashtable<>();
+		Hashtable<String, String> rmDuplicatedPeptides = new Hashtable<>();
+		Hashtable<String, ArrayList<DeepLCData>> fractions = new Hashtable<>();
+
+		ArrayList<String[]> pXgRecords = new ArrayList<>();
 		while((line = BR.readLine()) != null) {
 			pXgRecords.add(line.split("\t"));
 		}
-		
+
 		pXgRecords.sort(new Comparator<String[]>() {
 
 			@Override
 			public int compare(String[] o1, String[] o2) {
 				double score1 = Double.parseDouble(o1[peaksScoreIndex]);
 				double score2 = Double.parseDouble(o2[peaksScoreIndex]);
-				
+
 				if(score1 < score2) {
 					return 1;
 				} else if(score1 > score2) {
 					return -1;
 				}
-				
+
 				return 0;
 			}
-			
+
 		});
-		
+
 		for(int i=0; i<pXgRecords.size(); i++) {
 			String peptide = pXgRecords.get(i)[peptideIndex];
 			if(rmDuplicatedPeptides.get(peptide) != null) {
@@ -109,11 +109,11 @@ public class pXg2DeepLCInput {
 				BWpXgNew.newLine();
 			}
 		}
-		
+
 		BWpXgNew.close();
-		
-		
-		
+
+
+
 		for(int i=0; i<pXgRecords.size(); i++) {
 			String[] fields = pXgRecords.get(i);
 			String modifications = "";
@@ -131,25 +131,25 @@ public class pXg2DeepLCInput {
 			String fractionName ="1";//file.getName().split("\\.")[0];
 			ArrayList<DeepLCData> fraction = fractions.get(fractionName);
 			if(fraction == null) {
-				fraction = new ArrayList<DeepLCData>();
+				fraction = new ArrayList<>();
 				fractions.put(fractionName, fraction);
 			}
-			
+
 			String fileKey = fields[fractionIndex]+"_"+fields[scanIndex]+"_"+fields[peptideIndex];
-			
+
 			if(rmDuplications.get(fileKey) == null) {
 				DeepLCData data = new DeepLCData();
 				String key = fields[peptideIndex]+","+modifications+","+fields[rtIndex];
-				
+
 				data.content = key;
 				data.score = Double.parseDouble(fields[peaksScoreIndex]);
 				data.rt = Double.parseDouble(fields[rtIndex]);
-				
+
 				fraction.add(data);
 				rmDuplications.put(fileKey, "");
 			}
 		}
-		
+
 		fractions.forEach( (fName, fraction) -> {
 			try {
 				System.out.println(fName +" is running");
@@ -157,12 +157,12 @@ public class pXg2DeepLCInput {
 				BufferedWriter BWCal = new BufferedWriter(new FileWriter(fName+".cal.csv"));
 				BW.append("seq,modifications,tr");
 				BW.newLine();
-				
+
 				BWCal.append("seq,modifications,tr");
 				BWCal.newLine();
-				
+
 				Collections.sort(fraction);
-				
+
 				int cnt = 0;
 				while(cnt < calSize) {
 					for(DeepLCData data : fraction) {
@@ -174,41 +174,41 @@ public class pXg2DeepLCInput {
 					}
 				}
 				System.out.println("data size: "+cnt);
-				
+
 				// for calibration input file
 				double maxRT = 0;
 				double minRT = Double.MAX_VALUE;
-				for(int i=0; i<fraction.size(); i++) {
-					maxRT = Math.max(fraction.get(i).rt, maxRT);
-					minRT = Math.min(fraction.get(i).rt, minRT);
+				for (DeepLCData element : fraction) {
+					maxRT = Math.max(element.rt, maxRT);
+					minRT = Math.min(element.rt, minRT);
 				}
-				
+
 				double intervalRT = (maxRT-minRT)/calSize;
 				System.out.println("RT range: "+minRT+"-"+maxRT);
 				System.out.println("RT Interval: "+intervalRT);
-				
-				
-				ArrayList<DeepLCData> calData = new ArrayList<DeepLCData>();
+
+
+				ArrayList<DeepLCData> calData = new ArrayList<>();
 				for(int j=0; j<fraction.size(); j++) {
 					DeepLCData data = fraction.get(j);
 					if(data.score >= 95) {
 						calData.add(data);
 					}
 				}
-				
+
 				for(DeepLCData data : calData) {
 					BWCal.append(data.content);
 					BWCal.newLine();
 				}
-				
+
 				System.out.println("CalData: "+calData.size());
 				/*
 				for(int i=0; i<calSize; i++) {
 					double startRT = minRT + i * intervalRT;
 					double endRT = minRT + (i+1) * intervalRT;
-					
+
 					ArrayList<DeepLCData> calData = new ArrayList<DeepLCData>();
-					
+
 					// max top 10
 					while(calData.size() == 0) {
 						// select top 10 peptides
@@ -217,17 +217,17 @@ public class pXg2DeepLCInput {
 							if(data.rt >= startRT && data.rt <= endRT ) {
 								calData.add(data);
 							}
-							
+
 							if(calData.size() == 20) {
 								break;
 							}
 						}
-						
+
 						if(calData.size() == 0) {
 							break;
 						}
 					}
-					
+
 					for(DeepLCData data : calData) {
 						BWCal.append(data.content);
 						BWCal.newLine();
@@ -236,14 +236,14 @@ public class pXg2DeepLCInput {
 				*/
 				BW.close();
 				BWCal.close();
-				
+
 				System.out.println(fName+":\t"+fraction.size()+"=> "+cnt);
 			}catch(IOException ioe) {
-				
+
 			}
 		});
-		
-		
+
+
 		BR.close();
 	}
 }

@@ -12,9 +12,9 @@ import progistar.pXg.data.XBlock;
 public class GTFExportor {
 
 	private GTFExportor() {
-		
+
 	}
-	
+
 	public static void writeGTF (PBlock pBlock, XBlock xBlock, BufferedWriter BW) throws IOException {
 		String peptide = xBlock.peptideSequence;
 		if(pBlock.psmStatus == Constants.PSM_STATUS_DECOY) {
@@ -29,11 +29,11 @@ public class GTFExportor {
 		String mutation = xBlock.mutations;
 		String events = xBlock.toEvents().get("key");
 		String fastaID = xBlock.toFastaIDs().get("key");
-		
+
 		String chr = genomicLoci[0].split("\\:")[0];
 		String startPos = null;
 		String endPos = null;
-		
+
 		for(String genomicLocus : genomicLoci) {
 			genomicLocus = genomicLocus.replace(chr+":", "");
 			if(startPos == null) {
@@ -41,7 +41,7 @@ public class GTFExportor {
 			}
 			endPos = genomicLocus.split("\\-")[1];
 		}
-		
+
 		BW.append(chr).append("\t"); // chr
 		BW.append(Constants.VERSION).append("\t"); // source
 		BW.append("transcript").append("\t"); // feature
@@ -60,24 +60,24 @@ public class GTFExportor {
 		BW.append(" score \"").append(score).append("\";"); // attributes: score
 		BW.append(" fastaID \"").append(fastaID).append("\";"); // attributes: fasta matched list
 		BW.newLine();
-		
-		ArrayList<String> locusInfo = new ArrayList<String>();
+
+		ArrayList<String> locusInfo = new ArrayList<>();
 		if(strand == '+') {
-			for(int i=0; i<genomicLoci.length; i++) {
-				locusInfo.add(genomicLoci[i]);
+			for (String element : genomicLoci) {
+				locusInfo.add(element);
 			}
 		} else {
 			for(int i=genomicLoci.length-1; i>=0; i--) {
 				locusInfo.add(genomicLoci[i]);
 			}
 		}
-		
+
 		for(int i=0; i<locusInfo.size(); i++) {
 			String locus = locusInfo.get(i);
 			locus = locus.replace(chr+":", "");
 			startPos = locus.split("\\-")[0];
 			endPos = locus.split("\\-")[1];
-			
+
 			BW.append(chr).append("\t"); // chr
 			BW.append(Constants.VERSION).append("\t"); // source
 			BW.append("exon").append("\t"); // feature
@@ -92,6 +92,6 @@ public class GTFExportor {
 			BW.append(" exon_id \"").append((i+1)+"").append("\";"); // attributes: exon_id
 			BW.newLine();
 		}
-		
+
 	}
 }

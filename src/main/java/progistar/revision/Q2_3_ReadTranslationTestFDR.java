@@ -24,36 +24,36 @@ class Record implements Comparable<Record>{
 		}
 		return 0;
 	}
-	
-	
+
+
 }
 
 
 
 public class Q2_3_ReadTranslationTestFDR {
 	public static String header = null;
-	
+
 	public static void main(String[] args) throws IOException {
 		File targetFile = new File("/Users/gistar/Documents/MyPapers/pXg/MCP/revision_1/1.RevData/4.ReadTranslation/1.SepFDR/B_LCL1.target.classMark.psm");
 		File decoyFile = new File("/Users/gistar/Documents/MyPapers/pXg/MCP/revision_1/1.RevData/4.ReadTranslation/1.SepFDR/B_LCL1.decoy.classMark.psm");
 		File result = new File("/Users/gistar/Documents/MyPapers/pXg/MCP/revision_1/1.RevData/4.ReadTranslation/B_LCL1.noncanonical.fdr5");
-		
-		
+
+
 		ArrayList<Record> targets = loadFile(targetFile, false, true);
 		ArrayList<Record> decoys = loadFile(decoyFile, false, false);
-		
+
 		BufferedWriter BW = new BufferedWriter(new FileWriter(result));
 		BW.append(header);
 		BW.newLine();
-		
+
 		ArrayList<Record> psms = targets;
 		psms.addAll(decoys);
-		
+
 		Collections.sort(psms);
 
 		double targetN = 0;
 		double decoyN = 0;
-		
+
 		int fdrIdx = 0;
 		for(int i=0; i<psms.size(); i++) {
 			Record record = psms.get(i);
@@ -62,18 +62,18 @@ public class Q2_3_ReadTranslationTestFDR {
 			} else {
 				decoyN++;
 			}
-			
+
 			if(targetN != 0 && decoyN/targetN < 0.05) {
 				fdrIdx = i;
 			}
 		}
-		
+
 		targetN = 0;
 		decoyN = 0;
-		
+
 		for(int i=0; i<=fdrIdx; i++) {
 			Record record = psms.get(i);
-			
+
 			if(record.isTarget) {
 				BW.append(record.line);
 				BW.newLine();
@@ -82,16 +82,16 @@ public class Q2_3_ReadTranslationTestFDR {
 				decoyN++;
 			}
 		}
-		
+
 		System.out.println(targetN+"/"+decoyN);
 		BW.close();
 	}
-	
+
 	public static ArrayList<Record> loadFile (File file, boolean hasCanonical, boolean isTarget) throws IOException {
-		ArrayList<Record> records = new ArrayList<Record>();
+		ArrayList<Record> records = new ArrayList<>();
 		BufferedReader BR = new BufferedReader(new FileReader(file));
 		String line = null;
-		
+
 		header = BR.readLine();
 		while((line = BR.readLine()) != null) {
 			String[] fields = line.split("\t");
@@ -102,16 +102,17 @@ public class Q2_3_ReadTranslationTestFDR {
 			if(canonical.startsWith("Non")) {
 				isCanonical = false;
 			}
-			
-			if(mhc.equalsIgnoreCase("NB")) continue;
-			if(isCanonical != hasCanonical) continue;
-			
+
+			if(mhc.equalsIgnoreCase("NB") || (isCanonical != hasCanonical)) {
+				continue;
+			}
+
 			Record record = new Record();
 			record.isCanonical = isCanonical;
 			record.line = line;
 			record.score = score;
 			record.isTarget = isTarget;
-			
+
 			records.add(record);
 		}
 		BR.close();

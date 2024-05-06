@@ -6,7 +6,7 @@ public class MassConvertor {
 		double mass = charge * (mz);
 		return mass;
 	}
-	
+
 	public static double massToMz (double mass, double charge) {
 		double mz = (mass)/charge;
 		return mz;

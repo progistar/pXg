@@ -15,7 +15,7 @@ import progistar.thirdparty.netMHCpan.NetMHCpanResult;
 public class SpectralCompToMSP {
 
 	public static void main(String[] args) throws IOException {
-		
+
 		boolean[] selectedSet = {
 				false, // B-LCL1
 				false, // B-LCL2
@@ -45,7 +45,7 @@ public class SpectralCompToMSP {
 				false, // R2_IN532T
 				false, // M004T
 				false, // M009T
-				
+
 
 				true, // DI2N
 				true, // DI5N
@@ -63,7 +63,7 @@ public class SpectralCompToMSP {
 				true, // M004N
 				true // M009N
 		};
-		
+
 		String[] exSpectraSet = {
 				"/Users/gistar/projects/pXg/MSMS/B_LCL1.mgf",
 				"/Users/gistar/projects/pXg/MSMS/B_LCL2.mgf",
@@ -75,7 +75,7 @@ public class SpectralCompToMSP {
 				"/Users/gistar/projects/pXg/MSMS/THP1_1.mgf",
 				"/Users/gistar/projects/pXg/MSMS/THP1_2.mgf",
 				"/Users/gistar/projects/pXg/MSMS/THP1_3.mgf",
-				
+
 				"/Users/gistar/projects/GastricCancer_NCC/mgf/20221125_KHK_T1_05.scannum.mgf", // DI2T
 				"/Users/gistar/projects/GastricCancer_NCC/mgf/20221125_KHK_T1_06.scannum.mgf", // DI5T
 				"/Users/gistar/projects/GastricCancer_NCC/mgf/20221125_KHK_T1_12.scannum.mgf", // IN19T
@@ -93,7 +93,7 @@ public class SpectralCompToMSP {
 				"/Users/gistar/projects/GastricCancer_NCC/mgf/20201110_HLA-I_5_R1.scannum.mgf", // R2_IN532T
 				"/Users/gistar/projects/GastricCancer_NCC/mgf/20221125_KHK_T1_07.scannum.mgf", // M004T
 				"/Users/gistar/projects/GastricCancer_NCC/mgf/230217_MHC_I_160min_M009T.scannum.mgf", // M009T
-				
+
 				"/Users/gistar/projects/GastricCancer_NCC/mgf/20221125_KHK_N1_05.scannum.mgf", // DI2N
 				"/Users/gistar/projects/GastricCancer_NCC/mgf/20221125_KHK_N1_06.scannum.mgf", // DI5N
 				"/Users/gistar/projects/GastricCancer_NCC/mgf/20221125_KHK_N1_12.scannum.mgf", // IN19N
@@ -110,7 +110,7 @@ public class SpectralCompToMSP {
 				"/Users/gistar/projects/GastricCancer_NCC/mgf/20221125_KHK_N1_07.scannum.mgf", // M004N
 				"/Users/gistar/projects/GastricCancer_NCC/mgf/230118_MHC_I_160min_M009N.scannum.mgf" // M009N
 		};
-		
+
 		String[] predSpectraSet = {
 				"/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/B-LCL1.msp",
 				"/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/B-LCL2.msp",
@@ -122,7 +122,7 @@ public class SpectralCompToMSP {
 				"/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/THP1-1.msp",
 				"/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/THP1-2.msp",
 				"/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/THP1-3.msp",
-				
+
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/DI2T.msp", // DI2T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/DI5T.msp", // DI5T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/IN19T.msp", // IN19T
@@ -157,7 +157,7 @@ public class SpectralCompToMSP {
 				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/M004N.msp", // M004N
 				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/M009N.msp" // M009N
 		};
-		
+
 		String[] deepLCSet = {
 				"/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/B-LCL1.deeplc",
 				"/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/B-LCL2.deeplc",
@@ -169,7 +169,7 @@ public class SpectralCompToMSP {
 				"/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/THP1-1.deeplc",
 				"/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/THP1-2.deeplc",
 				"/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/THP1-3.deeplc",
-				
+
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/DI2T.deeplc", // DI2T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/DI5T.deeplc", // DI5T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/IN19T.deeplc", // IN19T
@@ -187,7 +187,7 @@ public class SpectralCompToMSP {
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/R2_IN532T.deeplc", // R2_IN532T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/M004T.deeplc", // M004T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/M009T.deeplc", // M009T
-				
+
 				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/DI2N.deeplc", // DI2N
 				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/DI5N.deeplc", // DI5N
 				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN19N.deeplc", // IN19N
@@ -203,9 +203,9 @@ public class SpectralCompToMSP {
 				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN532N.deeplc", // IN532N
 				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/M004N.deeplc", // M004N
 				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/M009N.deeplc" // M009N
-				
+
 		};
-		
+
 		String[] netmhcpanSet = {
 				"/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/B-LCL1.netmhcpan.xls",
 				"/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/B-LCL2.netmhcpan.xls",
@@ -217,7 +217,7 @@ public class SpectralCompToMSP {
 				"/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/THP1-1.netmhcpan.xls",
 				"/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/THP1-2.netmhcpan.xls",
 				"/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/THP1-3.netmhcpan.xls",
-				
+
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/DI2T.netmhcpan.xls", // DI2T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/DI5T.netmhcpan.xls", // DI5T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/IN19T.netmhcpan.xls", // IN19T
@@ -235,7 +235,7 @@ public class SpectralCompToMSP {
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/R2_IN532T.netmhcpan.xls", // R2_IN532T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/M004T.netmhcpan.xls", // M004T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/M009T.netmhcpan.xls", // M009T
-				
+
 				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/DI2N.netmhcpan.xls", // DI2N
 				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/DI5N.netmhcpan.xls", // DI5N
 				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN19N.netmhcpan.xls", // IN19N
@@ -252,7 +252,7 @@ public class SpectralCompToMSP {
 				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/M004N.netmhcpan.xls", // M004N
 				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/M009N.netmhcpan.xls" // M009N
 		};
-		
+
 		String[] pinSet = {
 				"/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/B-LCL1.pxg.pin",
 				"/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/B-LCL2.pxg.pin",
@@ -264,7 +264,7 @@ public class SpectralCompToMSP {
 				"/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/THP1-1.pxg.pin",
 				"/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/THP1-2.pxg.pin",
 				"/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/THP1-3.pxg.pin",
-				
+
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/DI2T.pxg.pin", // DI2T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/DI5T.pxg.pin", // DI5T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/IN19T.pxg.pin", // IN19T
@@ -282,7 +282,7 @@ public class SpectralCompToMSP {
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/R2_IN532T.pxg.pin", // R2_IN532T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/M004T.pxg.pin", // M004T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/M009T.pxg.pin", // M009T
-				
+
 				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/DI2N.pxg.pin", // DI2N
 				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/DI5N.pxg.pin", // DI5N
 				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN19N.pxg.pin", // IN19N
@@ -298,9 +298,9 @@ public class SpectralCompToMSP {
 				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN532N.pxg.pin", // IN532N
 				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/M004N.pxg.pin", // M004N
 				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/M009N.pxg.pin" // M009N
-				
+
 		};
-		
+
 		String[] pxgSet = {
 				"/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/B-LCL1.pxg",
 				"/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/B-LCL2.pxg",
@@ -312,7 +312,7 @@ public class SpectralCompToMSP {
 				"/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/THP1-1.pxg",
 				"/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/THP1-2.pxg",
 				"/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut/THP1-3.pxg",
-				
+
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/DI2T.pxg", // DI2T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/DI5T.pxg", // DI5T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/IN19T.pxg", // IN19T
@@ -330,7 +330,7 @@ public class SpectralCompToMSP {
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/R2_IN532T.pxg", // R2_IN532T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/M004T.pxg", // M004T
 				"/Users/gistar/projects/GastricCancer_NCC/pXg/M009T.pxg", // M009T
-				
+
 				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/DI2N.pxg", // DI2N
 				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/DI5N.pxg", // DI5N
 				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN19N.pxg", // IN19N
@@ -346,15 +346,15 @@ public class SpectralCompToMSP {
 				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/IN532N.pxg", // IN532N
 				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/M004N.pxg", // M004N
 				"/Users/gistar/projects/GastricCancer_NCC_2nd_analysis/pXg_normal/M009N.pxg" // M009N
-				
+
 		};
-		
-		
+
+
 		for(int idx = 0; idx<pinSet.length; idx++) {
 			if(!selectedSet[idx]) {
 				continue;
 			}
-			
+
 			System.out.println(pinSet[idx]);
 			System.out.println(exSpectraSet[idx]);
 			System.out.println(predSpectraSet[idx]);
@@ -368,17 +368,17 @@ public class SpectralCompToMSP {
 			File deepLCRes = new File(deepLCSet[idx]);
 			// HLA binding prediction
 			File netmhcpan = new File(netmhcpanSet[idx]);
-			
+
 			NetMHCpanResult netMHCpanResult = NetMHCpanParser.parseNetMHCpan(netmhcpan.getAbsolutePath());
-			
+
 			File pinFile = new File(pinSet[idx]);
 			String line = null;
-			
+
 			BufferedReader BRlc = new BufferedReader(new FileReader(deepLCRes));
-			Hashtable<String, Double> bestDelta = new Hashtable<String, Double>();
-			Hashtable<String, ArrayList<Double>> deltaRTs = new Hashtable<String, ArrayList<Double>>();
+			Hashtable<String, Double> bestDelta = new Hashtable<>();
+			Hashtable<String, ArrayList<Double>> deltaRTs = new Hashtable<>();
 			BRlc.readLine();// skip header
-			
+
 			while((line = BRlc.readLine()) != null) {
 				String[] fields = line.split("\\,");
 				String peptide =fields[1];
@@ -394,32 +394,32 @@ public class SpectralCompToMSP {
 				if(thisDelta == null || Math.abs(thisDelta) > Math.abs(delta)) {
 					bestDelta.put(peptide, delta);
 				}
-				
+
 				if(deltaList == null) {
-					deltaList = new ArrayList<Double>();
+					deltaList = new ArrayList<>();
 				}
 				deltaList.add(delta);
 				deltaRTs.put(peptide, deltaList);
 			}
-			
+
 			BRlc.close();
-			
+
 			BufferedReader BR = new BufferedReader(new FileReader(pxgSet[idx]));
-			ArrayList<String> pxgRecords = new ArrayList<String>();
+			ArrayList<String> pxgRecords = new ArrayList<>();
 			String pXgHeader = BR.readLine();
 			while((line = BR.readLine()) != null) {
 				pxgRecords.add(line);
 			}
-			
+
 			BR.close();
-			
+
 			BR = new BufferedReader(new FileReader(pinFile));
 			BufferedWriter BW = new BufferedWriter(new FileWriter(pinFile.getAbsolutePath().replace(".pin", ".predfeat.pin")));
 			BufferedWriter BWpxg = new BufferedWriter(new FileWriter(pxgSet[idx].replace(".pxg", ".predfeat.pxg")));
 			BWpxg.append(pXgHeader+"\tSA\tBestDeltaRT\tmLog2BestELRank");
 			BWpxg.newLine();
-			
-			
+
+
 			StringBuilder output = new StringBuilder();
 			String[] headers = BR.readLine().split("\t");
 			for(int i=0; i<headers.length-2; i++) {
@@ -438,47 +438,47 @@ public class SpectralCompToMSP {
 				String charge = uniqueID.split("\\|")[2];
 				String title = fileName+"."+scanNum+"."+scanNum+"."+charge;
 				String peptide = fields[fields.length-2];
-				
+
 				Spectrum s1 = exSpectra.getSpectrumByScanNum(title);
 				Spectrum s2 = predSpectra.getSpectrumByScanNum(peptide+"/"+charge);
-				
+
 				s1.setPeptide(peptide);
 				s2.setPeptide(peptide);
-				
+
 				double scaScore = SpectralScores.spectralContrastAngle(s1, s2, 0.02, false);
-				
+
 				for(int i=0; i<fields.length-2; i++) {
 					output.append(fields[i]).append("\t");
 				}
-				
+
 				ArrayList<Double> deltaList = deltaRTs.get(peptide);
 				double avgDelta = 0;
 				for(Double delta : deltaList) {
 					avgDelta += delta;
 				}
-				avgDelta /= (double) deltaList.size();
-				
+				avgDelta /= deltaList.size();
+
 				double elrank = -Math.log(netMHCpanResult.peptideToRecord.get(peptide).getBestScore()/2) / Math.log(2);
-				
+
 				output.append(scaScore).append("\t")
 				.append(Math.abs(bestDelta.get(peptide))).append("\t")
 				.append(elrank).append("\t")
 				.append(fields[fields.length-2]).append("\t").append(fields[fields.length-1]);
 				BW.append(output.toString());
 				BW.newLine();
-				
+
 				BWpxg.append(pxgRecords.get(pxgIdx++)).append("\t").append(scaScore+"").append("\t")
 				.append(Math.abs(bestDelta.get(peptide))+"").append("\t")
 				.append(elrank+"");
 				BWpxg.newLine();
-				
+
 			}
 			BW.close();
 			BR.close();
 			BWpxg.close();
 		}
-		
+
 	}
-	
-	
+
+
 }

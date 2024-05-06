@@ -5,8 +5,8 @@ import java.util.ArrayList;
 
 public class AminoAcid {
 
-	private static final AminoAcid [] AMINO_ACID_TABLE = 
-		{		
+	private static final AminoAcid [] AMINO_ACID_TABLE =
+		{
 			new AminoAcid('A',	71.037114,	"alanine", new ChemicalForm(3, 5, 1, 1, 0)),
 			null,
 			new AminoAcid('C',	103.00919,	"cysteine", new ChemicalForm(3, 5, 1, 1, 1)),
@@ -34,41 +34,43 @@ public class AminoAcid {
 			new AminoAcid('Y',	163.06333,	"tyrosine", new ChemicalForm(9, 9, 2, 1, 0)),
 			null,
 		};
-	
-	
+
+
 	private char aminoAcid = 'X';
 	private double mass = .0;
 	private String fullName = null;
 	private ChemicalForm chemicalForm = null;
-	
+
 	public AminoAcid (char aminoAcid, double mass, String fullName, ChemicalForm chemicalForm) {
 		this.aminoAcid = aminoAcid;
 		this.mass = mass;
 		this.fullName = fullName;
 		this.chemicalForm = chemicalForm;
 	}
-	
+
 	public ChemicalForm getChemicalForm () {
 		return this.chemicalForm;
 	}
-	
+
 	public double getResidualMass () {
 		return this.mass;
 	}
-	
+
 	public char getAminoAcid () {
 		return this.aminoAcid;
 	}
-	
+
 	public String getFullName () {
 		return this.fullName;
 	}
-	
+
 	public static AminoAcid getAminoAcid (char aminoAcid) {
-		if(Character.isLowerCase(aminoAcid)) aminoAcid = Character.toUpperCase(aminoAcid);
+		if(Character.isLowerCase(aminoAcid)) {
+			aminoAcid = Character.toUpperCase(aminoAcid);
+		}
 		return AMINO_ACID_TABLE[aminoAcid - 'A'];
 	}
-	
+
 	/**
 	 * tolerance must be dalton. <br>
 	 * If there is no matched amino acid, then it return zero size arraylist. <br>
@@ -78,21 +80,23 @@ public class AminoAcid {
 	 * @return
 	 */
 	public static ArrayList<AminoAcid> getAminoAcid (double mass, double tolerance) {
-		ArrayList<AminoAcid> aminoAcids = new ArrayList<AminoAcid>();
-		
-		for(int i=0; i<AminoAcid.AMINO_ACID_TABLE.length; i++) {
-			if(AminoAcid.AMINO_ACID_TABLE[i] != null) {
-				if(Math.abs(mass - AminoAcid.AMINO_ACID_TABLE[i].getResidualMass()) < tolerance) aminoAcids.add(AminoAcid.AMINO_ACID_TABLE[i]);
+		ArrayList<AminoAcid> aminoAcids = new ArrayList<>();
+
+		for (AminoAcid element : AminoAcid.AMINO_ACID_TABLE) {
+			if(element != null) {
+				if(Math.abs(mass - element.getResidualMass()) < tolerance) {
+					aminoAcids.add(element);
+				}
 			}
 		}
-		
+
 		return aminoAcids;
 	}
-	
+
 	/**
 	 * tolerance must be dalton. <br>
 	 * If there is no matched amino acid, then it returns null. <br>
-	 * 
+	 *
 	 * @param mass
 	 * @param charge
 	 * @param tolerance
@@ -107,7 +111,7 @@ public class AminoAcid {
 				aminoAcid_ = AminoAcid.AMINO_ACID_TABLE[aminoIndex];
 			}
 		}
-		
+
 		return aminoAcid_;
 	}
 }

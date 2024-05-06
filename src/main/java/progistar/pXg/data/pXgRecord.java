@@ -5,14 +5,14 @@ import progistar.pXg.data.parser.pXgParser;
 
 public class pXgRecord {
 	private String[] fields = null;
-	
+
 	public pXgRecord (String[] fields) {
 		this.fields = fields;
 	}
-	
+
 	public String getHeader () {
 		StringBuilder header = new StringBuilder(">pXg");
-		
+
 		String id = getID();
 		String isCanonical = getValueByFieldName("isCanonical").equalsIgnoreCase("true") ? "Canonical" : "Noncanonical";
 		String gn = getValueByFieldName("GeneNames");
@@ -24,7 +24,7 @@ public class pXgRecord {
 		String alt = getValueByFieldName("MutationStatus");
 		String gId = getValueByFieldName("GeneIDs");
 		String rna = getNucleotideSequence();
-		
+
 		header.append("|").append(id)
 		.append("|").append(id+"_"+isCanonical)
 		.append(" ").append(gId)
@@ -36,26 +36,26 @@ public class pXgRecord {
 		.append(" ").append("ALT="+alt)
 		.append(" ").append("RNA="+rna)
 		.append(" ").append("PE="+pe);
-		
+
 		return header.toString();
 	}
-	
+
 	public String getID () {
 		String id = null;
-		
+
 		String genomicLoci = getValueByFieldName("GenomicLoci").replace("|", ",");
 		String centerSeuqnece = getValueByFieldName("ObservedNucleotide");
 		String strand = getValueByFieldName("Strand");
-		
+
 		id = genomicLoci+":"+strand+":"+centerSeuqnece;
-		
+
 		return id;
 	}
-	
+
 	public boolean hasFastaID () {
 		return getValueByFieldName("FastaIDs").equalsIgnoreCase("-") ? false : true;
 	}
-	
+
 	public String getTranslatedSequence () {
 		String strand = getValueByFieldName("Strand");
 		String nucleotide = getNucleotideSequence();
@@ -64,23 +64,23 @@ public class pXgRecord {
 		} else {
 			nucleotide = nucleotide.split("\\|")[1];
 		}
-		
-		
+
+
 		if(strand.equalsIgnoreCase("+")) {
 			return GenomicSequence.translation(nucleotide, 0);
 		} else {
 			return GenomicSequence.reverseComplementTranslation(nucleotide, 0);
 		}
 	}
-	
+
 	public boolean isCanonical () {
 		return getValueByFieldName("isCanonical").equalsIgnoreCase("true") ? true : false;
 	}
-	
+
 	/**
-	 * return 
+	 * return
 	 * left-flank|center|right-flank
-	 * 
+	 *
 	 * @return
 	 */
 	private String getNucleotideSequence () {
@@ -93,10 +93,10 @@ public class pXgRecord {
 		sequence.append(centerSeuqnece);
 		sequence.append("|");
 		sequence.append(rightFlank);
-		
+
 		return sequence.toString();
 	}
-	
+
 
 	public String getValueByFieldName (String fieldName) {
 		String[] header = pXgParser.header;
@@ -112,7 +112,7 @@ public class pXgRecord {
 		}
 		return value;
 	}
-	
+
 	public void setValueByFieldName (String fieldName, String value) {
 		String[] header = pXgParser.header;
 		for(int i=0; i<header.length; i++) {
@@ -121,17 +121,18 @@ public class pXgRecord {
 			}
 		}
 	}
-	
+
+	@Override
 	public String toString() {
 		StringBuilder str = new StringBuilder();
-		
+
 		for(int i=0; i<fields.length; i++) {
 			if(i != 0) {
 				str.append("\t");
 			}
 			str.append(fields[i]);
 		}
-		
+
 		return str.toString();
 	}
 }

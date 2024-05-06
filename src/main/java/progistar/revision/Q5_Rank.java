@@ -13,30 +13,34 @@ import java.util.Iterator;
 public class Q5_Rank {
 
 	public static void main(String[] agrs) throws IOException {
-		
+
 		File[] pXgFiles = new File("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut").listFiles();
 		File[] pinFiles = new File("/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut_features").listFiles();
-		
+
 		String out = "/Users/gistar/eclipse-workspace/pXg/test/high_score_decoy/nocut_features_rank/";
-		
-		Hashtable<String, File> pXgFileHash = new Hashtable<String, File>();
-		Hashtable<String, File> pinFileHash = new Hashtable<String, File>();
-		
+
+		Hashtable<String, File> pXgFileHash = new Hashtable<>();
+		Hashtable<String, File> pinFileHash = new Hashtable<>();
+
 		for(File file : pXgFiles) {
-			if(file.getName().startsWith(".")) continue;
+			if(file.getName().startsWith(".")) {
+				continue;
+			}
 			if(file.getName().endsWith(".pxg")) {
 				pXgFileHash.put(file.getName().split("\\.")[0], file);
 			}
 		}
-		
+
 		for(File file : pinFiles) {
-			if(file.getName().startsWith(".")) continue;
+			if(file.getName().startsWith(".")) {
+				continue;
+			}
 			if(file.getName().endsWith(".feat2.pin")) {
 				pinFileHash.put(file.getName().split("\\.")[0], file);
 			}
 		}
-		
-		
+
+
 		Iterator<String> samples= (Iterator<String>) pXgFileHash.keys();
 		while(samples.hasNext()) {
 			String sample = samples.next();
@@ -44,27 +48,27 @@ public class Q5_Rank {
 			File pinFile = pinFileHash.get(sample);
 			BufferedReader BR = new BufferedReader(new FileReader(pXgFile));
 			String line = null;
-			
+
 			int rankIdx = 22;
-			ArrayList<Integer> ranks = new ArrayList<Integer>();
+			ArrayList<Integer> ranks = new ArrayList<>();
 			BR.readLine(); // skip header
 			while((line = BR.readLine()) != null) {
 				String rank = line.split("\t")[rankIdx];
 				ranks.add(Integer.parseInt(rank));
 			}
-			
+
 			BR.close();
-			
+
 			BR = new BufferedReader(new FileReader(pinFile));
 			String header = BR.readLine();
-			ArrayList<String> records = new ArrayList<String>();
-			
+			ArrayList<String> records = new ArrayList<>();
+
 			while((line = BR.readLine()) != null) {
 				records.add(line);
 			}
-			
+
 			BR.close();
-			
+
 			for(int i=1; i<=10; i++) {
 				int rank = i;
 				BufferedWriter BW = new BufferedWriter(new FileWriter(out+sample+".rank"+rank+".pin"));
@@ -76,13 +80,13 @@ public class Q5_Rank {
 						BW.newLine();
 					}
 				}
-				
+
 				BW.close();
 			}
-			
-			
+
+
 		}
 	}
-	
-	
+
+
 }

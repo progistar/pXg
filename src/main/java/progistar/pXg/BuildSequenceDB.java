@@ -30,20 +30,19 @@ public class BuildSequenceDB {
 		System.out.println(Constants.VERSION+" "+Constants.RELEASE);
 		System.out.println(Constants.INTRODUCE);
 		System.out.println();
-		
+
 		// parse the options
 		parseOptions(args);
-		
+
 		ArrayList<pXgRecord> records = pXgParser.parse(new File(Parameters.sequencedbInputPath));
-		
+
 		// write the records
 		File output = new File(Parameters.sequencedbOutputPath);
 		System.out.println("write "+output.getName());
 		BufferedWriter BW = new BufferedWriter(new FileWriter(output));
-		
+
 		int writeCnt = 0;
-		for(int i=0; i<records.size(); i++) {
-			pXgRecord record = records.get(i);
+		for (pXgRecord record : records) {
 			boolean isWrite = false;
 			if(Parameters.isIncludedCanonical && record.isCanonical()) {
 				isWrite = true;
@@ -51,7 +50,7 @@ public class BuildSequenceDB {
 			else if(Parameters.isIncludedNoncanonical && !record.isCanonical()) {
 				isWrite = true;
 			}
-			
+
 			if(isWrite) {
 				writeCnt++;
 				BW.append(record.getHeader());
@@ -62,13 +61,13 @@ public class BuildSequenceDB {
 		}
 		System.out.println("A total of "+writeCnt+" were written in the sequence database");
 		System.out.println();
-		
+
 		// write reference file
 		if(Parameters.referenceSequencePath != null) {
 			File referenceFile = new File(Parameters.referenceSequencePath);
 			System.out.println("Read and write reference file: "+referenceFile.getName());
 			System.out.println("All entries in the reference file enforce to have PE=1 at header section");
-			
+
 			Pattern PE = Pattern.compile("PE=[0-9]+");
 			BufferedReader BR = new BufferedReader(new FileReader(referenceFile));
 			String line = null;
@@ -86,26 +85,26 @@ public class BuildSequenceDB {
 				BW.append(line);
 				BW.newLine();
 			}
-			
+
 			BR.close();
 			System.out.println("A total of "+refCnt +" were written in the sequence database");
 			System.out.println();
-			
+
 		}
 		long endTime = System.currentTimeMillis();
 		System.out.println("Total elapsed time: "+(endTime - startTime)/1000 +" sec");
 		BW.close();
 	}
-	
+
 	/**
 	 * Parse and apply arguments
-	 * 
+	 *
 	 * @param args
 	 */
 	public static void parseOptions (String[] args) {
 		CommandLine cmd = null;
 		Options options = new Options();
-		
+
 		// Mandatory
 		Option optionInput = Option.builder("i")
 				.longOpt("input").argName("pXg input")
@@ -119,7 +118,7 @@ public class BuildSequenceDB {
 				.required(true)
 				.desc("Sequence database output path")
 				.build();
-		
+
 		// Optional
 		Option optionCanonical = Option.builder("c")
 				.longOpt("canonical").argName("Canonical peptides")
@@ -147,8 +146,8 @@ public class BuildSequenceDB {
 				.required(false)
 				.desc("Exclude non-canonical peptides with FastaIDs")
 				.build();
-		
-		
+
+
 		options.addOption(optionInput)
 		.addOption(optionOutput)
 		.addOption(optionCanonical)
@@ -156,14 +155,14 @@ public class BuildSequenceDB {
 		.addOption(optionFlank)
 		.addOption(optionReference)
 		.addOption(optionStringent);
-		
+
 		CommandLineParser parser = new DefaultParser();
 	    HelpFormatter helper = new HelpFormatter();
 	    boolean isFail = false;
-	    
+
 		try {
 		    cmd = parser.parse(options, args);
-		    
+
 		    if(!cmd.hasOption("c") && !cmd.hasOption("n")) {
 		    	isFail = true;
 		    	System.out.println("-c or -n must be included.");
@@ -200,12 +199,12 @@ public class BuildSequenceDB {
 			System.out.println(e.getMessage());
 			isFail = true;
 		}
-		
+
 		if(isFail) {
 		    helper.printHelp("Usage:", options);
 		    System.exit(0);
 		}
-		
+
 		System.out.println();
-	}	
+	}
 }

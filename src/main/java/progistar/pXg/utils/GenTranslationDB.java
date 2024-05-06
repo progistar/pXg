@@ -18,34 +18,37 @@ public class GenTranslationDB {
 	public static String fileFormat = null;
 	public static String mode = "";
 	public static int len = 15;
-	
+
 	public static void main(String[] args) throws IOException {
 		if(!parseArg(args)) {
 			System.exit(1);
 		}
-		
+
 		long startTime = System.currentTimeMillis();
 		BufferedReader BR = new BufferedReader(new FileReader(inputFile));
 		BufferedWriter BW = new BufferedWriter(new FileWriter(inputFile.getAbsolutePath().replace(".sam", ".fasta")));
 		String line = null;
-		
-		Hashtable<String, Integer> map = new Hashtable<String, Integer>();
+
+		Hashtable<String, Integer> map = new Hashtable<>();
 		while((line = BR.readLine()) != null) {
-			if(line.startsWith("@")) continue;
+			if(line.startsWith("@")) {
+				continue;
+			}
 			String[] fields = line.split("\t");
 			String nucleotide = fields[9];
 			// forward
 			for(int frame=0; frame<3; frame++) {
 				String[] peptides = GenomicSequence.translation(nucleotide, frame).split("X");
-				for(int i=0; i<peptides.length; i++) {
-					String peptide = peptides[i];
+				for (String peptide : peptides) {
 					int len = peptide.length();
-					
-					if(len < 8) continue;
-					
+
+					if(len < 8) {
+						continue;
+					}
+
 					int start = 0;
 					int end = len < 15 ? len : 15;
-					
+
 					while(end <= len) {
 						String subStr = peptide.substring(start, end);
 						Integer cnt = map.get(subStr);
@@ -62,15 +65,16 @@ public class GenTranslationDB {
 			// reverse
 			for(int frame=0; frame<3; frame++) {
 				String[] peptides = GenomicSequence.reverseComplementTranslation(nucleotide, frame).split("X");
-				for(int i=0; i<peptides.length; i++) {
-					String peptide = peptides[i];
+				for (String peptide : peptides) {
 					int len = peptide.length();
-					
-					if(len < 8) continue;
-					
+
+					if(len < 8) {
+						continue;
+					}
+
 					int start = 0;
 					int end = len < 15 ? len : 15;
-					
+
 					while(end <= len) {
 						String subStr = peptide.substring(start, end);
 						Integer cnt = map.get(subStr);
@@ -85,48 +89,48 @@ public class GenTranslationDB {
 				}
 			}
 		}
-		
+
 		// 0 for peptide cnt
 		// 1 for aa cnt
 		long[] summary = new long[2];
-		
+
 		long maxMemory = Runtime.getRuntime().maxMemory();
 		long allocatedMemory = Runtime.getRuntime().totalMemory();
 		long freeMemory = Runtime.getRuntime().freeMemory();
 		long totalMemory = Runtime.getRuntime().totalMemory();
-		
+
 		System.out.println("maxMem:" +maxMemory/1024);
 		System.out.println("allocated: "+allocatedMemory/1024);
 		System.out.println("freeMem: "+freeMemory/1024);
 		System.out.println("totalMem: "+totalMemory/1024);
 		System.out.println("usedMem: "+(totalMemory-freeMemory)/1024);
-		
+
 		map.forEach((peptide, cnt)->{
 			try {
 				summary[0]++;
 				summary[1] += peptide.length();
-				
+
 				BW.append(">"+summary[0]+" "+cnt);
 				BW.newLine();
 				BW.append(peptide);
 				BW.newLine();
 			}catch(IOException ioe) {
-				
+
 			}
 		});
 		long endTime = System.currentTimeMillis();
-		
+
 		System.out.println((endTime-startTime)/1000 +"sec");
-		
+
 		System.out.println("number of peptides: "+summary[0]);
 		System.out.println("AA size: "+summary[1]);
-		
+
 		BW.close();
 		BR.close();
 	}
-	
-	
-	
+
+
+
 	public static boolean parseArg(String[] args) {
 		for(int i=0; i<args.length; i++) {
 			if(args[i].equalsIgnoreCase(INPUT)) {
@@ -140,7 +144,7 @@ public class GenTranslationDB {
 			 	mode = args[++i];
 			}
 		}
-		
+
 		// check
 		if(inputFile == null || !inputFile.exists() || ! (mode.equalsIgnoreCase("s") || mode.equalsIgnoreCase("t")) || fileFormat == null) {
 			System.out.println("Usage: java -Xmx2G -jar -i [input file name] -m [translation mode]");

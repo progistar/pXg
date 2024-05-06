@@ -8,25 +8,25 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 public class SpectrumGen {
-	
+
 	public static int ProteomToolsFileIdx = 0;
 	public static int ProteomToolsScanIdx = 1;
 	public static int ProteomToolsPeptideIdx = 3;
 	public static int ProteomToolsChargeIdx = 12;
-	
+
 	public static int pXgFileIdx = 1;
 	public static int pXgScanIdx = 4;
 	public static int pXgPeptideIdx = 20;
 	public static int pXgChargeIdx = 10;
-	
-	public static ArrayList<String> msmsRecords = new ArrayList<String>();
-	public static ArrayList<Spectra> spectraList = new ArrayList<Spectra>();
+
+	public static ArrayList<String> msmsRecords = new ArrayList<>();
+	public static ArrayList<Spectra> spectraList = new ArrayList<>();
 
 	public static void loadProteomeTools(String resFolder, String specFolder, Hashtable<String, String> targetPeptides) throws IOException {
-		
+
 		File[] fileList = new File(resFolder).listFiles();
-		ArrayList<File> msmsFiles = new ArrayList<File>();
-		
+		ArrayList<File> msmsFiles = new ArrayList<>();
+
 		// read msms file
 		for(File file : fileList) {
 			if(file.isDirectory()) {
@@ -39,14 +39,16 @@ public class SpectrumGen {
 				}
 			}
 		}
-		
-		Hashtable<String, String> idedScanTitleMapper = new Hashtable<String, String>();
-		Hashtable<String, String> idedFileMapper = new Hashtable<String, String>();
+
+		Hashtable<String, String> idedScanTitleMapper = new Hashtable<>();
+		Hashtable<String, String> idedFileMapper = new Hashtable<>();
 		for(File file : msmsFiles) {
-			if(file.getName().startsWith(".")) continue;
+			if(file.getName().startsWith(".")) {
+				continue;
+			}
 			BufferedReader BR = new BufferedReader(new FileReader(file));
 			String line = null;
-			
+
 			BR.readLine(); // skip header
 			while((line = BR.readLine()) != null) {
 				String[] fields = line.split("\t");
@@ -59,38 +61,38 @@ public class SpectrumGen {
 					idedFileMapper.put(fileName, "");
 				}
 			}
-			
+
 			BR.close();
 		}
-		
+
 		fileList = new File(specFolder).listFiles();
-		
+
 		// read mgf
 		for(File file : fileList) {
-			if(file.getName().startsWith(".")) continue;
-			if(!file.getName().endsWith(".mgf")) continue;
-			if(idedFileMapper.get(file.getName()) == null) continue;
-			
+			if(file.getName().startsWith(".") || !file.getName().endsWith(".mgf") || (idedFileMapper.get(file.getName()) == null)) {
+				continue;
+			}
+
 			System.out.println("matched MGF file: "+file.getName());
 			Spectra spectra = new Spectra(file.getAbsolutePath(), Spectra.FILE_TYPE_MGF, idedScanTitleMapper);
 			spectraList.add(spectra);
 		}
-		
+
 	}
-	
+
 	public static void loadpXg(String resFileName, String specFolder, Hashtable<String, String> targetPeptides) throws IOException {
-		
+
 		File resFile = new File(resFileName);
-		ArrayList<File> msmsFiles = new ArrayList<File>();
+		ArrayList<File> msmsFiles = new ArrayList<>();
 		msmsFiles.add(resFile);
-		
-		
-		Hashtable<String, String> idedScanTitleMapper = new Hashtable<String, String>();
-		Hashtable<String, String> idedFileMapper = new Hashtable<String, String>();
+
+
+		Hashtable<String, String> idedScanTitleMapper = new Hashtable<>();
+		Hashtable<String, String> idedFileMapper = new Hashtable<>();
 		for(File file : msmsFiles) {
 			BufferedReader BR = new BufferedReader(new FileReader(file));
 			String line = null;
-			
+
 			BR.readLine(); // skip header
 			while((line = BR.readLine()) != null) {
 				String[] fields = line.split("\t");
@@ -104,22 +106,22 @@ public class SpectrumGen {
 					idedFileMapper.put(fileName, "");
 				}
 			}
-			
+
 			BR.close();
 		}
-		
+
 		File[] fileList = new File(specFolder).listFiles();
-		
+
 		// read mgf
 		for(File file : fileList) {
-			if(file.getName().startsWith(".")) continue;
-			if(!file.getName().endsWith(".mgf")) continue;
-			if(idedFileMapper.get(file.getName()) == null) continue;
-			
+			if(file.getName().startsWith(".") || !file.getName().endsWith(".mgf") || (idedFileMapper.get(file.getName()) == null)) {
+				continue;
+			}
+
 			System.out.println("matched MGF file: "+file.getName());
 			Spectra spectra = new Spectra(file.getAbsolutePath(), Spectra.FILE_TYPE_MGF, idedScanTitleMapper);
 			spectraList.add(spectra);
 		}
-		
+
 	}
 }

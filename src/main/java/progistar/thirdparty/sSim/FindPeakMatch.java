@@ -10,12 +10,12 @@ public class FindPeakMatch {
 		/*
 		 * Load ProteomTools
 		 */
-		SpectrumGen.loadProteomeTools("/Volumes/One Touch/pxgSelectedRes", 
-				"/Volumes/One Touch/pxgSelected", 
+		SpectrumGen.loadProteomeTools("/Volumes/One Touch/pxgSelectedRes",
+				"/Volumes/One Touch/pxgSelected",
 				PeptideLoader.matchedPeptides);
 		/*
-		SpectrumGen.loadpXg("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/ProteomeToolsHLA/UniqueNoncanonicalPSMs.tsv", 
-				"/Users/gistar/projects/pXg/Laumont_NatCommun2016/BLCL_spectra", 
+		SpectrumGen.loadpXg("/Users/gistar/projects/pXg/Laumont_NatCommun2016/Results/10.Unmodified_10ppm_basic/ProteomeToolsHLA/UniqueNoncanonicalPSMs.tsv",
+				"/Users/gistar/projects/pXg/Laumont_NatCommun2016/BLCL_spectra",
 				PeptideLoader.matchedPeptides);
 		*/
 		ArrayList<Spectra> list = SpectrumGen.spectraList;

@@ -14,24 +14,24 @@ import progistar.pXg.data.XBlock;
 
 public class SAMExportor {
 
-	private static Hashtable<String, String> sequenceIDChecker = new Hashtable<String, String>();
-	
+	private static Hashtable<String, String> sequenceIDChecker = new Hashtable<>();
+
 	public static void putSequenceID (XBlock xBlock) {
-		
+
 		sequenceIDChecker.put(xBlock.sequenceID.split("\\@")[0].replace(Constants.DECOY_PREFIX, ""), "");
-		
+
 		xBlock.siblingXBlocks.forEach((sxBlock) -> {
 			sequenceIDChecker.put(sxBlock.sequenceID.split("\\@")[0].replace(Constants.DECOY_PREFIX, ""), "");
 		});
-		
+
 	}
-	
+
 	public static void writeSAM (BufferedWriter BW) throws IOException {
-		
+
 		try (SamReader samReader = SamReaderFactory.makeDefault().open(new File(Parameters.sequenceFilePaths[Parameters.CURRENT_FILE_INDEX]))) {
-			
+
 			String lineSeparator = System.getProperty("line.separator");
-			
+
         	// get records
             for (SAMRecord samRecord : samReader) {
                 // Process each SAMRecord as needed
@@ -43,8 +43,8 @@ public class SAMExportor {
 					BW.newLine();
 				}
             }
-            
-            
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }

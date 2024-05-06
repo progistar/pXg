@@ -9,14 +9,14 @@ import java.io.IOException;
 import java.util.Hashtable;
 
 public class Q2_1_NetMHCpanInput {
-	
+
 	public static void main(String[] args) throws IOException {
-		
+
 		File[] files = {new File("/Users/gistar/Documents/MyPapers/pXg/MCP/revision_1/1.RevData/4.ReadTranslation/B_LCL1.target.psm"),
 				new File("/Users/gistar/Documents/MyPapers/pXg/MCP/revision_1/1.RevData/4.ReadTranslation/B_LCL1.decoy.psm")};
-		
+
 		BufferedWriter BW = new BufferedWriter(new FileWriter("B_LCL1.target.decoy.peptide"));
-		Hashtable<String, String> map = new Hashtable<String, String>();
+		Hashtable<String, String> map = new Hashtable<>();
 		for(File file : files) {
 
 			BufferedReader BR = new BufferedReader(new FileReader(file));
@@ -31,10 +31,10 @@ public class Q2_1_NetMHCpanInput {
 					map.put(peptide, "");
 				}
 			}
-			
+
 			BR.close();
 		}
-		
+
 		BW.close();
 		System.out.println(map.size() +" were detected.");
 	}

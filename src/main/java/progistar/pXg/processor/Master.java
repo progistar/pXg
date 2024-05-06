@@ -16,7 +16,6 @@ import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
 import progistar.pXg.constants.RunInfo;
 import progistar.pXg.data.GenomicAnnotation;
-import progistar.pXg.data.PIN;
 import progistar.pXg.data.PeptideAnnotation;
 import progistar.pXg.data.PxGAnnotation;
 import progistar.pXg.data.parser.GTFParser;
@@ -36,13 +35,13 @@ public class Master {
 	private static int[] startPositions = null;
 	private static boolean[] assignedArray = null;
 	private static String[] reads = null;
-	
+
 	private Master() {}
-	
-	
+
+
 	/**
 	 * Load GTF and peptide file and ready to read SAM file <br>
-	 * 
+	 *
 	 * @param genomicAnnotationFilePath
 	 * @param sequenceFilePath
 	 */
@@ -50,60 +49,60 @@ public class Master {
 		// GTF parser and Peptide parser
 		genomicAnnotation = GTFParser.parseGTF(genomicAnnotationFilePath);
 		PeptideParser.parseResult(peptideFilePath); // static..!
-		tmpOutputFilePaths = new Hashtable<String, BufferedWriter>();
+		tmpOutputFilePaths = new Hashtable<>();
 
 		SAM_FILE = new File(sequenceFilePath);
-		
+
 		// for SAM - GTF associated task assignment
 		// TASK-related variables
 		chrIndices = new int[Parameters.readSize];
 		startPositions = new int[Parameters.readSize];
 		assignedArray = new boolean[Parameters.readSize];
 		reads = new String[Parameters.readSize];
-		
+
 		// loading Codon.
 		Codon.mapping();
 	}
-	
-	
+
+
 	/**
 	 * Start to map peptides to NGS-reads <br>
-	 * 
+	 *
 	 */
 	public static void run () {
 		assert genomicAnnotation != null;
 		// TODO:
 		// Auto detection of already made index files.
-		
+
 		try {
 			RunInfo.totalProcessedReads = 0;
 			RunInfo.workerProcessedReads = new long[Parameters.nThreads+1];
 			Worker[] workers = new Worker[Parameters.nThreads];
-			
+
 			try (SamReader samReader = SamReaderFactory.makeDefault().open(SAM_FILE)) {
-				
+
 				// initialize
-				Vector<Task> taskQueue = new Vector<Task>(); // for synchronized
+				Vector<Task> taskQueue = new Vector<>(); // for synchronized
 				String lineSeparator = System.getProperty("line.separator");
 				int readCount = 0;
 				long readPartitionSize = Parameters.readSize;
-				
+
 	        	// get records
 	            for (SAMRecord samRecord : samReader) {
 	                // Process each SAMRecord as needed
 	            	String record = samRecord.getSAMString().replace(lineSeparator, "");
 	            	reads[readCount] =record;
-	            	
+
 	            	String[] fields = record.split("\\s");
 	            	String chr = fields[SamParser.CHR_IDX];
 	            	Integer startPosition = Integer.parseInt(fields[SamParser.START_POS_IDX]);
-					
+
 					// the index for that chr is automatically assigned by auto-increment key.
 					IndexConvertor.putChrIndexer(chr);
 					int chrIndex_ = IndexConvertor.chrToIndex(chr);
 					// check all chromosomes are well processed.
-					RunInfo.processedChromosomes.put(chr, chrIndex_); 	
-					
+					RunInfo.processedChromosomes.put(chr, chrIndex_);
+
 					// store chr and start positions
 					chrIndices[readCount] = chrIndex_;
 					startPositions[readCount] = startPosition;
@@ -112,82 +111,86 @@ public class Master {
 						// the array is initialized as "false"
 						Arrays.fill(assignedArray, false);
 						// assign tasks to workers
-						while(!assignTasks(taskQueue, workers, readCount));
+						while(!assignTasks(taskQueue, workers, readCount)) {
+							;
+						}
 						// once give the tasks, remove reads
 						RunInfo.totalProcessedReads += readCount;
 						readCount = 0;
 					}
 	            }
-	            
+
 	            // do last tasks
 	            if(readCount > 0) {
 	            	Arrays.fill(assignedArray, false);
 					// assign tasks to workers
-					while(!assignTasks(taskQueue, workers, readCount));
+					while(!assignTasks(taskQueue, workers, readCount)) {
+						;
+					}
 					// once give the tasks, remove reads
 					RunInfo.totalProcessedReads += readCount;
 					readCount = 0;
 	            }
-	            
-	            
+
+
 	        } catch (IOException e) {
 	            e.printStackTrace();
 	        }
-				
+
 			// wait for finishing all tasks from workers
 			waitUntilAllWorkersDone(workers);
-			
+
 			// read tmp output files
-			ArrayList<File> tmpOutputFiles = new ArrayList<File>();
+			ArrayList<File> tmpOutputFiles = new ArrayList<>();
 			tmpOutputFilePaths.forEach((path, tmpBW) ->{
 				tmpOutputFiles.add(new File(path));
 				Master.closeOutputBW(path);
 			});
-			
+
 			PxGAnnotation pXgA = ResultParser.parseResult(tmpOutputFiles);
-			
+
 			// removing tmpOutputFiles
 			tmpOutputFiles.forEach(file -> {file.delete();});
-			
+
 			// count peptides and scans matching to exp.reads
 			RunInfo.mappingFilterPeptideNum3 = PeptideAnnotation.getPeptideSizeWithXBlocks(pXgA.getXBlockMapper());
 			RunInfo.mappingFilterScanNum3 = PeptideAnnotation.getScanSizeWithXBlocks(pXgA.getXBlockMapper());
-			
+
 			// count peptides and scans after p-value
 			RunInfo.pvalueFilterPeptideNum4 = PeptideAnnotation.getPeptideSizeWithXBlocks(pXgA.getXBlockMapper());
 			RunInfo.pvalueFilterScanNum4 = PeptideAnnotation.getScanSizeWithXBlocks(pXgA.getXBlockMapper());
-			
+
 			// filter regions
 			pXgA.regionScoreFilter();
 			// mark fasta result
-			// to distinguish ambiguous interpretation 
+			// to distinguish ambiguous interpretation
 			pXgA.markFasta();
 			// marking target PSMs
 			pXgA.assignXBlocks();
-			
+
 			pXgA.write(Parameters.tmpOutputFilePaths[Parameters.CURRENT_FILE_INDEX]);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static boolean assignTasks (Vector<Task> taskQueue, Worker[] workers, int readCount) {
 		Task[] tasks = getTasks(readCount);
 		boolean isDone = true;
-		for(int i=0; i<tasks.length; i++) {
-			if(tasks[i].isAssigned) {
+		for (Task task : tasks) {
+			if(task.isAssigned) {
 				// add task into taskQueue
-				taskQueue.add(tasks[i]);
+				taskQueue.add(task);
 				isDone = false;
-			} 
+			}
 		}
-		
+
 		while(!taskQueue.isEmpty()) {
 			Task task = taskQueue.firstElement();
 			taskQueue.remove(0);
-			
+
 			boolean isAssigned = false;
-			
+
 			while(!isAssigned) {
 				for(int i=0; i<workers.length; i++) {
 					if(workers[i] == null || !workers[i].isAlive()) {
@@ -197,31 +200,32 @@ public class Master {
 						break;
 					}
 				}
-				
+
 				Thread.yield();
 			}
 		}
-		
+
 		return isDone;
 	}
-	
+
 	/**
 	 * waiting for all workers are done with their tasks.<br>
-	 * 
+	 *
 	 * @param workers
 	 */
 	private static void waitUntilAllWorkersDone (Worker[] workers) {
 		boolean isProcessing = true;
 		while(isProcessing) {
 			isProcessing = false;
-			for(int i=0; i<workers.length; i++) {
-				if(workers[i] != null)
-					isProcessing |= workers[i].isAlive();
+			for (Worker worker : workers) {
+				if(worker != null) {
+					isProcessing |= worker.isAlive();
+				}
 			}
 			Thread.yield();
 		}
 	}
-	
+
 	/**
 	 * Partitioning tasks. <br>
 	 * @param gSeqs
@@ -229,22 +233,24 @@ public class Master {
 	 * @return
 	 */
 	private static Task[] getTasks (int readCount) {
-		
+
 		assert readCount != 0;
-		
-		
+
+
 		Task[] tasks = new Task[Parameters.nThreads];
-		
+
 		// Task class contains "isAssigned" feature.
 		// The default value of the feature is "false"
 		// The value becomes "true" when task has something to do.
-		for(int i=0; i<tasks.length; i++) tasks[i] = new Task();
-		
+		for(int i=0; i<tasks.length; i++) {
+			tasks[i] = new Task();
+		}
+
 		int gSeqSize	=	readCount;
 		int chrIndex	=	0;
 		int start		=	0;
 		int end			=	0;
-		
+
 		// Setting the pivot start position information
 		for(int i=0; i<gSeqSize; i++) {
 			// start position of NOT treated sequence
@@ -252,26 +258,28 @@ public class Master {
 				chrIndex	=	chrIndices[i];
 				start		=	startPositions[i];
 				end			=	start + Parameters.partitionSize - 1;
-				
+
 				break;
 			}
 		}
-		
-		ArrayList<String> readPartition = new ArrayList<String>();
-		
+
+		ArrayList<String> readPartition = new ArrayList<>();
+
 		for(int i=0; i<gSeqSize; i++) {
 			// already treated sequence
-			if(assignedArray[i]) continue;
-			
+			if(assignedArray[i]) {
+				continue;
+			}
+
 			if(chrIndices[i] == chrIndex) {
 				if(startPositions[i] >= start && startPositions[i] + Parameters.maxJunctionSize <= end) {
 					assignedArray[i] = true;
 					readPartition.add(reads[i]);
 				}
 			}
-			
+
 		}
-		
+
 		// have a task at least one.
 		int partitionInSize = readPartition.size();
 		if(partitionInSize != 0) {
@@ -282,9 +290,11 @@ public class Master {
 				// target NGS-read
 				tasks[taskIndex].samReads.add(readPartition.get(i));
 				taskIndex++;
-				if(taskIndex == tasks.length) taskIndex = 0;
+				if(taskIndex == tasks.length) {
+					taskIndex = 0;
+				}
 			}
-			
+
 			for(int i=0; i<tasks.length; i++) {
 				if(tasks[i].samReads.size() != 0) {
 					tasks[i].isAssigned = true;
@@ -293,19 +303,19 @@ public class Master {
 					tasks[i].gIndexStart = start;
 					tasks[i].taskID = ++Master.taskCount;
 					tasks[i].taskType = Constants.TASK_G_MAP;
-					
+
 //					System.out.println(tasks[i].description());
 				}
 			}
 		}
-		
+
 		return tasks;
 	}
-	
+
 	/**
 	 * Enroll temporary output file path. <br>
 	 * The enrolled file paths will be processed when making the final output file. <br>
-	 * 
+	 *
 	 * @param outputFilePath
 	 */
 	public static void enrollTmpOutputFilePath (String outputFilePath) {
@@ -313,28 +323,28 @@ public class Master {
 			try {
 				tmpOutputFilePaths.put(outputFilePath, new BufferedWriter(new FileWriter(outputFilePath)));
 			}catch(IOException ioe) {
-				
+
 			}
 		}
 	}
-	
+
 	public static BufferedWriter getOutputBW (String outputFilePath) {
 		BufferedWriter BW = tmpOutputFilePaths.get(outputFilePath);
 		if(BW == null) {
 			enrollTmpOutputFilePath(outputFilePath);
 			BW = tmpOutputFilePaths.get(outputFilePath);
 		}
-		
+
 		return BW;
 	}
-	
+
 	public static void closeOutputBW (String outputFilePath) {
 		BufferedWriter BW = tmpOutputFilePaths.get(outputFilePath);
 		if(BW != null) {
 			try {
 				BW.close();
 			}catch(IOException ioe) {
-				
+
 			}
 		}
 	}

@@ -11,30 +11,30 @@ public class NetMHCpanRatio {
 
 	public static void main(String[] args) throws IOException {
 		File file = new File("C:\\Users\\progi\\Desktop\\Projects\\pXg\\Laumont_NatCommun2016\\Results\\3.S3_pXg\\PeptideAnnotationS3_5ppm_002.rep1.rank10.pXg.netMHCpan_4.1");
-		
+
 		BufferedReader BR = new BufferedReader(new FileReader(file));
 		String line = null;
-		
+
 		BR.readLine(); // skip header
-		Hashtable<String, String> isDuplicated = new Hashtable<String, String>();
-		ArrayList<String> records = new ArrayList<String>();
-		
+		Hashtable<String, String> isDuplicated = new Hashtable<>();
+		ArrayList<String> records = new ArrayList<>();
+
 		while((line = BR.readLine()) != null) {
 			String[] fields = line.split("\t");
 			String key = fields[0]+"_"+fields[1]+"_"+fields[4];
-			
+
 			if(isDuplicated.get(key) == null) {
 				records.add(line);
 				isDuplicated.put(key, "");
 			}
 		}
-		
+
 		BR.close();
-		
-		Hashtable<String, Integer> countIDs = new Hashtable<String, Integer>();
-		Hashtable<String, Integer> countMAPs = new Hashtable<String, Integer>();
-		for(int i=0; i<records.size(); i++) {
-			String[] fields = records.get(i).split("\t");
+
+		Hashtable<String, Integer> countIDs = new Hashtable<>();
+		Hashtable<String, Integer> countMAPs = new Hashtable<>();
+		for (String record : records) {
+			String[] fields = record.split("\t");
 			String isCanonical = fields[36];
 			String class_ = fields[43];
 			String score = fields[6];
@@ -43,12 +43,12 @@ public class NetMHCpanRatio {
 				if(count == null) {
 					count = 0;
 				}
-				
+
 				count++;
 				countIDs.put(score, count);
-				
+
 				if(class_.equalsIgnoreCase("NB")) {
-					
+
 				} else {
 					count = countMAPs.get(score);
 					if(count == null) {
@@ -59,19 +59,19 @@ public class NetMHCpanRatio {
 				}
 			}
 		}
-		
+
 		for(int i=99; i>0; i--) {
 			String score = (i+"");
 			Integer countID = countIDs.get(score);
 			Integer countMAP = countMAPs.get(score);
-			
+
 			if(countID == null) {
 				countID = 0;
 			}
 			if(countMAP == null) {
 				countMAP = 0;
 			}
-			
+
 			System.out.println(score+"\t"+countID+"\t"+countMAP);
 		}
 	}
