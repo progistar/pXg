@@ -46,8 +46,9 @@ public class pXgRecord {
 		String genomicLoci = getValueByFieldName("GenomicLoci").replace("|", ",");
 		String centerSeuqnece = getValueByFieldName("ObservedNucleotide");
 		String strand = getValueByFieldName("Strand");
+		String label = getValueByFieldName("Label");
 
-		id = genomicLoci+":"+strand+":"+centerSeuqnece;
+		id = genomicLoci+":"+strand+":"+centerSeuqnece+":"+label;
 
 		return id;
 	}

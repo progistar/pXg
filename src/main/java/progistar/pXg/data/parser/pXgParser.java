@@ -21,7 +21,7 @@ public class pXgParser {
 
 	private pXgParser() {}
 
-	public static ArrayList<pXgRecord> parse (File file) throws IOException {
+	public static ArrayList<pXgRecord> parse (File file, boolean removeDuplicates) throws IOException {
 		long startTime = System.currentTimeMillis();
 		System.out.println("Parsing "+file.getName());
 
@@ -40,7 +40,7 @@ public class pXgParser {
 			pXgRecord record = new pXgRecord(line.split("\t"));
 			String header = record.getHeader();
 
-			if(checkDuplicates.get(header) == null) {
+			if(!removeDuplicates || checkDuplicates.get(header) == null) {
 				records.add(record);
 				checkDuplicates.put(header, "");
 
@@ -70,8 +70,12 @@ public class pXgParser {
 			System.out.println(excluded +" non-canonical peptides were excluded");
 			records = selectedRecords;
 		}
-
-		System.out.println("A total of "+records.size()+" unique entries were saved (canonical: "+canonical+", non-canonical:"+noncanonical+")");
+		
+		if(removeDuplicates) {
+			System.out.println("A total of "+records.size()+" unique entries were saved (canonical: "+canonical+", non-canonical:"+noncanonical+")");
+		} else {
+			System.out.println("A total of "+records.size()+" entries were saved (canonical: "+canonical+", non-canonical:"+noncanonical+")");
+		}
 
 		long endTime = System.currentTimeMillis();
 		System.out.println("Elapsed time: "+(endTime - startTime)/1000 +" sec");

@@ -34,7 +34,7 @@ public class BuildSequenceDB {
 		// parse the options
 		parseOptions(args);
 
-		ArrayList<pXgRecord> records = pXgParser.parse(new File(Parameters.sequencedbInputPath));
+		ArrayList<pXgRecord> records = pXgParser.parse(new File(Parameters.sequencedbInputPath), true);
 
 		// write the records
 		File output = new File(Parameters.sequencedbOutputPath);
