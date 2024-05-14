@@ -2,6 +2,8 @@ package progistar.pXg.data.parser;
 
 import java.io.File;
 
+import org.apache.commons.io.FilenameUtils;
+
 import progistar.pXg.constants.Constants;
 import progistar.pXg.constants.Parameters;
 import progistar.pXg.utils.Logger;
@@ -66,9 +68,9 @@ public class ParameterParser {
 				System.out.println("  --threads             : The number of threads. Default is 4");
 				System.out.println();
 				System.out.println("Example1");
-				System.out.println("java -Xmx30G -jar pXg.jar -gtf_file gencode.gtf -sam_file aligned.sorted.bam -psm_file peaks.result -scan_col 5 -file_col 2 -pept_col 4 -charge_col 11 -score_col 8 -add_feat_cols 14,15  -out_canonical false -out test");
+				System.out.println("java -Xmx30G -jar pXg.jar --gtf_file gencode.gtf --sam_file aligned_1.sorted.bam,aligned_2.sorted.bam --psm_file peaks.result --scan_col 5 --file_col 2 --pept_col 4 --charge_col 11 --score_col 8 --add_feat_cols 14,15  --out_canonical false --out test");
 				System.out.println("Example2");
-				System.out.println("java -Xmx30G -jar pXg.jar -gtf_file gencode.gtf -sam_file aligned.sorted.sam -psm_file peaks.result -scan_col 5 -file_col 2 -pept_col 4 -charge_col 11 -score_col 8 -add_feat_cols 14,15 -lengths 8-11 -out test");
+				System.out.println("java -Xmx30G -jar pXg.jar --gtf_file gencode.gtf --sam_file aligned.sorted.sam -psm_file peaks.result --scan_col 5 --file_col 2 --pept_col 4 --charge_col 11 --score_col 8 --add_feat_cols 14,15 --lengths 8-11 --out test");
 				return -1;
 			}
 
@@ -92,15 +94,17 @@ public class ParameterParser {
 							return -1;
 						}
 
-						int lastIdx = Parameters.sequenceFilePaths[idx].lastIndexOf(".");
-
-						Parameters.unmappedFilePaths[idx] = Parameters.sequenceFilePaths[idx].substring(0, lastIdx) + ".unknown.seq";
-						Parameters.exportSAMPaths[idx]	  = Parameters.sequenceFilePaths[idx].substring(0, lastIdx) + ".ided.sam";
-						Parameters.tmpOutputFilePaths[idx]= Parameters.sequenceFilePaths[idx].substring(0, lastIdx) + "."+Constants.UNIQUE_RUN_ID;
 						if(!isExist(Parameters.sequenceFilePaths[idx])) {
 							printNoSuchFileOrDirectory(Parameters.sequenceFilePaths[idx]);
 							return -1;
 						}
+						
+						int lastIdx = Parameters.sequenceFilePaths[idx].lastIndexOf(".");
+						
+						Parameters.unmappedFilePaths[idx] = Parameters.sequenceFilePaths[idx].substring(0, lastIdx) + ".unknown.seq";
+						Parameters.exportSAMPaths[idx]	  = Parameters.sequenceFilePaths[idx].substring(0, lastIdx) + ".ided.sam";
+						Parameters.tmpOutputFilePaths[idx]= Parameters.sequenceFilePaths[idx].substring(0, lastIdx) + "."+Constants.UNIQUE_RUN_ID;
+						
 					}
 				}
 			}
@@ -154,6 +158,28 @@ public class ParameterParser {
 					if(isExist(Parameters.outputFilePath)) {
 						printAlreadyExistFileOrDirectory(Parameters.outputFilePath);
 						return -1;
+					}
+					
+					File baseFile = new File(Parameters.outputFilePath);
+					String basePath = FilenameUtils.getFullPathNoEndSeparator(baseFile.getAbsolutePath());
+					if(basePath == null) {
+						basePath = "";
+					}
+					// relocation of sam/bam-related outputs
+					for(int idx=0; idx < Parameters.NUM_OF_SAM_FILES; idx++) {
+						
+						File file = new File(Parameters.unmappedFilePaths[idx]);
+						Parameters.unmappedFilePaths[idx] = basePath +"/"+file.getName();
+						
+						file = new File(Parameters.exportSAMPaths[idx]);
+						Parameters.exportSAMPaths[idx] = basePath +"/"+file.getName();
+						
+						file = new File(Parameters.tmpOutputFilePaths[idx]);
+						Parameters.tmpOutputFilePaths[idx] = basePath +"/"+file.getName();
+						
+						System.out.println(Parameters.unmappedFilePaths[idx]);
+						System.out.println(Parameters.exportSAMPaths[idx]);
+						System.out.println(Parameters.tmpOutputFilePaths[idx]);
 					}
 				}
 				// -ileq (optional)

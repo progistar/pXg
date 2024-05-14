@@ -127,7 +127,7 @@ public class pXgParser {
 			tmp.append(pXgParser.header[i]);
 		}
 
-		if(samFileNames.length > 1) {
+		if(samFileNames.length > 0) {
 			for (String samFileName : samFileNames) {
 				tmp.append("\t").append(new File(samFileName).getName());
 			}
