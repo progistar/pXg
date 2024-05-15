@@ -37,7 +37,7 @@ It was developed for the reliable identification of noncanonical MAPs from de no
 | Protein sequences  | Canonical and contaminant protein sequences (e.g. UniProt)                        | Fasta      | No    |
 
 *pXg is not applicable to the flat formatted output in pNovo3. A user must convert the flat format to CSV or TSV.<br>
-*After version 2.2.2, pXg can support multiple SAM/BAM files. "Reads" column indicates sum of reads from multiple SAM/BAM files. Reads in each SAM/BAM file is appended to the last columns. <br>
+*Since version 2.3.0, pXg can support multiple SAM/BAM files. "Reads" column indicates sum of reads from multiple SAM/BAM files. Reads in each SAM/BAM file is appended to the last columns. <br>
 
 ### Output format
 |Output    | Description    | Format   | Mandatory   |
@@ -46,7 +46,6 @@ It was developed for the reliable identification of noncanonical MAPs from de no
 | pXg result for Percolator | This is a main output file and contains a list of identification as PIN format         | PIN         | Yes   |
 | Unknown sequences          | A list of softclip and unmapped reads matching to peptides               | Flat        | Yes   |
 | Matched reads*             | Matched reads to peptides passing all filters                            | SAM         | No    |
-| Matched peptides*          | A list of peptides passing all filters (currently, deprecated)           | GTF         | No    |
 
 *Although the pXg result contains PSM information with corresponding RNA-Seq counts, it is not suitable for visualization. <br>
  Two output files (matched reads and peptides) are available for direct use in <a href="https://software.broadinstitute.org/software/igv/" target="_blank">IGV</a>, making visualization easier.
