@@ -18,6 +18,7 @@
   - [IGV viewer](#igv-viewer)
 - [TODO](#todo)
   - [GTF Export](#gtf-export)
+- [Citation] (#citation)
 ---
 
 ## About pXg
@@ -159,3 +160,8 @@ When pXg finishes identifying peptides, the resulting GTF and SAM files are imme
 ## TODO
 ### GTF Export
 * Export GTF format from pXg result.
+
+## Citation
+<a href="https://www.mcponline.org/article/S1535-9476(24)00033-1/" target="_blank">pXg: Comprehensive Identification of Noncanonical MHC-I–Associated Peptides From De Novo Peptide Sequencing Using RNA-Seq Reads. Seunghyuk Choi and Eunok Paek, Molecular & Cellular Proteomics 2024.</a><br>
+
+
