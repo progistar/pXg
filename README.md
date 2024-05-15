@@ -18,7 +18,7 @@
   - [IGV viewer](#igv-viewer)
 - [TODO](#todo)
   - [GTF Export](#gtf-export)
-- [Citation] (#citation)
+- [Citation](#citation)
 ---
 
 ## About pXg
